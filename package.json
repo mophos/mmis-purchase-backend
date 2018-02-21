@@ -41,6 +41,7 @@
         "@types/mysql": "2.15.2",
         "@types/node": "^9.4.6",
         "@types/random-js": "^1.0.30",
-        "@types/serve-favicon": "^2.2.30"
+        "@types/serve-favicon": "^2.2.30",
+        "typescript": "^2.7.2"
     }
 }

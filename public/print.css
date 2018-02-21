@@ -1,0 +1,11 @@
+button, .btn, .btn-sm, .hideprint,.btn-success{
+    display:none;
+}
+@page{
+    margin-top: 1.5cm;
+    margin-left: 2cm;
+    margin-right: 1.5cm;
+}
+.pagebreak{
+    page-break-after: always;
+}

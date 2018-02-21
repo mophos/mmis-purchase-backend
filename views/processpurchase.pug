@@ -1,0 +1,38 @@
+include css.pug
+doctype html
+html
+  head
+    meta(charset="utf-8")
+    title report
+  body
+    button.btn.btn-sm.btn-success(onclick='window.print()') Print
+    .center.head #{hospname}
+     br
+     | จำนวนรายการเวชภัณฑ์
+     br(style='padding-bottom: 7pt;')
+     | ตั้งแต่วันที่ #{dates} ถึง วันที่ #{daten}
+    .left(style='padding-bottom: 20pt;')
+    .center(style='padding-bottom: 7pt;') สรุปวิธีการจัดซื้อ (คำนวนนับจากใบสั่งซื้อทั้งรับของและยังไม่ได้รับของ)
+    table
+     thead
+      tr
+        td(colspan='4' style='border-top: 1px dashed black;')
+     tbody
+      - var y=0
+        for b in results
+          - y++
+            tr
+              td #{y}. #{b.name}
+              td.right #{b.po}
+              td.right #{b.list}
+              td.right #{b.cost} บาท
+      tfooter          
+        tr
+          td.tbfooter(colspan='4' height='10')
+        tr
+          td.right รวม
+          td.right #{sum} ใบ
+          td.right #{sum1} รายการ
+          td.right #{sum2} บาท
+        tr
+          td.tbfooter(colspan='4' height='10')

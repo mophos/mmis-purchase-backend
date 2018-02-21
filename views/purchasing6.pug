@@ -1,0 +1,89 @@
+include css.pug
+style(type='text/css').
+  body{
+  font-family:'THSarabunIT';
+  }
+style(type='text/css' media='print').
+   @page{
+   margin-top: 1.5cm;
+   margin-left: 2.5cm;
+   margin-right: 2cm;
+  }
+doctype html
+html
+  head
+    meta(charset="utf-8")
+    title report
+  body
+    button.btn.btn-sm.btn-success.btnprint(onclick='window.print()') Print
+    img(src='/krut.png', height='60px')
+    .headkut.h1 บันทึกข้อความ
+    p.h2
+      | ส่วนราชการ
+      label.h3(style='margin-top: 5px;')  &nbsp;#{hospitalName}
+    p.h2(style='width:50%;float: left;')
+      | ที่
+      label.h3(style='margin-top: 5px;')  &nbsp;#{at_name}
+    b.h2(style='width:50%;float: left;')
+      | วันที่ 
+      label.h3 &nbsp;#{nDate}
+    br
+    b.h2 เรื่อง 
+    | รายงานผลการพิจารณาและขออนุมัติสั่งซื้อพัสดุ
+    .enter เรียน ผู้ว่าราชการจังหวัด#{province}
+    br 
+    .fontspace
+    | ขอรายงานผลการพิจารณาจัดซื้อพัสดุ จาก #{labeler_name} โดยวิธี #{name} ดังนี้
+    br
+    .fontspace
+    table(style='border: 1px solid black;')
+      thead
+        tr 
+          td(rowspan='2' style='font-size: 12pt; border: 1px solid black; vertical-align: middle; width:4%;').center ลำดับ
+          td(rowspan='2' style='font-size: 12pt; border: 1px solid black; vertical-align: middle;').center รายการพิจารณา
+          td(rowspan='2' style='font-size: 12pt; border: 1px solid black; vertical-align: middle;').center หน่วยนับ
+          td(style='border: 1px solid black; font-size: 12pt;').center จำนวน
+          td(style='border: 1px solid black; font-size: 12pt;').center ราคา/หน่วย
+          td(style='border: 1px solid black; font-size: 12pt;').center ราคารวม
+      tbody
+        - var y=0
+            for b in results
+              - y++
+                tr
+                  td.center(style='font-size: 13pt; border: 1px solid black;') #{y}
+                  td(style='font-size: 13pt; border: 1px solid black;') #{b.generic_id} : #{b.generic_name}
+                  td.center(style='font-size: 13pt; border: 1px solid black;') #{b.unit_price_name} #{b.small_unit} (#{b.large_unit})
+                  td.center(style='font-size: 13pt; border: 1px solid black;') #{b.total}
+                  td.right(style='font-size: 13pt; border: 1px solid black;') #{b.unit_price}
+                  td.right(style='font-size: 13pt; border: 1px solid black;') #{b.total_price}
+    br
+    .fontspace
+    | จำนวน #{y} รายการ รวมเป็นเงิน #{totalprice} บาท (#{bahtText})
+    br
+    .fontspace
+    | เกณฑ์การพิจารณาผลการยื่นข้อเสนอครั้งนี้ จะพิจารณาโดยใช้หลักเกณฑ์ราคากลาง กลุ่มงานเภสัชกรรม#{hospitalName}พิจารณาแล้ว เห็นสมควรจัดซื้อจากผู้เสนอราคาดังกล่าว
+    br
+    .fontspace
+    | จึงเรียนมาเพื่อโปรดพิจารณา หากเห็นชอบขอได้โปรดอนุมัติให้สั่งซื้อสั่งจ้างจากผู้เสนอราคาดังกล่าว
+    br
+    br 
+    br 
+    div(style="width:100%;float:left;")
+      div(style="width:50%;float:left;text-align:center") 
+        | 
+        br 
+        | 
+      div(style="width:50%;float:left;text-align:center") ลงชื่อ............................................................
+        br
+        | (#{buyer_fullname})
+        br 
+        | #{buyer_position}
+    div(style="width:100%;float:left;text-align:center") อนุมัติ
+      br
+      br
+      br
+      | ลงชื่อ............................................................
+      br
+      | (#{nameChief})
+      br
+      | ผู้อำนวยการโรงพยาบาล#{hospitalName}

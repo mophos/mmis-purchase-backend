@@ -1,0 +1,47 @@
+include css.pug
+style(type='text/css').
+ body{
+ font-family: 'THSarabunIT';
+ }
+style(type='text/css' media='print').
+ @page{
+    margin-top: 1.5cm;
+    margin-left: 2.5cm;
+    margin-right: 2cm;
+  }
+doctype html
+html
+  head
+    meta(charset="utf-8")
+    title report
+  body
+    button.btn.btn-sm.btn-success.btnprint(onclick='window.print()') Print
+    center 
+      img(src='/krut.png', height='60px')
+    .bold.center ประกาศ #{hospitalName}
+    .bold.center.br เรื่อง ประกาศผู้ชนะการเสนอราคาซื้อเวชภัณฑ์ยา
+    .bold.center.br โดนวิธีเฉพาะเจาะจง
+    hr
+    br
+    .fontspace
+    | ตามที่#{hospitalName} ได้มีหนังสือเชิญชวนซื้อ 
+    - var c=0
+    for p in purchasing4
+      - if(c>0)
+          | , 
+      | #{p.product_name}
+      - c++
+    |  โดยวิธีเฉพาะเจาะจงนั้น ผู้เสนอราคาที่ชนะการเสนอราคา ได้แก่ #{purchasing4[0].labeler_name} โดยเสนอราคาต่ำสุด เป็นเงินทั้งสิ้น  #{total_price} บาท (#{total_priceT})รวมภาษีมูลค่าเพิ่มและภาษีอื่น ค่าขนส่ง ค่าจดทะเบียน และค่าใช้จ่ายอื่นๆ ทั้งปวง
+    br
+    br
+    br
+    div(style='margin-left:50%;') สั่ง ณ วันที่ #{date}
+    br
+    br
+    br
+    br
+    div(style='width:50%;float:right')
+      .center (ลงชื่อ)............................................. 
+      .center (#{getChief.title}#{getChief.fname} #{getChief.lname})
+      .center #{getChief.position}#{hospitalName}
+      .center ปฏิบัติราชการแทนผู้ว่าราชการจังหวัด#{province}

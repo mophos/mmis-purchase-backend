@@ -1,0 +1,72 @@
+include css.pug
+doctype html
+html
+  head
+    meta(charset="utf-8")
+    title report
+  body
+    button.btn.btn-sm.btn-success(onclick='window.print()') Print
+    .center(style='font-weight: bold;') โรงพยาบาลสมุทรสาคร
+     br
+     | รายงานสรุปการดำเนินการจัดซื้อเวชภัณฑ์
+    .center(style='padding-bottom: 7pt;') ตั้งแต่วันที่ 1 กรกฎาคม 2560 ถึง วันที่ 29 กรกฎาคม 2560
+    - var y=0
+    - for (y=0;y<3;y++)
+        .left(style='font-weight: bold;') รหัสงบ : 10 : งบปกติ โรงพยาบาลสมุทรสาคร
+        table
+          thead
+            tr
+              th 
+              th.right จัดซื้อเอง
+              th.right จัดซื้อร่วม
+              th.right รวม
+          tbody
+            tr
+              td.left จำนวนใบรับ
+              td.right 1
+              td.right 0
+              td.right 1 ใบ
+            tr
+              td.left 1.ยาในบัญชียาหลัก
+              td.right 0.00
+              td.right 0.00
+              td.right 0.00 บาท
+            tr
+              td.left 2.ยานอกบัญชียาหลัก
+              td.right 44,940.00
+              td.right 0.00
+              td.right 0.00 บาท
+            tr
+              td.left 3.เวชภัณฑ์
+              td.right 0.00
+              td.right 0.00
+              td.right 0.00
+            tr
+              td.left 4.วัสดุการแพทย์
+              td.right 0.00
+              td.right 0.00
+              td.right 0.00
+            tr
+              td.left 5.วัสดุวิทยาศาสตร์
+              td.right 0.00
+              td.right 0.00
+              td.right 0.00
+            tr
+              td.left 5.เภสัชเคมีภัณฑ์
+              td.right 0.00
+              td.right 0.00
+              td.right 0.00
+            tr
+              td.left 6.อื่นๆ
+              td.right 0.00
+              td.right 0.00
+              td.right 0.00
+          tfooter          
+            tr
+              td.tbfooter(colspan='4' height='10')
+    table
+      tr
+        td.right มูลค่ารวม
+        td.right 44,940
+        td.right 0.00
+        td.right(width='170') 44,940 บาท

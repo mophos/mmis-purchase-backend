@@ -1,0 +1,168 @@
+include css.pug
+style(type='text/css').
+ body{
+ font-family: 'THSarabunIT';
+ }
+style(type='text/css' media='print').
+ @page{
+    margin-top: 1.5cm;
+    margin-left: 1.3cm;
+    margin-right: 1.3cm;
+  }
+doctype html
+html
+  head
+    meta(charset="utf-8")
+    title report
+  body
+    button.btn.btn-sm.btn-success.btnprint(onclick='window.print()') Print
+    center
+      table(style='width:100%;')
+        tr
+          td(width='180') ที่ #{at_name}
+          td.center(colspan='3')
+            img(src=APIURL+'krut.png', height='130px')
+          td(width='200') ศาลากลางจังหวัดสิงห์บุรี
+        tr
+          td(colspan='4')
+          td ถนนสิงห์บุรี-บางพาน สห 16000
+        tr
+          td(colspan='3')
+          td(colspan='2') #{nDate}
+    br
+    .enter เรื่อง สั่งซื้อยา
+    .enter เรียน ผู้อำนวยการองค์การเภสัชกรรม
+    .enter ส่งที่ส่งมาด้วย 1. ใบสั่งซื้อยา พร้อมเงื่อนไข&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; จำนวน 1 ฉบับ
+    .fontspace
+    .enter &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2. สำเนาใบอนุมัติสั่งซื้อยา&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; จำนวน 1 ฉบับ
+    .fontspace
+    .enter &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ด้วยจังหวัดสิงห์บุรี มีความประสงค์จะสั่งซื้อยา จากองค์การเภสัชกรรม เพื่อใช้ในราชการ&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; โรงพยาบาลสิงห์บุรี จำนวน #{countp} รายการ เป็นเงิน #{total} บาท (#{bahtText}) สำเนาใบอนุมัติสั่งซื้อยาและใบสั่งซื้อยาพร้อมเงื่อนไขในการสั่งซื้อที่แนบมาพร้อมนี้
+    .fontspace
+    .enter &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;จึงเรียนมาเพื่อโปรดจัดส่งยา ให้แก่โรงพยาบาลสิงห์บุรี ตามกำหนดเวลาและสถานที่ ที่ระบุในใบสั่งซื้อด้วย จักเป็นพระคุณ
+    div(style='margin-left: 40%; width: 40%; text-align:center;')
+      | ขอแสดงความนับถือ
+      br
+      br
+      br
+      br
+      | (#{poraor.title}#{poraor.fname} #{poraor.lname})
+      br
+      | ผู้อำนวยการโรงพยาบาลสิงห์บุรี
+      br
+      | ปฏิบัติราชการแทนผู้ว่าราชการจังหวัดสิงห์บุรี
+    .enter 
+    p(style='text-decoration:underline; font-size: 14pt;') เงื่อนไขในการสั่งซื้อ
+    div(style='font-size: 14pt;')
+      .fontspace
+      | 1.ให้ส่งมอบ ณ โรงพยาบาลสิงห์บุรี ถนนขุนสรรค์ หมู่ - ตำบลบางพุทรา จังหวัดสิงห์บุรี
+      br
+      .fontspace
+      | 2.การส่งมอบ ให้ส่งมอบดังนี้คือ
+      br
+      .fontspace
+      .fontspace
+      | 2.1 กรณีใบสั่งซื้อที่มีรายการสั่งซื้อไม่เกิน 25 รายการ ให้ส่งมอบภายใน 65 วัน นับจากวันที่องค์การเภสัชกรรมได้รับใบสั่งซื้อ
+      br
+      .fontspace
+      .fontspace
+      | 2.2 กรณีใบสั่งซื้อเกิน 25 รายการ ให้ส่งมอบภายในกำหนด 90 วัน นับจากวันที่องค์การเภสัชกรรมได้รับใบสั่งซื้อ
+      br
+      .fontspace
+      .fontspace
+      | ถ้าหากส่งมอบเกินกำหนดเวลาดังกล่าวในข้อ 2.1 หรือ 2.2 แล้วแต่กรณีขอสงวนการปรับเป็นรายวันในอัตราร้อยละ 0.1 ของราคาสิ่งของที่ยังไม่ได้รับมอบ
+      br
+      .fontspace
+      | 3.รายการใดที่ไม่สามารถส่งมอบได้ภายในกำหนด องค์การดภสัชกรรมต้องแจ้งยกเลิกรายการนั้นให้ทราบภายใน 30 วันหลังจากที่ได้รับใบสั่งซื้อนี้ และจะต้องไม่นำวงเงินในรายการดังกล่าวไปเพิ่มในรายการอื่นเว้นแต่ผู้สั่งซื้อได้ระบุไว้ในใบสั่งซื้อ
+      br
+      .fontspace
+      | 4.การชำระเงินตามใบสั่งซื้อนี้จะชำระเป็นรายงวด หรือรายการตามที่คณะกรรมการตรวจรับพัสดุของทางรายการได้รับมอบไว้
+    br
+    br
+    div(style='font-size:12pt; width:30%;')
+      | สำนักงานสาธารณสุขจังหวัดสิงห์บุรี
+      br
+      | โรงพยาบาลสิงห์บุรี
+      br
+      | โทร. 0 3651 1060 ต่อ 1127
+      br
+      | โทรสาร 0 3652 2514
+    hr.hideprint
+    div(style='page-break-after: always;')
+    table
+      tr
+        td
+          img(src=APIURL+'krut.png', height='60px')
+        td(style='font-size: 24pt; padding-left:120px;').bold บันทึกข้อความ
+    .enter  
+    table
+      tr
+        td.bold(style='font-size: 20pt; width:90px;') ส่วนราชการ
+        td(style='border-bottom: 1px dotted black;').left กลุ่มงานเภสัชกรรม โรงพยาบาลสิงห์บุรี
+    table
+      tr
+        td.bold(style='font-size: 20pt; width:5px;') ที่
+        td(style='border-bottom: 1px dotted black;').left &nbsp;สห 0032.238/ 
+        td.bold(style='font-size: 20pt; width:40px;') วันที่
+        td(style='border-bottom: 1px dotted black;').left #{dDate} 
+    table
+      tr
+        td.bold(style='font-size: 20pt; width:30px;') เรื่อง
+        td(style='border-bottom: 1px dotted black;').left &nbsp;ขออนุมัติซื้อยาด้วย#{budget[0].bgtype_name} ประจำปีงบประมาณ #{budget[0].bg_year}
+    br
+    .enter เรียน ผู้ว่าราชการจังหวัดสิงห์บุรี
+    .enter
+    .fontspace
+    | ด้วยโรงพยาบาลสิงห์บุรี มีความประสงค์จะสั่งซื้อยา จากองค์การเภสัชกรรม ตามแบบ บส.09/1 ที่แนบมาพร้อมนี้ เพื่อใช้ในการรักษาพยาบาล จำนวน #{countp} รายการ เป็นเงิน #{total} บาท (#{bahtText}) โดยใช้#{budget[0].bgtype_name} ประจำปีงบประมาณ #{budget[0].bg_year}
+    .enter
+    .fontspace
+    .conleft จึงเรียนมาเพื่อขออนุมัติซื้อยาดังกล่าว &nbsp;
+    if(type == 8 || type == 9 || type == 10)
+      .conleft ตามพระราชบัญญัติการจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ.2560 
+    if(type == 8) 
+      .conleft &nbsp;มาตรา 56 วรรคหนึ่ง (2)(ข) 
+    if(type == 9) 
+      .conleft &nbsp;มาตรา 56 วรรคหนึ่ง (2)(ค) 
+    if(type == 10) 
+      .conleft &nbsp;มาตรา 56 วรรคหนึ่ง (2)(ซ)
+    .conleft ระเบียบกระทรวงการคลังและกฎกรระทรวงว่าด้วยการจัดซื้อจัดจ้างภาครัฐจากองค์การเภสัชกรรม อนึ่งในการจัดซื้อในครั้งนี้ใคร่ขอเสนอแต่งตั้งให้ผู้มีรายนามต่อไปนี้ เป็นกรรมการตรวจรับของ คือ
+    br
+    br
+    -var b=0
+    for c in committeesVerify
+      .fontspace
+      | #{b+1}. #{c.fullname}  #{c.position_name}  #{c.position}
+      br
+      -b++
+    br
+    .fontspace
+    | จึงเรียนมาเพื่อโปรดพิจารณาขออนุมัติ และลงนามในใบสั่งซื้อที่แนบด้วยจักเป็นพระคุณ
+    br
+    br
+    br
+    br
+    div(style='margin-left: 40%; width: 40%; text-align:center;')
+      | ( #{purchasingChief.buyer_fullname} )
+      br
+      | #{purchasingChief.buyer_position}
+      br
+      | เจ้าหน้าที่ 
+    br
+    br
+    br
+    div(style='margin-left: 40%; width: 40%; text-align:center;')
+      | ( #{purchasingChief.chief_fullname} )
+      br
+      | #{purchasingChief.chief_position}
+      br
+      | หัวหน้าเจ้าหน้าที่ 
+    br
+    .bold(style='margin-left: 57%;') อนุมัติ
+    br
+    br
+    br
+    div(style='margin-left: 40%; width: 43%; text-align:center;')
+      | ( #{poraor.title}#{poraor.fname} #{poraor.lname} )
+      br
+      | ผู้อำนวยการโรงพยาบาลสิงห์บุรี
+      br
+      | ปฏิบัติราชการแทนผู้ว่าราชการจังหวัดสิงห์บุรี

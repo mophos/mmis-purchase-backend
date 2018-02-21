@@ -1,0 +1,89 @@
+include css.pug
+style(type='text/css' media='print').
+   @page{
+   margin-top: 0.5cm;
+   margin-left: 1.5cm;
+   margin-right: 1cm;
+  }
+doctype html
+html
+  head
+    meta(charset="utf-8")
+    title report
+  body
+    button.btn.btn-sm.btn-success.btnprint(onclick='window.print()') Print
+    .h2.center.bold ใบสั่งซื้อยา
+    br
+    div(style='margin-left: 60%;')
+      .left เลขที่ใบสั่งซื้อ #{purchaOrderId}
+      | #{address}
+    .center
+      | วันที่ 
+      label.h3 &nbsp;#{nDate}
+    p.h2
+      | เรียน
+      label.h3(style='margin-top: 5px;')  &nbsp;#{labeler_name}
+    p.h2
+      | ที่อยู่
+      label.h3(style='margin-top: 5px;')  &nbsp;#{labeler_address} โทรศัพท์ #{labeler_phone}
+    p.h2
+      | เลขประจำตัวผู้เสียภาษี
+      label.h3(style='margin-top: 5px;')  &nbsp;#{nin}
+    b.h2 อ้างถึง 
+    | สัญญาจะซื้อจะขายแบบราคาคงที่ไม่จำกัดปริมาณ เลขที่ #{cid} ลงวันที่ #{nDate}
+    br
+    br 
+    .fontspace
+    | #{hospitalName} มีความประสงค์ที่จะซื้อเวชภัณฑ์ยา ตามรายการดังต่อไปนี้
+    br
+    .fontspace
+    table(style='border: 1px solid black;')
+      thead
+        tr 
+          td(rowspan='2' style='font-size: 12pt; border: 1px solid black; vertical-align: middle; width:4%;').center ลำดับ
+          td(rowspan='2' style='font-size: 12pt; border: 1px solid black; vertical-align: middle;').center รายการพิจารณา
+          td(rowspan='2' style='font-size: 12pt; border: 1px solid black; vertical-align: middle;').center หน่วยนับ
+          td(style='border: 1px solid black; font-size: 12pt;').center จำนวน
+          td(style='border: 1px solid black; font-size: 12pt;').center ราคา/หน่วย
+          td(style='border: 1px solid black; font-size: 12pt;').center ราคารวม
+      tbody
+        - var y=0
+            for b in results
+              - y++
+                tr
+                  td.center(style='font-size: 13pt; border: 1px solid black;') #{y}
+                  td(style='font-size: 13pt; border: 1px solid black;') #{b.generic_id} : #{b.generic_name}
+                  td.center(style='font-size: 13pt; border: 1px solid black;') #{b.unit_price_name} #{b.small_unit} (#{b.large_unit})
+                  td.center(style='font-size: 13pt; border: 1px solid black;') #{b.total}
+                  td.right(style='font-size: 13pt; border: 1px solid black;') #{b.unit_price}
+                  td.right(style='font-size: 13pt; border: 1px solid black;') #{b.total_price}
+    br
+    table
+      thead
+        tr
+          td รวม #{y} รายการ 
+          td.right รวมเป็นเงิน #{totalprice} บาท 
+            br
+            | (#{bahtText}) 
+    br
+    br
+    .left การสั่งซื้อ อยู่ภายใต้เงื่อนไขดังต่อไปนี้
+    .left 1.กำหนดส่งมอบภายใน 60 วัน นับถัดจากวันที่ผู้ขายได้รับใบสั่งซื้อ
+    .left 2.สถานที่ส่งมอบ คลังเวชภัณฑ์ กลุ่มงานเภสัชกรรม #{hospitalName}
+    .left 3.ผู้ขายจะต้องรับประกันคุณภาพของสิ่งของที่ส่งมอบ เป็นเวลาอย่างน้อย 1 ปี นับแต่วันส่งมอบของ
+    .left 4.สงวนสิทธิ์ค่าปรับกรณีส่งมอบเกินกำหนดเวลา โดยคิดค่าปรับเป็นรายวัน ในอัตราร้อยละ 0.2 ของราคาสิ่งของในส่วนที่ยังไม่ได้รับมอบ
+    .left 5.ส่วนราชการสงวนสิทธิ์ที่จะไม่รับมอบถ้าปรากฏว่าสินค้ามีลักษณะไม่ตรงตามรายการที่ระบุไว้ในใบสั่งซื้อ ซึ่งผู้ขายจะต้องดำเนินการเปลี่ยนใหม่ให้ถูกต้องตามใบสั่งซื้อทุกประการ
+    br
+    br 
+    br 
+    table.center
+      thead
+        tr
+          td ลงชื่อ.......................................................ผู้รับใบสั่งซื้อ
+          td ลงชื่อ.......................................................ผู้สั่งซื้อ
+        tr
+          td (................................................................)
+          td (#{buyer_fullname})
+        tr
+          td วันที่ #{nDate}
+          td #{buyer_position}

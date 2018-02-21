@@ -1,0 +1,10 @@
+app/*
+node_modules/*
+typings/*
+npm-debug.log
+.settings/*
+.git/*
+bower_components/*
+.env
+.vscode
+uploads/*

@@ -1,0 +1,77 @@
+include css.pug
+style(media='print').
+  @page {
+    size:landscape;
+    margin-top: 1.2cm;
+    margin-left: 1cm;
+    margin-right: 1cm;
+  }
+style.
+  table, tr, td, th {
+    border: 0px solid #000;
+    position: relative;
+    padding: 2;
+    font-size: 12pt;
+    border: 1px solid black;
+  }
+  td{
+    font-size: 10pt;
+  }
+  th span {
+    
+    transform-origin: 0 50%;
+    transform: rotate(-90deg); 
+    white-space: nowrap; 
+    display: block;
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+  }
+doctype html
+html
+  head
+    meta(charset="utf-8")
+    title report
+  body
+    button.btn.btn-sm.btn-success(onclick='window.print()') Print
+    .center(style='font-weight: bold;') #{hospname}
+    .center(style='font-weight: bold;') รายการสั่งซื้อยา
+    .center ณ วันที่ #{sdate} ถึง #{edate}
+    table(cellpadding="0" cellspacing="0" style='padding: 0;')
+      thead
+        tr 
+          th( valign='bottom' height='100') ชื่อยา
+          th
+           span ขนาดบรรจุ
+          th
+           span รูปแบบ
+          th(width='10px')
+           span จำนวนขั้นต่ำ
+          th
+           span อัตราการใช้ต่อเดือน
+          th
+           span ราคาหลังสุด
+          th
+           span จำนวนคงคลัง
+          th(valign='bottom') สั่งเพิ่ม
+          th(valign='bottom') ยอดสั่ง
+          th(valign='bottom') ชื่อการค้า
+          th(valign='bottom') บริษัทจำหน่าย
+          th(valign='bottom') บริษัทที่ผลิต
+      tbody
+        - var y=0
+        for b in results
+          - y++
+            tr
+              td #{b.generic_name}
+              td.left #{b.unit_name}
+              td.left #{b.unit_name}
+              td.right #{b.min_qty}
+              td.right #{b.used}
+              td.right #{b.price}
+              td.right #{b.qty}
+              td.right #{b.orderqty}
+              td.right 
+              td #{b.product_name}
+              td #{b.labeler_name}
+              td #{b.labeler_name}

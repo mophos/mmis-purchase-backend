@@ -1,0 +1,76 @@
+include css.pug
+style(type='text/css').
+ body{
+ font-family: 'THSarabunIT';
+ }
+style(type='text/css' media='print').
+ @page{
+    margin-top: 1.5cm;
+    margin-left: 2.5cm;
+    margin-right: 2cm;
+  }
+doctype html
+html
+  head
+    meta(charset="utf-8")
+    title report
+  body
+    button.btn.btn-sm.btn-success.btnprint(onclick='window.print()') Print
+    center 
+      img(src='/krut.png', height='60px')
+    .bold.center คำสั่ง จังหวัด#{province}
+    .center.br ที่ ........................../.........................         
+    .enter
+    .left เรื่อง แต่งตั้ง ผู้ตรวจรับพัสดุ สำหรับการซื้อเวชภัณฑ์ยา โดยวิธีเฉพาะเจาะจง
+    .fontspace
+    | ด้วยจังหวัด#{province} มีความประสงค์จะซื้อ  
+    - var c=0
+    for p in purchasing8
+      - if(c>0)
+          | , 
+      | #{p.product_name} จำนวน #{p.qty} #{p.large_unit}
+      - c++
+    |  โดยวิธีเฉพาะเจาะจง และเพื่อให้เป็นไปตามระเบียบกระทรวงการคลังว่าด้วยการจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ. 2560 จึงขอแต่งตั้งรายชื่อต่อไปนี้เป็น ผู้ตรวจรับพัสดุ สำหรับการซื้อ 
+    - var c=0
+    for p in purchasing8
+      - if(c>0)
+          | , 
+      | #{p.product_name} จำนวน #{p.qty} #{p.large_unit}
+      - c++
+    | โดยวิธีเฉพาะเจาะจง
+    br
+    br
+    .fontspace 
+    | ผู้ตรวจรับพัสดุ
+    .enter
+    table(style='width:60%;margin-left:15%;')
+      -var y=0
+      for c in committee
+        - y++
+        tr
+          td #{y}
+          td #{c.title}#{c.fname} #{c.lname}
+          td #{c.position_name}
+        tr
+          td
+          td ตำแหน่ง#{c.position2}
+          td
+    br
+    .fontspace
+    | อำนาจและหน้าที่
+    br
+    .fontspace
+    | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ทำการตรวจรับพัสดุให้เป็นไปตามเงื่อนไขของสัญญาหรือข้อตกลงนั้น
+    br
+    br
+    br
+    div(style='margin-left:50%;') สั่ง ณ วันที่ #{date}
+    br
+    br
+    br
+    br
+    div(style='width:50%;float:right')
+      .center (ลงชื่อ)............................................. 
+      .center (#{getChief.title}#{getChief.fname} #{getChief.lname})
+      .center #{getChief.position}#{hospitalName}
+      .center ปฏิบัติราชการแทนผู้ว่าราชการจังหวัด#{province}

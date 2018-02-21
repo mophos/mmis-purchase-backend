@@ -1,0 +1,50 @@
+'use strict';
+
+import * as express from 'express';
+import * as moment from 'moment';
+import * as fse from 'fs-extra';
+import * as wrap from 'co-express';
+import * as _ from 'lodash';
+import { PurchasingOrderReportModel } from '../models/reports/purchasingOrder';
+import { RequisitionOrderReportModel } from '../models/reports/requisitionOrder';
+
+const model = new PurchasingOrderReportModel();
+const modelPr = new RequisitionOrderReportModel();
+const router = express.Router();
+
+router.get('/requisition',wrap(async (req, res, next) => {
+    let db = req.db;
+    moment.locale('th');
+    let purchaOrderId = req.query.purchase_order_id;
+    let type = req.query.type;
+    let purchasing = await model.purchasing(db, purchaOrderId);
+    purchasing = purchasing[0];
+    let committeesVerify = await model.getCommitteeVerify(db,purchasing.verify_committee_id);
+    let committeesCheck  = await model.getCommitteeVerify(db,purchasing.check_price_committee_id);
+    let count = await model.purchasingCountItem(db, purchaOrderId);
+    count = count[0][0].count || 0;
+  
+    let hosdetail = await model.hospital(db);
+    let hospitalName = hosdetail[0].hospname;
+    let orderDate = moment(purchasing.order_date).format('D MMMM ')+(moment(purchasing.order_date).get('year')+543);
+  
+    let purchasingOfficer = await model.getPurchasingOfficer(db);
+    let inventoryBossName = _.find(purchasingOfficer,{'type_id':2});
+    let directorName = _.find(purchasingOfficer,{'type_id':1});
+    
+    res.render('requisition', {
+      committeesVerify: committeesVerify,
+      committeesCheck: committeesVerify,
+      hospitalName: hospitalName,
+      orderDate: orderDate,
+      purchasing: purchasing,
+      type: type,
+      pricetext: model.bahtText(purchasing.total_price) || 0,
+      count: count,
+      purchasingOfficer: purchasingOfficer,
+      inventoryBossName: inventoryBossName,
+      directorName: directorName
+    });
+  }));
+
+  export default router;

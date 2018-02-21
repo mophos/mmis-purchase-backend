@@ -1,0 +1,75 @@
+include css.pug
+doctype html
+html
+  head
+    meta(charset="utf-8")
+    title report
+  body
+    button.btn.btn-sm.btn-success.btnprint(onclick='window.print()') Print
+    .center.bold คำสั่ง จังหวัด#{province}
+    .center.bold ที่ #{at_name}
+    .center.bold เรื่อง แต่งตั้ง คณะกรรมการตรวจรับพัสดุ 
+    .center.bold 
+      | สำหรับการซื้อจำนวน #{countp} รายการ ( 
+      - var y=0
+            for b in purchasing
+              - y++
+              | &nbsp;#{b.generic_name}&nbsp; 
+      | ) โดย#{bidname}
+
+    br
+    .fontspace
+    | ด้วย จังหวัด#{province} มีความประสงค์จะซื้อจำนวน #{countp} รายการ (
+    - var y=0
+          for b in purchasing
+            - y++
+             | &nbsp;#{b.generic_name}&nbsp; 
+    | ) โดย#{bidname} และเพื่อให้เป็นไปตามระเบียบกระทรวงการคลังว่าด้วยการจัดซื้อจัดจ้างและบริหารพัสดุภาครัฐ พ.ศ. 2560 จึงขอแต่งตั้งรายชื่อต่อไปนี้เป็น คณะกรรมการตรวจรับพัสดุ สำหรับการจัดซื้อจำนวน #{countp} รายการ (
+    - var y=0
+          for b in purchasing
+            - y++
+             | &nbsp;#{b.generic_name}&nbsp; 
+    | ) โดย#{bidname}
+    br
+    br
+    .fontspace 
+    | คณะกรรมการตรวจรับพัสดุ
+    br
+    -var b=0
+    for c in committeesVerify
+      .fontspace
+      | #{b+1}. #{c.fullname}  #{c.position_name}  #{c.position}
+      br
+      -b++
+    br
+    .fontspace
+    | อำนาจและหน้าที่ 
+    br
+    .fontspace
+    | ทำการตรวจรับพัสดุให้เป็นไปตามเงื่อนไขของสัญญาหรือข้อตกลงนั้น 
+    br
+    br
+    .right ประกาศ ณ วันที่ #{nDate}
+    br
+    br
+    br
+    //- div(style="width:100%;float:left;")
+    //-   div(style="width:50%;float:left;text-align:center") ลงชื่อ.................................................เจ้าหน้าที่
+    //-     br
+    //-     | ( #{purchasingChief.buyer_fullname} )
+    //-     br 
+    //-     | #{purchasingChief.buyer_position}
+    //-   div(style="width:50%;float:left;text-align:center") ลงชื่อ.................................................หัวหน้าเจ้าหน้าที่
+    //-     br
+    //-     | ( #{purchasingChief.chief_fullname} )
+    //-     br
+    //-     | #{purchasingChief.chief_position}
+    div(style="margin-left: 40%;width:80%;float:left;text-align:center")
+      br
+      br
+      br
+      | ลงชื่อ............................................................
+      br
+      | ( #{poraor.title}#{poraor.fname} #{poraor.lname} )
+      br
+      | ผู้อำนวนการ#{hospitalName}

@@ -1,0 +1,186 @@
+include css.pug
+doctype html
+html
+  head
+    meta(charset="utf-8")
+    title report
+  body
+    button.btn.btn-sm.btn-success(onclick='window.print()') Print
+    br
+    style(type='text/css').
+      div.content{
+      width: 100%;
+      display: inline-block;
+      float: left;
+      font-size: 16px;
+      line-height: 1.5em;
+      }
+      div.box{
+      display: inline-block;
+      float: left;
+      width: 42%;
+      }
+    .content
+      .center.head.bold บันทึกข้อความ
+      .box
+        label
+          | ส่วนราชการ #{hospname}
+          br
+          | 			ที่  
+          br
+          | 			เรื่อง ขออนุมัติซื้อเวชภัณฑ์
+          br
+          | 			เรียน ผู้ว่าราชการจังหวัด
+          br
+      .box(style='margin-left: 15%;')
+        br
+        label
+          | วันที่ #{date}
+    .content
+      .box(style='width: 100%')
+        label(style='margin-left: 5%;') ด้วยเวชภัณฑ์ของ#{hospname} มีเหลือน้อยอาจจะไม่เพียงพอจะให้บริการ  
+        | 		รักษาพยาบาลได้ตลอดเวลา เห็นควรดำเนินการจัดซื้อโดยวิธี........
+        | ตามระเบียบสสำนักนายกรัฐมณตรี
+        | 		ว่าด้วยการพัสดุ พ.ศ.2535 ข้อ 19 
+        | จากบริษัท#{lname}
+        br
+        | 		รายการดังต่อไปนี้
+    .content
+      br
+      table
+        thead
+          tr
+            th(rowspan='2') ลำดับ
+            th(rowspan='2').left รายการ
+            th(rowspan='2') คงเหลือ
+            th(rowspan='2') อัตราใช้ต่อเดือน
+            th(colspan='3') ความต้องการซื้อครั้งนี้
+          tr(align='center')
+            th(style='border-bottom: 1px dashed black;') จำนวน
+            th(style='border-bottom: 1px dashed black;').right ราคา
+            th(style='border-bottom: 1px dashed black;').right มูลค่ารวม
+        tbody
+        - var y=0
+        - var sum=0
+          for b in requisitionItem
+            - y++
+            - sum+=b.total_price
+            tr
+              td.center #{y}
+              td #{b.generic_name}
+              td.center 0
+              td.center 0
+              td.center #{b.qty}
+              td.right #{b.unit}
+              td.right #{b.total_price}
+            tr
+              td.center #{y}
+              td #{b.generic_name}
+              td.center 0
+              td.center 0
+              td.center #{b.qty}
+              td.right #{b.unit}
+              td.right #{b.total_price}
+            tr
+              td.center #{y}
+              td #{b.generic_name}
+              td.center 0
+              td.center 0
+              td.center #{b.qty}
+              td.right #{b.unit}
+              td.right #{b.total_price}
+            tr
+              td.center #{y}
+              td #{b.generic_name}
+              td.center 0
+              td.center 0
+              td.center #{b.qty}
+              td.right #{b.unit}
+              td.right #{b.total_price}
+            tr
+              td.center #{y}
+              td #{b.generic_name}
+              td.center 0
+              td.center 0
+              td.center #{b.qty}
+              td.right #{b.unit}
+              td.right #{b.total_price}
+        tfooter
+          tr
+            td.tbfooter(colspan='7')
+        if y > 4 
+         | #{'test'}
+    .content(style='margin-top: 2%;')
+      .box(style='margin-left: 5%;')
+        | รวม #{y} รายการ ส่วนลด -
+      .box
+        | รวมเป็นเงิน #{sum} บาท
+    .content
+      p(style='margin-left: 5%; line-height: 0.5;')
+        | กำหนดส่งมอบภายใน 30 วัน และอนุมัติแต่งตั้งคณะกรรมการตรวจรับพัสดุ ประกอบด้วย
+      p(style='margin-left: 5%;')
+        - var t=0
+          for n in name
+            - t++
+              | #{t}. #{n.fname} &nbsp&nbsp #{n.lname} &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp #{n.p} &nbsp&nbsp เป็น #{n.position_name}
+              br
+      p(style='margin-left: 5%; line-height: 0.5;')
+        | จึงเรียนมาเพื่อโปรดพิจารณาอนุมัติ โดยใช้เงิน #{bgname} 2560 ในการจัดซื้อครั้งนี้ ซึ่งมีรายละเอียดการใช้เงินดังนี้
+      .box(style='margin-left: 20%; width: 30%;')
+        | ยอดเงินที่ได้รับจัดสรร
+        br
+        | 		ยอดเงินจัดซื้อสะสมจากครั้งก่อน
+        br
+        | 		ยอดเงินคงเหลือก่อนซื้อครั้งนี้
+        br
+      .box()
+        label
+          | ......................บาท
+        br
+        label
+          | ......................บาท
+        br
+        label
+          | ......................บาท
+    .content
+      .box(style='margin-left: 47%;')
+        p
+          | ................................................เจ้าหน้าที่พัสดุ 
+          br
+          | 			(...............................................) 
+          br
+          label(style='margin-left: 8%;')
+            | เภสัชกรชำนานการ
+      .box(style='margin-left: \
+      7%; margin-top: -10%;')
+        br
+        p
+          label(style='margin-left: 7%;')
+            | โปรดพิจารณาอนุมัติ
+          br
+          br
+          | 			................................................ 
+          br
+          | 			(...............................................) 
+          br
+          label(style='margin-left: 3%;')
+            | เภสัชกรชำนานการพิเศษ 
+            br
+            | 				&nbsp&nbsp&nbsp&nbsp&nbspหัวหน้าเจ้าหน้าที่พัสดุ
+      .box(style='margin-left: \
+      47%; margin-top: -25%;')
+        br
+        p
+          label(style='margin-left: 18%;')
+            | อนุมัติ
+          br
+          br
+          | 			................................................ 
+          br
+          | 			(...............................................) 
+          br
+          label(style='')
+            | ผู้อำนวยการโรงพยาบาลสิงห์บุรี
+          br
+          label(style='margin-left: -8%;')
+            | ปัฏิบัติราชการแทนผู้ว่าราชการจังหวัดสิงห์บุรี

@@ -1,0 +1,105 @@
+include css.pug
+doctype html
+html
+  head
+    meta(charset="utf-8")
+    title report
+  body
+    button.btn.btn-sm.btn-success.btnprint(onclick='window.print()') Print
+    img(src=APIURL+'krut.png', height='60px')
+    .headkut.h1 บันทึกข้อความ
+    p.h2
+      | ส่วนราชการ
+      label.h3(style='margin-top: 5px;')  &nbsp;#{hospitalName}
+    p.h2(style='width:50%;float: left;')
+      | ที่
+      label.h3(style='margin-top: 5px;')  &nbsp;#{at_name}
+    b.h2(style='width:50%;float: left;')
+      | วันที่ 
+      label.h3 &nbsp;#{nDate}
+    br
+    b.h2 เรื่อง 
+    | รายงานขอซื้อขอจ้าง
+    hr
+    .enter เรียน ผู้ว่าราชการจังหวัด#{province}
+    .fontspace
+    | ด้วย#{hospitalName}มีความประสงค์จะ ซื้อจำนวน #{countp} รายการ (
+    - var y=0
+          for b in purchasing
+            - y++
+             | &nbsp;#{b.generic_name}&nbsp; 
+    | ) โดย#{bidname} ซึ่งมีรายละเอียดดังต่อไปนี้
+    br
+    .fontspace
+    | 1.  เหตุผลและความจำเป็นที่ต้องซื้อ
+    br
+    .fontspace 
+    | &nbsp;&nbsp; เพื่อให้บริการผู้ป่วยที่มารับบริการ และให้เพียงพอต่อการให้บริการผู้ป่วย
+    br
+    .fontspace 
+    | 2.	รายละเอียดของพัสดุ
+    br
+    .fontspace 
+    | &nbsp;&nbsp; รายละเอียดของเอกสารแนบ
+    br
+    .fontspace 
+    | 3.	ราคากลางและรายละเอียดของราคากลางจำนวน #{total} บาท (#{bahtText})
+    br
+    .fontspace 
+    | 4.	วงเงินที่จะซื้อ
+    br
+    .fontspace 
+    | &nbsp;&nbsp; เงินนอกงบประมาณ จำนวน #{budget[0].amount} บาท (#{textamount})
+    br
+    .fontspace 
+    | 5.	กำหนดเวลาที่ต้องการใช้พัสดุนั้น หรือให้งานแล้วเสร็จ
+    br
+    .fontspace 
+    | &nbsp;&nbsp; กำหนดเวลาส่งมอบงานหรือให้งานแล้วเสร็จภายใน #{delivery} วัน 
+    br
+    .fontspace
+    | 6.	วิธีที่จะซื้อ และเหตุผลที่ต้องซื้อ
+    br
+    .fontspace
+    | &nbsp;&nbsp; ดำเนินการซื้อเนื่องจากการจัดซื้อจัดจ้างพัสดุที่มีการผลิต จำหน่าย ก่อสร้าง หรือให้บริการทั่วไป และมีวงเงินในการจัดซื้อจัดจ้างครั้งหนึ่งไม่เกินวงเงินตามที่กำหนดในกระทรวง
+    br
+    .fontspace
+    | 7.	หลักเกณฑ์การพิจารณาคัดเลือกข้อเสนอ
+    br
+    .fontspace
+    | &nbsp;&nbsp; การพิจารณาคัดเลือกข้อเสนอโดยใช้เกณฑ์ราคา
+    br
+    .fontspace 
+    | 8.	ข้อเสนออื่นๆ เห็นควรแต่งตั้งผู้ตรวจรับพัสดุ ตามเสนอ
+    br
+    br
+    | จึงเรียนมาเพื่อโปรดพิจารณา หากเห็นชอบได้ขอโปรด
+    br
+    .fontspace 
+    | 1.	อนุมัติให้ดำเนินการ ตามรายละเอียดในรายงานขอซื้อดังกล่าวข้างต้น
+    br
+    .fontspace 
+    br
+    br
+    br
+    br
+    div(style="width:100%;float:left;")
+      div(style="width:50%;float:left;text-align:center") ลงชื่อ.................................................เจ้าหน้าที่
+        br
+        | ( #{purchasingChief.buyer_fullname} )
+        br 
+        | #{purchasingChief.buyer_position}
+      div(style="width:50%;float:left;text-align:center") ลงชื่อ.................................................หัวหน้าเจ้าหน้าที่
+        br
+        | ( #{purchasingChief.chief_fullname} )
+        br
+        | #{purchasingChief.chief_position}
+    div(style="width:100%;float:left;text-align:center")
+      br
+      br
+      br
+      | ลงชื่อ............................................................
+      br
+      | ( #{poraor.title}#{poraor.fname} #{poraor.lname} )
+      br
+      | ผู้อำนวนการ#{hospitalName}

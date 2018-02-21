@@ -1,0 +1,88 @@
+include css.pug
+doctype html
+html
+  head
+    meta(charset="utf-8")
+    title report
+  body
+    button.btn.btn-sm.btn-success.btnprint(onclick='window.print()') Print
+    img(src=APIURL+'krut.png', height='60px')
+    .headkut.h1 บันทึกข้อความ
+    p.h2
+      | ส่วนราชการ
+      label.h3(style='margin-top: 5px;')  &nbsp;#{hospitalName}
+    p.h2(style='width:50%;float: left;')
+      | ที่
+      label.h3(style='margin-top: 5px;')  &nbsp;#{at_name}
+    b.h2(style='width:50%;float: left;')
+      | วันที่ 
+      label.h3 &nbsp;#{nDate}
+    br
+    b.h2 เรื่อง 
+    | รายงานผลการพิจารณาและขออนุมัติสั่งซื้อสั่งจ้าง
+    hr
+    .enter เรียน ผู้ว่าราชการจังหวัด#{province}
+    .fontspace
+    | ขอรายงานผลการพิจารณาซื้อจำนวน #{countp} รายการ (
+    - var y=0
+          for b in purchasing
+            - y++
+             | &nbsp;#{b.generic_name}&nbsp; 
+    | ) โดย#{bidname} ดังนี้
+    br
+    table
+      thead
+        tr 
+          th(style='border: 1px solid black; font-size: 13pt; padding:3px;').center รายงานผลการพิจารณา
+          th(style='border: 1px solid black; font-size: 13pt;').center รายชื่อผู้ยื่นข้อเสนอ
+          th(style='border: 1px solid black; font-size: 13pt;').center ราคาที่เสนอ *
+          td(style='border: 1px solid black; font-size: 13pt; width: 20%;').center ราคาที่ตกลงซื้อหรือจ้าง *
+      tbody
+        - var y=0
+          for b in purchasing
+            - y++
+              tr
+                td(style='border: 1px solid black; font-size: 13pt;') #{b.generic_name} #{b.qty} #{unit_name} จำนวน #{b.qtyPoi} #{unit_name}
+                td(style='border: 1px solid black; font-size: 13pt;') #{purchasing[0].labeler_name} 
+                td(style='border: 1px solid black; font-size: 13pt;').right #{b.total_price}
+                td(style='border: 1px solid black; font-size: 13pt;').right #{b.total_price}  
+        tfooter
+            tr
+              td(colspan='3' style='border: 1px solid black; font-size: 13pt;').right รวม
+              td(style='border: 1px solid black; font-size: 13pt;').right #{total}
+    .enter(style='font-size: 11pt;') * ราคาที่เสนอ และราคาที่ตกลงซื้อหรือจ้าง เป็นราคารวมภาษีมูลค่าเพิ่มและภาษี่อื่นๆ ค่าขนส่ง ค่าจดทะเบียน และค่าใช้จ่ายอื่นๆ ทั้งปวง
+   
+    br
+    .fontspace 
+    | เกณฑ์การพิจารณาผลการยื่นข้อเสนอครั้งนี้ จะพิจารณาตัดสินโดยใช้หลักเกณฑ์ราคา
+    br
+    .fontspace
+    | #{hospitalName}พิจารณาแล้ว เห็นสมควรจัดซื้อจากผู้เสนอราคาดังกล่าว
+    br
+    .fontspace
+    | จึงเรียนมาเพื่อโปรดพิจารณา หากเห็นชอบขอได้โปรดอนุมัติให้สั่งซื้อสั่งจ้างจากผู้เสนอราคาดังกล่าว
+    br
+    br
+    br
+    br
+    br
+    div(style="width:100%;float:left;")
+      div(style="width:50%;float:left;text-align:center") ลงชื่อ.................................................เจ้าหน้าที่
+        br
+        | ( #{purchasingChief.buyer_fullname} )
+        br 
+        | #{purchasingChief.buyer_position}
+      div(style="width:50%;float:left;text-align:center") ลงชื่อ.................................................หัวหน้าเจ้าหน้าที่
+        br
+        | ( #{purchasingChief.chief_fullname} )
+        br
+        | #{purchasingChief.chief_position}
+    div(style="width:100%;float:left;text-align:center")
+      br
+      br
+      br
+      | ลงชื่อ............................................................
+      br
+      | ( #{poraor.title}#{poraor.fname} #{poraor.lname} )
+      br
+      | ผู้อำนวนการ#{hospitalName}

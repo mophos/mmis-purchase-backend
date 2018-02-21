@@ -1,0 +1,144 @@
+include css.pug
+style(type='text/css').
+  body{
+  font-family:'THSarabunIT';
+  }
+style(type='text/css' media='print').
+   @page{
+   margin-top: 1.5cm;
+   margin-left: 2.5cm;
+   margin-right: 2cm;
+  }
+doctype html
+html
+  head
+    meta(charset="utf-8")
+    title report
+  body
+    button.btn.btn-sm.btn-success.btnprint(onclick='window.print()') Print
+    img(src=APIURL+'krut.png', height='60px')
+    .headkut.h1 บันทึกข้อความ
+    p.h2
+      | ส่วนราชการ
+      label.h3(style='margin-top: 5px;')  &nbsp;#{hospitalName}
+    p.h2(style='width:50%;float: left;')
+      | ที่
+      label.h3(style='margin-top: 5px;')  กลุ่มงานเภสัชกรรม
+    b.h2(style='width:50%;float: left;')
+      | วันที่ 
+      label.h3 &nbsp;#{nDate}
+    br
+    b.h2 เรื่อง 
+    | รายงานขอซื้อเวชภัณฑ์
+    hr
+    .enter เรียน ผู้อำนวยการ#{hospitalName}
+    .fontspace
+    | ด้วยกลุ่มงานเภสัชกรรม มีความประสงค์จะขอซื้อเวชภัณฑ์ จำนวน #{count} รายการ เพื่อใช้สำหรับผู้ป่วย ซึ่งได้รับอนุมัติเงินจากแผนเงินบำรุง รายละเอียดดังแนบ
+    br
+    .fontspace
+    | งานพัสดุได้ตรวจสอบแล้วเห็นสมควรจัดจ้างตามเสนอและเพื่อให้เป็นไปตามพระราชบัญญัติการจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ. 2560  
+    if(type == 1) 
+      | ข้อ 56(1) 
+    if(type == 21) 
+      | ข้อ 56 วรรคหนึ่ง (2)(ข) 
+    if(type == 22) 
+      | ข้อ 56 วรรคหนึ่ง (2)(ค) 
+    if(type == 23) 
+      | ข้อ 56 วรรคหนึ่ง (2)(ซ) 
+    if(type == 3) 
+      | ข้อ 55(1) 
+    | และระเบียบกระทรวงการคลังว่าด้วยการจัดซื้อจัดจ้างและการบริการพัสดุภาครัฐ พ.ศ. 2560 
+    | และกฎกระทรวงกำหนดวงเงินการจัดซื้อจัดจ้างพัสดุ พ.ศ. 2560 จึงขอรายงานขอซื้อ ดังนี้
+    br
+    .fontspace 
+    | 1.  เหตุผลและความจำเป็นที่ต้องซื้อ คือ…………………………………………………………….
+    br
+    .fontspace 
+    | 2.	รายละเอียดของที่จะซื้อคือ............(รายละเอียดตามบันทึกที่แนบ).......................
+    br
+    .fontspace 
+    | 3.	ราคากลางของพัสดุที่จะซื้อ............(รายละเอียดตามบันทึกที่แนบ).......................
+    br
+    .fontspace 
+    | 4.	วงเงินที่จะขอซื้อครั้งนี้ #{purchasing[0].total_price} บาท (#{pricetext})
+    br
+    .fontspace 
+    | 5.	กำหนดเวลาที่ต้องการใช้พัสดุภายใน.......วัน นับถัดจากวันลงนามในสัญญา
+    br
+    .fontspace 
+    if(type == 1)
+      | 6.  ซื้อโดยวิธีคัดเลือกตามมาตรา 56(1)
+    if(type == 21||type == 22||type == 23)
+      | 6.	ซื้อโดยวิธีเฉพาะเจาะจง เนื่องจาก การจัดจ้างพัสดุที่มีการผลิต จำหน่าย ก่อสร้าง หรือให้บริการทั่วไป และมีวงเงินในการจัดซื้อจัดจ้างครั้งหนึ่งไม่เกิน 500,000 บาท ที่กำหนดในกฎกระทรวง
+    if(type == 3)
+      | 6.  ซื้อโดยวิธีประกาศชวนทั่วไปตามมาตรา 55(1)
+    br
+    .fontspace 
+    | 7.	หลักเกณฑ์การพิจารณาคัดเลือกข้อเสนอ โดยใช้เกณฑ์ราคา
+    br
+    .fontspace 
+    | 8.	ข้อเสนออื่นๆ เห็นควรแต่งตั้งผู้ตรวจรับพัสดุ ตามเสนอ
+    br
+    .fontspace 
+    | จึงเรียนมาเพื่อโปรดพิจารณา
+    br
+    .fontspace 
+    | 1.	เห็นชอบในรายงานขอซื้อดังกล่าวข้างต้น
+    br
+    .fontspace 
+    | 2.	อนุมัติให้แต่งตั้ง รายชื่อดังนี้เป็นผู้ตรวจรับพัสดุ
+    br
+    .fontspace2
+    | 1.	#{committee1}
+    br
+    .fontspace2
+    | 2.	#{committee2}
+    br
+    .fontspace2
+    | 3.	#{committee3}
+    br
+    br 
+    br 
+    div(style="width:100%;float:left;")
+      div(style="width:50%;float:left;text-align:center") ลงชื่อ............................................................
+        br
+        | (#{committeecheck3})
+        br 
+        | #{committeecheckpos3}
+      div(style="width:50%;float:left;text-align:center") ลงชื่อ............................................................
+        br
+        | (#{committeecheck2})
+        br 
+        | #{committeecheckpos2}
+    div(style="width:100%;float:left;text-align:center") อนุมัติเห็นชอบ
+      br
+      br
+      br
+      | ลงชื่อ............................................................
+      br
+      | (#{committeecheck1})
+      br
+      | #{committeecheckpos1}#{hospitalName}
+
+    //- div(style="width:50%;float:right;") 
+    //-   label(style="margin-left:-45px;") เพื่อโปรดทราบ
+    //-   div(style="width:100%;text-align:center") ลงชื่อ............................................................
+    //-     br
+    //-     | (นางสาวพรทิพย์ สมวัน)
+    //-     br 
+    //-     | นักจัดการงานทั่วไปชำนาญการ
+    //- br
+    //- br 
+    //- br 
+    //- br
+    //- br 
+    //- br
+    //- div(style="width:50%;float:right;") 
+    //-   label(style="margin-left:-20px;") เพื่อทราบ
+    //-   div(style="width:100%;float:right;text-align:center") ลงชื่อ............................................................
+    //-     br
+    //-     | (นายดนัย เจียรกูล)
+    //-     br 
+    //-     | นายแพทย์(ด้านเวชกรรมป้องกัน)เชี่ยวชาญรักษาการใน
+    //-     br 
+    //-     | ตำแหน่งผู้อำนวยการ #{hospitalName}

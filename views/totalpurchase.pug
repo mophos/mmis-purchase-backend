@@ -1,0 +1,45 @@
+include css.pug
+doctype html
+html
+  head
+    meta(charset="utf-8")
+    title report
+  body
+    button.btn.btn-sm.btn-success(onclick='window.print()') Print
+    .center(style='font-weight: bold;') #{hospname}
+    .center(style='font-weight: bold;') รายงานการออกใบสั่งซื้อ
+    .center(style='padding-bottom: 7pt;') ประจำเดือน #{nDate}
+    table(style='font-size: 12pt;')
+      thead
+        tr
+          th เลขที่สั่งซื้อ
+          th วันที่สั่งซื้อ
+          th รหัสเวชภัณฑ์
+          th.left รายการเวชภัณฑ์
+          th จำนวน
+          th มูลค่า
+          th.center(style='padding-left: 5pt;') งบที่ใช้
+          th.center ชื่อบริษัท
+      tbody
+      - var y=0
+        for b in results
+          - y++
+            tr
+              td.center #{b.purchase_order_id}
+              td.center #{b.created_date}
+              td.center #{b.product_id}
+              td #{b.generic_name}
+              td.center #{b.qty} x #{b.small_qty} #{b.unit_name}
+              td.right #{b.total_price}
+              td.center(style='padding-left: 5pt;') #{b.bgtype_name}
+              td.center #{b.labeler_name}
+      tfooter          
+        tr
+          td.tbfooter(colspan='8' height='10')
+        tr
+          td(colspan='4')
+          td.right รวมทั้งสิ้น
+          td.right #{y} รายการ
+          td.center ยอดรวม
+          td.left #{sum} บาท
+          

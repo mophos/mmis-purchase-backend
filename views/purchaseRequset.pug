@@ -1,0 +1,123 @@
+include css.pug
+style(type='text/css').
+ body{
+ font-family: 'THSarabunIT';
+ }
+style(type='text/css' media='print').
+ @page{
+    margin-top: 1.5cm;
+    margin-left: 2.5cm;
+    margin-right: 2cm;
+  }
+doctype html
+html
+  head
+    meta(charset="utf-8")
+    title report
+  body
+    button.btn.btn-sm.btn-success(onclick='window.print()') Print
+    img(src='/krut.png', height='60px')
+    .headkut.h1 บันทึกข้อความ
+    p.h2
+      | ส่วนราชการ 
+      label.h3(style='margin-top: 5px;')  &nbspโรงพยาบาลเขื่องใน
+    p.h2(style='width:50%;float: left;')
+      | ที่ 
+      label.h3(style='margin-top: 5px;')  อบ. 0032.305/1270
+    b.h2(style='width:50%;float: left;')
+      | วันที่ 24 กรกฏาคม 2560
+      label.h3 &nbsp;#{today}
+    br
+    b.h2 เรื่อง 
+    | รายงานขอซื้อ/จ้าง เวชภัณฑ์ยา
+    hr
+    .left เรียน ผู้ว่าราชการจังหวัดอุบลราชธานี(ตามคำสั่งจังหวัดอุบลราชธานี ที่ 4411/2559 ลงวันที่ 10 ตุลาคม 2559)
+    .fontspace
+    .left ด้วยโรงพยาบาลเขื่องใน มีความจำเป็นที่จะซื้อเวชภัณฑ์ยาเพื่อใช้ในราชการของโรงพยาบาลเขื่องใน 
+    .left(style='padding-bottom: 15px;') จึงรายงานขอความเห็นชอบตามข้อ 27 แห่งระเบียบสำนักนายกรัฐมนตรีว่าด้วยการพัสดุ พ.ศ.2535 ดังนี้
+    table
+      thead
+        tr
+          th(style='padding-top: 1px;') ลำดับ
+          th.center รายการ
+          th จำนวน
+          th.right ราคา
+           br 
+           | ต่อหน่วย
+          th.right รวมเงิน
+          th.right ราคาครั้งหลังสุด
+          th.right กำหนดเวลา
+           br
+           | ใช้แล้วเสร็จ
+      tbody
+        tr
+          td.center 1
+          td.left VITAMIN C 100 MG 1000'S(ส)
+          td.center 100x1000'S
+          td.right 146.50
+          td.right 14,650.00
+          td.right 160.00
+          td(style='padding-bottom: 1px;').right 60 วัน
+      tfooter
+        tr
+         td(colspan='7').tbfooter
+        tr
+         td
+         td
+         td(colspan='3' style='padding-top: 10px;') ภาษีมูลค่าเพิ่มจำนวน 7 % เป็นเงิน  
+         td.right(style='border-bottom: 1px dashed black') 0.00
+         td(colspan='2') &nbspบาท
+        tr
+         td
+         td
+         td(colspan='3') รวมเป็นเงินทั้งสิ้น  
+         td.right(style='border-bottom: 1px dashed black') 14,650.00
+         td(colspan='2') &nbspบาท
+    .left(style='padding-top: 15px;')
+    .left รวม 1 รายการ เป็นนเงินทั้งสิ้น 14,650.00 บาท (หนึ่งหมื่นสี่พันหกร้อยห้าสิบบาทถ้วน).
+    .left ตามรายละเอียดที่แนบมาพร้อมนี้จะดำเนินการซื้อ/จ้าง โดยวิธีตกลงราคา ตามระเบียบสำนักนายกรัฐมนตรีว่าด้วยการพัสดุ พ.ศ.2535 แก้ไขเพิ่ม(ฉบับที่ 3) พ.ศ.2539 ข้อ 19 ด้วย[ ] งบประมาณ[/] เงินบำรุงวงเงิน 14,650.00 บาท (หนึ่งหมื่นสี่พันหกร้อยห้าสิบบาทถ้วน).
+    .left(style='margin-left: 15%; padding-top: 7pt; padding-bottom: 7pt;') ขออนุมัติแต่งตั้งบุคคลต่อไปนี้เป็นกรรมการตรวจรับพัสดุ คือ
+    table
+      tr
+        td 1. นายก้านแก้ว ศรีเนตร
+        td ตำแหน่ง เจ้าพนักงานรังสีการแพทย์ชำนาญงาน
+        td ประธานกรรมการ
+      tr
+        td 2. นางสาวปิยธิดา รักพงศ์
+        td ตำแหน่ง เภสัชกรชำนาญการ
+        td กรรมการ
+      tr
+        td 3. นางชุดา สมวัลัย
+        td ตำแหน่ง เจ้าพนักงานเภสัชกรรมปฏิบัติงาน
+        td กรรมการ
+    .break
+    .left(style='margin-left: 15%; padding-top: 15px;') จึงเรียนมาเพื่อโปรดพิจารณาให้ความเห็นชอบ ตามนัยข้อ 29 แห่งระเบียบสำนักนายกรัฐมนตรี
+    .left ว่าด้วยการพัสดุ พ.ศ.2535 ให้ใช้บันทึกนี้แทนคำสั่งแต่งตั้งกรรมการด้วยจะเป็นพระคุณ
+    br
+    table(style='width: 50%; float: right;')
+     tr
+      td(style='padding-top: 50px;').center (ลงชื่อ)...........................................................
+     tr
+      td.center (นางสาวบัวเรียน มนัส)
+     tr
+      td.center เจ้าหน้าที่พัสดุ
+     tr
+      td.center ตำแหน่ง เภสัชกรชำนาญการ
+     tr
+       td(style='padding-top: 80px;').center (ลงชื่อ)...........................................................
+     tr
+      td.center ผู้หัวหน้าเจ้าหน้าที่พัสดุ
+     tr
+       td.center (นางสาวศิริรัตน์ บุญจรัส)
+     tr
+       td.center (ตำแหน่ง เภสัชกรชำนาญการพิเศษ)
+     tr
+      td(style='padding-top: 80px;').center (ลงชื่อ)............................................................
+     tr
+      td.center (นายดนัย เจียรกูล)
+     tr
+      td.center นายแพทย์(ด้านเวชกรรมป้องกัน)เชี่ยวชาญ
+     tr
+      td.center รักษาการในตำแหน่งผู้อำนวยการโรงพยาบาลเขื่องใน
+     tr
+      td.center ปฏิบัติราชการแทนผู้ว่าราชการจังหวัดอุบลราชธานี

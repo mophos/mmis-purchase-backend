@@ -1,0 +1,54 @@
+include css.pug
+style(type='text/css' media='print').
+ @page{
+    margin-top: 1.5cm;
+    margin-left: 2.5cm;
+    margin-right: 2cm;
+  }
+doctype html
+html
+  head
+    meta(charset="utf-8")
+    title report
+  body
+    button.btn.btn-sm.btn-success(onclick='window.print()') Print
+    br
+    center.head
+     b
+      | ใบสั่งซื้อ
+     table(style='line-height: 1.1em;')
+      tr
+        td เลขที่ PH600612/2560
+        td(style='width: 50%;') 
+      tr
+        td โรงพยาบาลเขื่องใน
+        td วันที่ 25 กรกฏาคม 2560
+    .left(style='padding-bottom: 7pt;') เรียน เจ้าของ/ผู้จัดการ ร้าน/ห้าง โมเดิร์น ฟาร์มา จำกัด
+    .fontspace
+    .left(style='padding-bottom: 15pt;') ด้วยโรงพยาบาลเขื่องในมีความประสงค์จะจัดซื้อเวชภัณฑ์ยา เพื่อใช้ในราชการของโรงพยาบาลเขื่องใน จึงขอสั่งซื้อเวชภัณฑ์จากร้านของท่าน ตามรายการดังต่อไปนี้
+    table
+     thead
+      tr
+       td(colspan='5').tbfooter
+     tbody
+      tr
+       td 1
+       td VITAMIN C 100 MG 1000
+       td 100x1000'S
+       td ราคาต่อหน่วย 146.50 บาท
+       td รวม 14,650.00 บาท
+      tfooter
+       tr
+        td(colspan='5').tbfooter
+    .fontspace
+    .left รวม 1 รายการ เป็นนเงินทั้งสิ้น 14,650.00 บาท (หนึ่งหมื่นสี่พันหกร้อยห้าสิบบาทถ้วน). 
+    
+    table(style='width: 40%; float: right;')
+     tr
+      td(style='padding-top: 100px;').center (ลงชื่อ)........................................ผู้สั่งซื้อ
+     tr
+      td.center (นางสาวศิริรัตน์ บุญจรัส)
+     tr
+      td.center ตำแหน่ง เภสัชกร ชำนาญการพิเศษ
+     tr
+       td.center ทำหน้าที่ หัวหน้าเจ้าหน้าที่พัสดุ

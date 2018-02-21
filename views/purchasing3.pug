@@ -1,0 +1,129 @@
+include css.pug
+style(type='text/css').
+  body{
+  font-family:'THSarabunIT';
+  }
+style(type='text/css' media='print').
+   @page{
+   margin-top: 1.5cm;
+   margin-left: 2.5cm;
+   margin-right: 2cm;
+  }
+doctype html
+html
+  head
+    meta(charset="utf-8")
+    title report
+  body
+    button.btn.btn-sm.btn-success.btnprint(onclick='window.print()') Print
+    img(src='/krut.png', height='60px')
+    .headkut.h1 บันทึกข้อความ
+    p.h2
+      | ส่วนราชการ
+      label.h3(style='margin-top: 5px;')  &nbsp;#{hospitalName}
+    p.h2(style='width:50%;float: left;')
+      | ที่
+      label.h3(style='margin-top: 5px;')  &nbsp;#{at_name}
+    b.h2(style='width:50%;float: left;')
+      | วันที่ 
+      label.h3 &nbsp;#{nDate}
+    br
+    b.h2 เรื่อง 
+    | รายงานขอซื้อเวชภัณฑ์
+    .enter เรียน ผู้อำนวยการ#{hospitalName}
+    br 
+    .fontspace
+    | 1. ด้วยกลุ่มงานเภสัชกรรม มียาในบัญชียาหลักแห่งชาติ เหลืออยู่ไม่เพียงพอแก่การรักษาพยาบาลผู้ป่วย จึงเรียนมาเพื่อโปรดอนุมัติซื้อพัสดุตามพระราชบัญญัติการจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ. ๒๕๖๐ 
+    if(type == 8 || type == 9 || type == 10)
+      | ตามพระราชบัญญัติการจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ.2560 
+    if(type == 8) 
+      | มาตรา 56 วรรคหนึ่ง (2)(ข) 
+    if(type == 9) 
+      | มาตรา 56 วรรคหนึ่ง (2)(ค) 
+    if(type == 10) 
+      | มาตรา 56 วรรคหนึ่ง (2)(ซ)
+    |และกฎกระทรวงกำหนดพัสดุที่รัฐต้องการส่งเสริมหรือสนับสนุนและกำหนดวิธีการจัดซื้อจัดจ้างและบริหารพัสดุโดยวิธีเฉพาะเจาะจง ด้วยเงิน UC กลุ่มงานเภสัชกรรม ประจำปีงบประมาณ #{year} ซึ่งมียอดจัดสรร #{budget[0].amount} บาท และมียอดสะสมรวม #{sum} บาท
+    br
+    .fontspace
+    | 2. รายละเอียดของพัสดุ
+    br
+    .fontspace
+    table(style='border: 1px solid black; font-size: 13pt;')
+      thead
+        tr 
+          td(rowspan='2' style='font-size: 11pt; border: 1px solid black; vertical-align: middle; width:4%;').center ลำดับ
+          td(rowspan='2' style='font-size: 11pt; border: 1px solid black; vertical-align: middle;').center รหัส/รายการยา
+          td(rowspan='2' style='font-size: 11pt; border: 1px solid black; vertical-align: middle;').center หน่วยนับ
+          td(rowspan='2' style='font-size: 11pt; border: 1px solid black; vertical-align: middle;').center คงคลัง
+          td(colspan='3' style='font-size: 11pt; border: 1px solid black; vertical-align: middle;').center ความต้องการซื้อครั้งนี้
+          td(rowspan='2' style='font-size: 11pt; border: 1px solid black; vertical-align: middle;').center ราคากลาง
+          td(rowspan='2' style='font-size: 11pt; border: 1px solid black; vertical-align: middle;').center ราคาซื้อครั้งหลังสุด
+        tr
+          td(style='border: 1px solid black; font-size: 11pt;').center จำนวน
+          td(style='border: 1px solid black; font-size: 11pt;').center ราคา/หน่วย
+          td(style='border: 1px solid black; font-size: 11pt;').center ราคารวม
+      tbody
+        - var y=0
+            for b in purchasing
+              - y++
+                tr
+                  td.center(style='border: 1px solid black;') #{y}
+                  td(style='border: 1px solid black;') #{b.generic_id} : #{b.generic_name}
+                  td.center(style='border: 1px solid black;') #{b.unit_price_name} #{b.small_unit} (#{b.large_unit})
+                  td.center(style='border: 1px solid black;') #{b.qty}
+                  td.center(style='border: 1px solid black;') #{b.total}
+                  td.right(style='border: 1px solid black;') #{b.unit_price}
+                  td.right(style='border: 1px solid black;') #{b.total_price}
+                  td.right(style='border: 1px solid black;') #{b.p_cost}
+                  td.right(style='border: 1px solid black;') #{b.unit_price}
+    br
+    .fontspace
+    | 3. จำนวนที่จัดซื้อ #{y} รายการ รวมเป็นเงิน #{totalprice} บาท (#{bahtText})
+    br
+    .fontspace
+    | 4. วงเงินราคากลาง #{totalprice} (#{bahtText}) โดยอ้างอิงจากราคาที่ได้จากการคำนวณตามหลักเกณฑ์ที่คณะกรรมการราคากลางกำหนดหรือราคาที่เคยซื้อหลังสุดภายในระยะเวลา ๒ ปีงบประมาณ
+    br
+    .fontspace
+    | 5. กำหนดเวลาการส่งมอบพัสดุภายใน ๖๐ วัน หลังจากได้รับใบสั่งซื้อ
+    br
+    .fontspace
+    | 6. ใช้เกณฑ์ราคาในการพิจารณาคัดเลือก
+    br
+    .fontspace
+    | 7. คณะกรรมการตรวจรับ
+    br
+    -var b=0
+    for c in committeesVerify
+      .fontspace
+      .fontspace
+      | #{b+1}. #{c.fullname} #{c.position}
+      br
+      -b++
+    |	7.1 #{committee1}
+    br
+    br 
+    br 
+    div(style="width:100%;float:left;")
+      div(style="width:50%;float:left;text-align:center") ลงชื่อ............................................................
+        br
+        | (#{purchasingChief.buyer_fullname})
+        br 
+        | #{purchasingChief.buyer_position}
+        br 
+        | เจ้าหน้าที่
+      div(style="width:50%;float:left;text-align:center") ลงชื่อ............................................................
+        br
+        | (#{purchasingChief.chief_fullname})
+        br 
+        | #{purchasingChief.chief_position}
+        br 
+        | หัวหน้าเจ้าหน้าที่
+    div(style="width:100%;float:left;text-align:center") อนุมัติ
+      br
+      br
+      br
+      | ลงชื่อ............................................................
+      br
+      | (#{poraor.title}#{poraor.fname} #{poraor.lname})
+      br
+      | ผู้อำนวยการโรงพยาบาล#{hospitalName}

@@ -1,0 +1,45 @@
+include css.pug
+style(type='text/css').
+style(type='text/css' media='print').
+   @page{
+   margin-top: 0.5cm;
+   margin-left: 0.5cm;
+   margin-right: 1cm;
+   size: landscape;
+   }
+doctype html
+html
+  head
+    meta(charset="utf-8")
+    title report
+  body
+    button.btn.btn-sm.btn-success.btnprint(onclick='window.print()') Print
+    p.center.bold(style='font-size: 20pt;') รายการสั่งซื้อ
+    br
+    p.center ประจำวันที่ #{startdate} ถึง #{enddate}
+    br
+    table.center
+      thead
+        tr
+          td(style='border: 1px solid black; padding: 5px;') เลขที่ใบสั่งซื้อ
+          td(style='border: 1px solid black; padding: 5px;') รหัสยา
+          td(style='border: 1px solid black; padding: 5px;') ชื่อทางการค้า
+          td(style='border: 1px solid black; padding: 5px;') ชื่อสามัญ
+          td(style='border: 1px solid black; padding: 5px;') ราคาต่อหน่วย
+          td(style='border: 1px solid black; padding: 5px;') จำนวน
+          td(style='border: 1px solid black; padding: 5px;') ราคารวม
+          td(style='border: 1px solid black; padding: 5px;') ชื่อบริษัท
+      tbody
+        - var y=0
+          for b in results
+            - y++
+              tr 
+                td(style='border-left: 1px solid black; border-right: 1px solid black; font-size: 13pt;') #{b.purchase_order_id}
+                td(style='border-left: 1px solid black; border-right: 1px solid black; font-size: 13pt;') #{b.generic_id}
+                td(style='border-left: 1px solid black; border-right: 1px solid black; font-size: 13pt;') #{b.product_name}
+                td(style='border-left: 1px solid black; border-right: 1px solid black; font-size: 13pt;') #{b.generic_name}
+                td(style='border-left: 1px solid black; border-right: 1px solid black; font-size: 13pt;') #{b.unit_price}
+                td(style='border-left: 1px solid black; border-right: 1px solid black; font-size: 13pt;') #{b.qty} x #{b.qty1} #{b.unit_name}
+                td(style='border-left: 1px solid black; border-right: 1px solid black; font-size: 13pt;') #{b.total_price}
+                td(style='border-left: 1px solid black; border-right: 1px solid black; font-size: 13pt;') #{b.labeler_name}
+

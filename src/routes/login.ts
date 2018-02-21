@@ -20,20 +20,18 @@ router.post('/', (req, res, next) => {
     loginModel.doLogin(db, username, encPassword)
       .then((results: any) => {
         if (results.length) {
-          const payload = { fullname: results[0].fullname };
-          const token = jwt.sign(payload);
-          res.send({ ok: true, token: token })
+          res.send({ ok: false, error: 'กรุณา login ผ่าน login portal' });
         } else {
-          res.send({ ok: false, message: 'ชื่อผู้ใช้งานหรือรหัสผ่าน ไม่ถูกต้อง' })
+          res.send({ ok: false, error: 'ชื่อผู้ใช้งานหรือรหัสผ่าน ไม่ถูกต้อง' })
         }
       })
       .catch(err => {
         console.log(err);
-        res.send({ ok: false, message: 'Server error!' });
+        res.send({ ok: false, error: 'Server error!' });
       })
       
   } else {
-    res.send({ ok: false, message: 'กรุณาระบุชื่อผู้ใช้งานและรหัสผ่าน' })
+    res.send({ ok: false, error: 'กรุณาระบุชื่อผู้ใช้งานและรหัสผ่าน' })
   }
 })
 

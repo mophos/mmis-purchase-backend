@@ -44,7 +44,7 @@ import genericTypeRoute from './routes/genericType';
 import settingRoute from './routes/setting';
 import budgetTransectionRoute from './routes/budgetTransection';
 import userRoute  from './routes/users';
-import basicRoute  from './routes/basics';
+import stdRoute  from './routes/standard';
 import officerRoute from './routes/officer'
 
 const app: express.Express = express();
@@ -61,10 +61,10 @@ app.use(express.static(path.join(__dirname, '../public')));
 app.use(cors());
 app.use(expressValidator());
 
-app.use(protect.express.sqlInjection({
-  body: true,
-  loggerFunction: console.error
-}));
+// app.use(protect.express.sqlInjection({
+//   body: true,
+//   loggerFunction: console.error
+// }));
 
 app.use(protect.express.xss({
   body: true,
@@ -150,7 +150,7 @@ app.use('/generictype', genericTypeRoute);
 app.use('/setting', settingRoute);
 app.use('/docs', poReportRoute);
 app.use('/budget-transection', budgetTransectionRoute);
-app.use('/basic', basicRoute);
+app.use('/std', stdRoute);
 app.use('/officer',officerRoute);
 
 app.use('/', indexRoute);

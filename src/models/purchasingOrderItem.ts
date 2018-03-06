@@ -35,7 +35,7 @@ export class PurchasingOrderItemModel {
     let fullname = knex.raw("concat(p.product_name,' [',gd.generic_name,'] ') as fullname");
     return knex(this.tableName)
     .select('pc_purchasing_order_item.*','p.*', fullname, 'gd.generic_name',
-    'ug.qty as small_qty', 'u1.unit_name as from_unit_name', 'u2.unit_name as to_unit_name')
+      knex.raw('ifnull(ug.qty, 0) as small_qty'), 'u1.unit_name as from_unit_name', 'u2.unit_name as to_unit_name')
       //.leftJoin('mm_labelers', 'pc_purchasing_order_item.labeler_id', 'mm_labelers.labeler_id')
       //.leftJoin('mm_packages','pc_purchasing_order_item.package_id','mm_packages.package_id')
       .innerJoin('mm_products as p','pc_purchasing_order_item.product_id','p.product_id')

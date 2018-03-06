@@ -4,97 +4,99 @@ import * as express from 'express';
 
 export class BudgetTransectionModel {
 
-  list(knex: Knex, limit: number = 100, offset: number = 0) {
-    return knex('pc_budget_transection')
-      .limit(limit)
-      .offset(offset);
-  }
+  // list(knex: Knex, limit: number = 100, offset: number = 0) {
+  //   return knex('pc_budget_transection')
+  //     .limit(limit)
+  //     .offset(offset);
+  // }
 
-  incomingBalance(knex: Knex, detail_id: any) {
-    return knex('pc_budget_transection')
-      .where('type', 'spend')
-      .andWhere('bgdetail_id', detail_id)
-      .limit(1)
-      .orderBy('transection_id', 'DESC')
-  }
+  // incomingBalance(knex: Knex, detail_id: any) {
+  //   return knex('pc_budget_transection')
+  //     .where('type', 'spend')
+  //     .andWhere('bgdetail_id', detail_id)
+  //     .limit(1)
+  //     .orderBy('transection_id', 'DESC')
+  // }
 
+  // save transaction
   save(knex: Knex, datas: any) {
     return knex('pc_budget_transection')
       .insert(datas);
   }
 
-  update(knex: Knex, id: string, datas: any) {
-    return knex('pc_budget_transection')
-      .where('transection_id', id)
-      .update(datas);
-  }
+  // update(knex: Knex, id: string, datas: any) {
+  //   return knex('pc_budget_transection')
+  //     .where('transection_id', id)
+  //     .update(datas);
+  // }
 
-  updateTransaction(knex: Knex, id: string) {
-    return knex('pc_budget_transection')
-      .where('transection_id', id)
-      .update('type', 'revoke');
-  }
+  // updateTransaction(knex: Knex, id: string) {
+  //   return knex('pc_budget_transection')
+  //     .where('transection_id', id)
+  //     .update('type', 'revoke');
+  // }
 
-  async detail(knex: Knex, id: string) {
-    return knex('pc_budget_transection')
-      .where('purchase_order_id', id);
-  }
+  // async detail(knex: Knex, purchaseOrderId: string) {
+  //   return knex('pc_budget_transection')
+  //     .where('purchase_order_id', purchaseOrderId)
+  //     .where('type', 'SPEND')
+  //     .orderBy('date_time', 'desc')
+  //     .limit(1);
+  // }
 
-  async getDetail(knex: Knex, id: string, year: any) {
+  async getDetail(knex: Knex, id: string) {
     return knex('pc_budget_transection')
       .select(knex.raw('ifnull(sum(amount), 0) as amount'))
       .where('bgdetail_id', id)
-      .andWhere('budget_year', year)
-      .andWhere('type', 'spend')
+      .andWhere('transaction_status', 'SPEND')
       .limit(1);
   }
 
-  async budgetDetailByID(knex: Knex, id: string) {
-    return knex('view_budget_subtype')
-      .where('bgdetail_id', id);
-  }
+  // async budgetDetailByID(knex: Knex, id: string) {
+  //   return knex('view_budget_subtype')
+  //     .where('bgdetail_id', id);
+  // }
 
-  difference(knex: Knex, pid: any) {
-    return knex('pc_budget_transection')
-      .where('purchase_order_id', pid)
-      .andWhere('type', 'spend')
-      .orderBy('date_time', 'DESC')
-      .limit(1)
-  }
+  // difference(knex: Knex, pid: any) {
+  //   return knex('pc_budget_transection')
+  //     .where('purchase_order_id', pid)
+  //     .andWhere('type', 'spend')
+  //     .orderBy('date_time', 'DESC')
+  //     .limit(1)
+  // }
 
-  async summaryPoByBudgetId(knex: Knex, id: string, purchase_order_id: string) {
-    return knex('pc_budget_transection')
-      .sum('amount as amount')
-      .where('bgdetail_id', id)
-      .andWhere('type', 'spend');
-  }
+  // async summaryPoByBudgetId(knex: Knex, id: string, purchase_order_id: string) {
+  //   return knex('pc_budget_transection')
+  //     .sum('amount as amount')
+  //     .where('bgdetail_id', id)
+  //     .andWhere('type', 'spend');
+  // }
 
-  detailActive(knex: Knex, id: string) {
-    return knex('pc_budget_transection')
-      .where('purchase_order_id', id)
-      .andWhere('type', 'spend');
-  }
+  // detailActive(knex: Knex, id: string) {
+  //   return knex('pc_budget_transection')
+  //     .where('purchase_order_id', id)
+  //     .andWhere('type', 'spend');
+  // }
 
-  remove(knex: Knex, id: string) {
-    return knex('pc_budget_transection')
-      .where('purchase_order_id', id)
-      .del();
-  }
+  // remove(knex: Knex, id: string) {
+  //   return knex('pc_budget_transection')
+  //     .where('purchase_order_id', id)
+  //     .del();
+  // }
 
-  getPotransaction(knex: Knex, pid: any) {
-    return knex('pc_budget_transection as t')
-      .select('t.date_time', 'po.purchase_order_number', 'vb.bgtype_name',
-        'vb.bgtypesub_name', 't.incoming_balance', 't.amount', 't.difference', 't.balance', 't.type')
-      .join('pc_purchasing_order as po', 'po.purchase_order_id', 't.purchase_order_id')
-      .join('view_budget_subtype as vb', 'vb.bgdetail_id', 't.bgdetail_id')
-      .where('po.purchase_order_id', pid)
-      .orderBy('date_time', 'DESC')
-  }
+  // getPotransaction(knex: Knex, pid: any) {
+  //   return knex('pc_budget_transection as t')
+  //     .select('t.date_time', 'po.purchase_order_number', 'vb.bgtype_name',
+  //       'vb.bgtypesub_name', 't.incoming_balance', 't.amount', 't.difference', 't.balance', 't.type')
+  //     .join('pc_purchasing_order as po', 'po.purchase_order_id', 't.purchase_order_id')
+  //     .join('view_budget_subtype as vb', 'vb.bgdetail_id', 't.bgdetail_id')
+  //     .where('po.purchase_order_id', pid)
+  //     .orderBy('date_time', 'DESC')
+  // }
 
-  getBudgetTransaction(knex: Knex, budgetYear: any, budgetDetailId: any) {
+  getBudgetTransaction(knex: Knex, budgetDetailId: any) {
     return knex('view_budget_subtype as vbg')
       .where('vbg.bgdetail_id', budgetDetailId)
-      .where('vbg.bg_year', budgetYear)
       .limit(1);
     // return knex('pc_budget_transection as pbt')
     //   .select('pbt.date_time'
@@ -111,5 +113,26 @@ export class BudgetTransectionModel {
     //   .where('pbt.budget_year', budgetYear)
     //   .andWhere('pbt.bgdetail_id', budgetDetailId)
     //   .orderBy('date_time');
+  }
+
+  getTransactionBalance(knex: Knex, budgetDetailId: any, purchaseOrderId: any = null) {
+
+    let query = knex('pc_budget_transection as bt')
+      .select(knex.raw('sum(bt.amount) as total_purchase'))
+      .where('bt.bgdetail_id', budgetDetailId)
+      .where('bt.transaction_status', 'SPEND');
+    
+    if (purchaseOrderId) {
+      query.whereNot('bt.purchase_order_id', purchaseOrderId);
+    }
+
+    return query;
+  
+  }
+
+  cancelTransaction(knex: Knex, purchaseOrderId: any) {
+    return knex('pc_budget_transection')
+      .where('purchase_order_id', purchaseOrderId)
+      .update('transaction_status', 'REVOKE');
   }
 }

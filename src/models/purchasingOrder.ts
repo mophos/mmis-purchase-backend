@@ -106,15 +106,15 @@ export class PurchasingOrderModel {
     let con = knex(this.tableName)
       .select(sumItems, sumReceive, 'pc_purchasing_order.*', 'l.labeler_name', 'bp.name as bid_process_name')
       .leftJoin('mm_labelers as l', 'pc_purchasing_order.labeler_id', 'l.labeler_id')
-      .leftJoin('l_bid_process as bp', 'pc_purchasing_order.purchase_method', 'bp.id')
+      .leftJoin('l_bid_process as bp', 'pc_purchasing_order.purchase_method_id', 'bp.id')
       .whereIn('pc_purchasing_order.purchase_order_status', status)
       .orderBy('pc_purchasing_order.order_date', 'DESC')
       .orderBy('pc_purchasing_order.purchase_order_number', 'DESC');
 
     if (contract === 'T') {
-      con.where('pc_purchasing_order.is_contract', 'T');
+      con.where('pc_purchasing_order.is_contract', 'Y');
     } else if (contract === 'F') {
-      con.where('pc_purchasing_order.is_contract', 'F');
+      con.where('pc_purchasing_order.is_contract', 'N');
     }
 
     if (query !== '') {

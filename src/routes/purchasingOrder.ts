@@ -9,12 +9,14 @@ import { SerialModel } from '../models/serial';
 
 import * as _ from 'lodash';
 import { PeriodModel } from '../models/period';
+import { BudgetTransectionModel } from '../models/budgetTransection';
 
 const serialModel = new SerialModel();
 const router = express.Router();
 const model = new PurchasingOrderModel();
 const modelItems = new PurchasingOrderItemModel();
 const periodModel = new PeriodModel();
+const bgModel = new BudgetTransectionModel();
 
 router.get('/budgetyear/:year/:budget_type_id', (req, res, next) => {
 
@@ -54,7 +56,7 @@ router.get('/getpoId/:sId/:eId/:genericTypeId/:orderStatus', async (req, res, ne
   let genericTypeId = req.params.genericTypeId;
   let orderStatus = req.params.orderStatus;
   try {
-    let rs: any = await model.getPOid(db, sId, eId,genericTypeId, orderStatus);
+    let rs: any = await model.getPOid(db, sId, eId, genericTypeId, orderStatus);
     res.send({ ok: true, rows: rs[0] });
   } catch (error) {
     res.send({ ok: false, error: error.message });
@@ -70,7 +72,7 @@ router.get('/getPrintDate/:start_date/:end_date/:genericTypeId/:orderStatus', as
   let genericTypeId = req.params.genericTypeId;
   let orderStatus = req.params.orderStatus;
   try {
-    let rs: any = await model.getPrintDate(db, start_date, end_date,genericTypeId, orderStatus);
+    let rs: any = await model.getPrintDate(db, start_date, end_date, genericTypeId, orderStatus);
     res.send({ ok: true, rows: rs[0] });
   } catch (error) {
     res.send({ ok: false, error: error.message });
@@ -330,85 +332,18 @@ router.post('/purchase-reorder', async (req, res, next) => {
 });
 
 router.post('/', async (req, res, next) => {
-  let items: any = req.body.items;
-  let summary: any = req.body.summary;
+  const items: any = req.body.items;
+  const summary: any = req.body.summary;
+  const transaction: any = req.body.budgetTransaction;
+
   const db = req.db;
 
   let products: any = [];
   let purchase: any = {};
+  let purchaseOrderId: any = moment().add(1, 'ms').format('x');
 
   if (items.length && summary) {
     try {
-      let serial
-      if (summary.generic_type_id == '1' && summary.purchase_order_number == null) {
-        serial = await serialModel.getSerial(db, 'PO');
-      } else if (summary.generic_type_id == '2' && summary.purchase_order_number == null) {
-        serial = await serialModel.getSerial(db, 'POA');
-      } else if (summary.generic_type_id == '3' && summary.purchase_order_number == null) {
-        serial = await serialModel.getSerial(db, 'POB');
-      } else if (summary.generic_type_id == '4' && summary.purchase_order_number == null) {
-        serial = await serialModel.getSerial(db, 'POC');
-      } else if (summary.generic_type_id == '5' && summary.purchase_order_number == null) {
-        serial = await serialModel.getSerial(db, 'POD');
-      } else if (summary.generic_type_id && summary.purchase_order_number == null) {
-        serial = await serialModel.getSerial(db, 'POF');
-      } else if (summary.purchase_order_number) {
-        serial = summary.purchase_order_number;
-      }
-
-      purchase = {
-        purchase_order_status: 'PREPARED',
-        purchase_order_id: summary.purchase_order_id,
-        purchase_order_number: serial,
-        purchasing_id: summary.purchasing_id,
-        labeler_id: summary.labeler_id,
-        verify_committee_id: summary.verify_committee_id,
-        order_date: summary.order_date,
-        discount_percent: summary.discount_percent,
-        discount_cash: summary.discount_cash,
-        include_vat: summary.include_vat ? 1 : 0,
-        vat_rate: summary.vat_rate,
-        vat: summary.vat,
-        total_price: summary.total_price,
-        egp_id: summary.egp_id,
-        budgettype_id: summary.budgettype_id,
-        budget_detail_id: summary.budget_detail_id,
-        generic_type_id: summary.generic_type_id,
-        purchase_method: summary.purchase_method,
-        purchase_type: summary.purchase_type,
-        buyer_fullname: summary.buyer_fullname,
-        chief_fullname: summary.chief_fullname,
-        chief_position: summary.chief_position,
-        buyer_position: summary.buyer_position,
-        chief_id: summary.chief_id,
-        buyer_id: summary.buyer_id,
-        budget_year: summary.budget_year,
-        comment: summary.comment,
-        is_reorder: summary.is_reorder,
-        ship_to: summary.ship_to,
-        vendor_contact_name: summary.vendor_contact_name,
-        delivery: summary.delivery,
-        is_contract: summary.is_contract,
-        purchase_order_book_number: summary.purchase_order_book_number,
-        people_user_id: req.decoded.people_user_id
-      }
-
-      items.forEach(v => {
-        let obj: any = {
-          purchase_order_id: summary.purchase_order_id,
-          generic_id: v.generic_id,
-          product_id: v.product_id,
-          qty: v.qty, // large unit
-          unit_price: v.cost,
-          unit_generic_id: v.unit_generic_id,
-          total_price: v.total_cost,
-          total_small_qty: v.total_small_qty,
-          giveaway: v.is_giveaway
-        }
-
-        products.push(obj);
-      });
-
       // check period status
       let year = moment(summary.order_date, 'YYYY-MM-DD').get('year');
       let month = moment(summary.order_date, 'YYYY-MM-DD').get('month') + 1;
@@ -416,11 +351,90 @@ router.post('/', async (req, res, next) => {
       let isClose = await periodModel.isPeriodClose(db, year, month);
 
       if (isClose) {
-        res.send({ ok: false, error: 'รอบบัญชีถูกปิดแล้ว' })
+        res.send({ ok: false, error: 'รอบบัญชีถูกปิดแล้ว ไม่สามารถบันทึกได้' })
       } else {
+
+        let serial
+        if (summary.generic_type_id === 1) {
+          serial = await serialModel.getSerial(db, 'PO');
+        } else if (summary.generic_type_id === 2) {
+          serial = await serialModel.getSerial(db, 'POA');
+        } else if (summary.generic_type_id === 3) {
+          serial = await serialModel.getSerial(db, 'POB');
+        } else if (summary.generic_type_id === 4) {
+          serial = await serialModel.getSerial(db, 'POC');
+        } else if (summary.generic_type_id === 5) {
+          serial = await serialModel.getSerial(db, 'POD');
+        } else {
+          serial = await serialModel.getSerial(db, 'PO');
+        }
+
+        purchase.purchase_order_number = serial;
+        purchase.purchase_order_status = 'PREPARED';
+        purchase.purchase_order_id = purchaseOrderId;
+        // purchasing_id: summary.purchasing_id;
+        purchase.labeler_id = summary.labeler_id;
+        purchase.verify_committee_id = summary.verify_committee_id;
+        purchase.order_date = summary.order_date;
+        purchase.discount_percent = summary.discount_percent;
+        purchase.discount_cash = summary.discount_cash;
+        purchase.exclude_vat = summary.exclude_vat;
+        // purchase.is_before_vat = summary.is_before_vat;
+        purchase.vat_rate = summary.vat_rate;
+        purchase.vat = summary.vat;
+        purchase.total_price = summary.total_price;
+        purchase.egp_id = summary.egp_id ? summary.egp_id : null;
+        purchase.budgettype_id = summary.budgettype_id;
+        purchase.budget_detail_id = summary.budget_detail_id;
+        purchase.generic_type_id = summary.generic_type_id;
+        purchase.purchase_method_id = summary.purchase_method_id;
+        purchase.purchase_type_id = summary.purchase_type_id;
+        // buyer_fullname: summary.buyer_fullname;
+        // chief_fullname: summary.chief_fullname;
+        // chief_position: summary.chief_position;
+        // buyer_position: summary.buyer_position;
+        purchase.chief_id = summary.chief_id;
+        purchase.buyer_id = summary.buyer_id;
+        purchase.budget_year = summary.budget_year;
+        purchase.comment = summary.comment ? summary.comment : null;
+        // is_reorder= summary.is_reorder;
+        purchase.ship_to = summary.ship_to ? summary.ship_to : null;
+        purchase.vendor_contact_name = summary.vendor_contact_name ? summary.vendor_contact_name : null;
+        purchase.delivery = summary.delivery;
+        purchase.is_contract = summary.is_contract ? summary.is_contract : null;
+        purchase.purchase_order_book_number = summary.purchase_order_book_number ? summary.purchase_order_book_number : null;
+        purchase.people_user_id = req.decoded.people_user_id;
+
+
+        items.forEach(v => {
+          let obj: any = {
+            purchase_order_id: purchaseOrderId,
+            generic_id: v.generic_id,
+            product_id: v.product_id,
+            qty: v.qty, // large unit
+            unit_price: v.cost,
+            unit_generic_id: v.unit_generic_id,
+            total_price: v.total_cost,
+            total_small_qty: v.total_small_qty,
+            giveaway: v.is_giveaway
+          }
+
+          products.push(obj);
+        });
+
+        let transactionData = {
+          purchase_order_id: purchaseOrderId,
+          bgdetail_id: transaction.budgetDetailId,
+          incoming_balance: transaction.budgetRemain,
+          amount: transaction.totalPurchase,
+          balance: transaction.remainAfterPurchase,
+          date_time: moment().format('YYYY-MM-DD HH:mm:ss'),
+          transaction_status: 'SPEND'
+        }
         // save
         await model.save(db, purchase);
         await modelItems.save(db, products);
+        await bgModel.save(db, transactionData);
         res.send({ ok: true });
       }
 
@@ -435,26 +449,132 @@ router.post('/', async (req, res, next) => {
 
 });
 
-router.put('/newponumber/:id', (req, res, next) => {
-  let id = req.params.id;
-  let data = model.load(req);
-  let db = req.db;
-  if (data.purchase_order_number) {
-    model.createPoNumber(db, id, data)
-      .then((results: any) => {
-        res.send({ ok: true })
-      })
-      .catch(error => {
-        res.send({ ok: false, error: data })
-      })
-      .finally(() => {
-        db.destroy();
-      });
+router.put('/:purchaseOrderId', async (req, res, next) => {
+  const items: any = req.body.items;
+  const summary: any = req.body.summary;
+  const transaction: any = req.body.budgetTransaction;
+  const purchaseOrderId: any = req.params.purchaseOrderId;
+
+  const db = req.db;
+
+  let products: any = [];
+  let purchase: any = {};
+  // let purchaseOrderId: any = moment().add(1, 'ms').format('x');
+
+  if (items.length && summary) {
+    try {
+      // check period status
+      let year = moment(summary.order_date, 'YYYY-MM-DD').get('year');
+      let month = moment(summary.order_date, 'YYYY-MM-DD').get('month') + 1;
+
+      let isClose = await periodModel.isPeriodClose(db, year, month);
+
+      if (isClose) {
+        res.send({ ok: false, error: 'รอบบัญชีถูกปิดแล้ว ไม่สามารถบันทึกได้' })
+      } else {
+
+        purchase.purchase_order_status = 'PREPARED';
+        purchase.purchase_order_id = purchaseOrderId;
+        // purchasing_id: summary.purchasing_id;
+        purchase.labeler_id = summary.labeler_id;
+        purchase.verify_committee_id = summary.verify_committee_id;
+        purchase.order_date = summary.order_date;
+        purchase.discount_percent = summary.discount_percent;
+        purchase.discount_cash = summary.discount_cash;
+        purchase.exclude_vat = summary.exclude_vat;
+        // purchase.is_before_vat = summary.is_before_vat;
+        purchase.vat_rate = summary.vat_rate;
+        purchase.vat = summary.vat;
+        purchase.total_price = summary.total_price;
+        purchase.egp_id = summary.egp_id ? summary.egp_id : null;
+        purchase.budgettype_id = summary.budgettype_id;
+        purchase.budget_detail_id = summary.budget_detail_id;
+        purchase.generic_type_id = summary.generic_type_id;
+        purchase.purchase_method_id = summary.purchase_method_id;
+        purchase.purchase_type_id = summary.purchase_type_id;
+        // buyer_fullname: summary.buyer_fullname;
+        // chief_fullname: summary.chief_fullname;
+        // chief_position: summary.chief_position;
+        // buyer_position: summary.buyer_position;
+        purchase.chief_id = summary.chief_id;
+        purchase.buyer_id = summary.buyer_id;
+        purchase.budget_year = summary.budget_year;
+        purchase.comment = summary.comment ? summary.comment : null;
+        // is_reorder= summary.is_reorder;
+        purchase.ship_to = summary.ship_to ? summary.ship_to : null;
+        purchase.vendor_contact_name = summary.vendor_contact_name ? summary.vendor_contact_name : null;
+        purchase.delivery = summary.delivery;
+        purchase.is_contract = summary.is_contract ? summary.is_contract : null;
+        purchase.purchase_order_book_number = summary.purchase_order_book_number ? summary.purchase_order_book_number : null;
+        purchase.update_people_user_id = req.decoded.people_user_id;
+
+        items.forEach(v => {
+          let obj: any = {
+            purchase_order_id: purchaseOrderId,
+            generic_id: v.generic_id,
+            product_id: v.product_id,
+            qty: v.qty, // large unit
+            unit_price: v.cost,
+            unit_generic_id: v.unit_generic_id,
+            total_price: v.total_cost,
+            total_small_qty: v.total_small_qty,
+            giveaway: v.is_giveaway
+          }
+
+          products.push(obj);
+        });
+
+        let transactionData = {
+          purchase_order_id: purchaseOrderId,
+          bgdetail_id: transaction.budgetDetailId,
+          incoming_balance: transaction.budgetRemain,
+          amount: transaction.totalPurchase,
+          balance: transaction.remainAfterPurchase,
+          date_time: moment().format('YYYY-MM-DD HH:mm:ss'),
+          transaction_status: 'SPEND'
+        }
+        // save
+        await model.update(db, purchaseOrderId, purchase);
+        await modelItems.removePurchaseItem(db, purchaseOrderId);
+        await modelItems.save(db, products);
+        // revoke transaction
+        await bgModel.cancelTransaction(db, purchaseOrderId);
+        // save transaction
+        await bgModel.save(db, transactionData);
+        res.send({ ok: true });
+      }
+
+    } catch (error) {
+      res.send({ ok: false, error: error.message });
+    } finally {
+      db.destroy();
+    }
   } else {
-    res.send({ ok: false, error: 'กรุณาระบุ po number' })
+    res.send({ ok: false, error: 'ข้อมูลไม่่ครบถ้วน กรุณาตรวจสอบ' });
   }
 
 });
+
+// router.put('/newponumber/:id', (req, res, next) => {
+//   let id = req.params.id;
+//   let data = model.load(req);
+//   let db = req.db;
+//   if (data.purchase_order_number) {
+//     model.createPoNumber(db, id, data)
+//       .then((results: any) => {
+//         res.send({ ok: true })
+//       })
+//       .catch(error => {
+//         res.send({ ok: false, error: data })
+//       })
+//       .finally(() => {
+//         db.destroy();
+//       });
+//   } else {
+//     res.send({ ok: false, error: 'กรุณาระบุ po number' })
+//   }
+
+// });
 
 router.put('/update-purchase/status', async (req, res, next) => {
   const db = req.db;
@@ -561,102 +681,102 @@ router.put('/update-purchase/status', async (req, res, next) => {
 
 });
 
-router.put('/:id', async (req, res, next) => {
-  const db = req.db;
-  let id = req.params.id;
-  let items: any = req.body.items;
-  let summary: any = req.body.summary;
+// router.put('/:purchaseOrderId', async (req, res, next) => {
+//   const db = req.db;
+//   let id = req.params.id;
+//   let items: any = req.body.items;
+//   let summary: any = req.body.summary;
 
-  let products: any = [];
-  let purchase: any = {};
+//   let products: any = [];
+//   let purchase: any = {};
 
-  let year = moment(summary.order_date, 'YYYY-MM-DD').get('year');
-  let month = moment(summary.order_date, 'YYYY-MM-DD').get('month') + 1;
-  let isClose = await periodModel.isPeriodClose(db, year, month);
+//   let year = moment(summary.order_date, 'YYYY-MM-DD').get('year');
+//   let month = moment(summary.order_date, 'YYYY-MM-DD').get('month') + 1;
+//   let isClose = await periodModel.isPeriodClose(db, year, month);
 
-  if (isClose) {
-    res.send({ ok: false, error: 'รอบบัญชีถูกปิดแล้ว' })
-  } else {
-    if (items.length && summary) {
-      try {
-        purchase = {
-          purchase_order_number: summary.purchase_order_number,
-          labeler_id: summary.labeler_id,
-          verify_committee_id: summary.verify_committee_id,
-          order_date: summary.order_date,
-          discount_percent: summary.discount_percent,
-          discount_cash: summary.discount_cash,
-          include_vat: summary.include_vat ? 1 : 0,
-          vat_rate: summary.vat_rate,
-          vat: summary.vat,
-          total_price: summary.total_price,
-          egp_id: summary.egp_id,
-          budgettype_id: summary.budgettype_id,
-          budget_detail_id: summary.budget_detail_id,
-          generic_type_id: summary.generic_type_id,
-          purchase_method: summary.purchase_method,
-          purchase_order_status: summary.purchase_order_status,
-          purchase_type: summary.purchase_type,
-          buyer_fullname: summary.buyer_fullname,
-          chief_fullname: summary.chief_fullname,
-          chief_position: summary.chief_position,
-          buyer_position: summary.buyer_position,
-          chief_id: summary.chief_id,
-          buyer_id: summary.buyer_id,
-          budget_year: summary.budget_year,
-          comment: summary.comment,
-          is_reorder: summary.is_reorder,
-          ship_to: summary.ship_to,
-          vendor_contact_name: summary.vendor_contact_name,
-          delivery: summary.delivery,
-          is_contract: summary.is_contract,
-          purchase_order_book_number: summary.purchase_order_book_number
-        }
+//   if (isClose) {
+//     res.send({ ok: false, error: 'รอบบัญชีถูกปิดแล้ว' })
+//   } else {
+//     if (items.length && summary) {
+//       try {
+//         purchase = {
+//           purchase_order_number: summary.purchase_order_number,
+//           labeler_id: summary.labeler_id,
+//           verify_committee_id: summary.verify_committee_id,
+//           order_date: summary.order_date,
+//           discount_percent: summary.discount_percent,
+//           discount_cash: summary.discount_cash,
+//           include_vat: summary.include_vat ? 1 : 0,
+//           vat_rate: summary.vat_rate,
+//           vat: summary.vat,
+//           total_price: summary.total_price,
+//           egp_id: summary.egp_id,
+//           budgettype_id: summary.budgettype_id,
+//           budget_detail_id: summary.budget_detail_id,
+//           generic_type_id: summary.generic_type_id,
+//           purchase_method: summary.purchase_method,
+//           purchase_order_status: summary.purchase_order_status,
+//           purchase_type: summary.purchase_type,
+//           buyer_fullname: summary.buyer_fullname,
+//           chief_fullname: summary.chief_fullname,
+//           chief_position: summary.chief_position,
+//           buyer_position: summary.buyer_position,
+//           chief_id: summary.chief_id,
+//           buyer_id: summary.buyer_id,
+//           budget_year: summary.budget_year,
+//           comment: summary.comment,
+//           is_reorder: summary.is_reorder,
+//           ship_to: summary.ship_to,
+//           vendor_contact_name: summary.vendor_contact_name,
+//           delivery: summary.delivery,
+//           is_contract: summary.is_contract,
+//           purchase_order_book_number: summary.purchase_order_book_number
+//         }
 
-        items.forEach(v => {
-          let obj: any = {
-            purchase_order_id: summary.purchase_order_id,
-            generic_id: v.generic_id,
-            product_id: v.product_id,
-            qty: v.qty, // large unit
-            unit_price: v.cost,
-            unit_generic_id: v.unit_generic_id,
-            total_price: v.total_cost,
-            total_small_qty: v.total_small_qty,
-            giveaway: v.is_giveaway
-          }
+//         items.forEach(v => {
+//           let obj: any = {
+//             purchase_order_id: summary.purchase_order_id,
+//             generic_id: v.generic_id,
+//             product_id: v.product_id,
+//             qty: v.qty, // large unit
+//             unit_price: v.cost,
+//             unit_generic_id: v.unit_generic_id,
+//             total_price: v.total_cost,
+//             total_small_qty: v.total_small_qty,
+//             giveaway: v.is_giveaway
+//           }
 
-          products.push(obj);
-        });
+//           products.push(obj);
+//         });
 
-        // save
-        await model.update(db, id, purchase);
-        // remove old items
-        await modelItems.removePurchaseItem(db, id);
-        await modelItems.save(db, products);
+//         // save
+//         await model.update(db, id, purchase);
+//         // remove old items
+//         await modelItems.removePurchaseItem(db, id);
+//         await modelItems.save(db, products);
 
-        let statusLog = {
-          purchase_order_id: summary.purchase_order_id,
-          from_status: summary.from_status,
-          to_status: summary.purchase_order_status,
-          people_user_id: req.decoded.people_user_id,
-          created_at: moment().format('YYYY-MM-DD HH:mm:ss')
-        };
+//         let statusLog = {
+//           purchase_order_id: summary.purchase_order_id,
+//           from_status: summary.from_status,
+//           to_status: summary.purchase_order_status,
+//           people_user_id: req.decoded.people_user_id,
+//           created_at: moment().format('YYYY-MM-DD HH:mm:ss')
+//         };
 
-        await model.updateStatusLog(db, statusLog);
+//         await model.updateStatusLog(db, statusLog);
 
-        res.send({ ok: true });
-      } catch (error) {
-        res.send({ ok: false, error: error.message });
-      } finally {
-        db.destroy();
-      }
-    } else {
-      res.send({ ok: false, error: 'ข้อมูลไม่่ครบถ้วน กรุณาตรวจสอบ' });
-    }
-  }
+//         res.send({ ok: true });
+//       } catch (error) {
+//         res.send({ ok: false, error: error.message });
+//       } finally {
+//         db.destroy();
+//       }
+//     } else {
+//       res.send({ ok: false, error: 'ข้อมูลไม่่ครบถ้วน กรุณาตรวจสอบ' });
+//     }
+//   }
 
-});
+// });
 
 router.get('/detail', (req, res, next) => {
   let id = req.query.id;
@@ -734,15 +854,15 @@ router.get('/check-holiday', async (req, res, nex) => {
 router.get('/period/status', (async (req, res, next) => {
   let db = req.db;
   let date = req.query.date;
-  const month = moment(date).get('month')+1;
+  const month = moment(date).get('month') + 1;
   let year = moment(date).get('year');
   if (month >= 10) {
-    year+=1;
+    year += 1;
   }
-  
+
   try {
-    let rs = await model.getPeriodStatus(db,month,year);
-      res.send({ ok: true, rows: rs });
+    let rs = await model.getPeriodStatus(db, month, year);
+    res.send({ ok: true, rows: rs });
   } catch (error) {
     res.send({ ok: false, error: error.message });
   } finally {

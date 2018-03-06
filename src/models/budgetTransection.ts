@@ -98,21 +98,14 @@ export class BudgetTransectionModel {
     return knex('view_budget_subtype as vbg')
       .where('vbg.bgdetail_id', budgetDetailId)
       .limit(1);
-    // return knex('pc_budget_transection as pbt')
-    //   .select('pbt.date_time'
-    //     , knex.raw(`concat(vbg.bgtype_name, ' - ', vbg.bgtypesub_name) as budget_name`)
-    //     , 'po.purchase_order_number'
-    //     , 'pbt.incoming_balance'
-    //     , knex.raw(`IF(pbt.type='spend', pbt.amount, null) as spend_amount`)
-    //     , knex.raw(`IF(pbt.type='revoke', pbt.amount, null) as revoke_amount`)
-    //     , 'pbt.balance'
-    //     , knex.raw(`IF(pbt.type='spend', 'ตัดงบ', 'คืนงบ') as type_desc`)
-    //     , 'pbt.type')
-    //   .leftJoin('pc_purchasing_order as po', 'po.purchase_order_id', 'pbt.purchase_order_id')
-    //   .leftJoin('view_budget_subtype as vbg', 'vbg.bgdetail_id', 'pbt.bgdetail_id')
-    //   .where('pbt.budget_year', budgetYear)
-    //   .andWhere('pbt.bgdetail_id', budgetDetailId)
-    //   .orderBy('date_time');
+  }
+
+  getHistory(knex: Knex, budgetDetailId: any) {
+    return knex('pc_budget_transection as pt')
+      .select('pt.*', 'pc.purchase_order_number')  
+      .innerJoin('pc_purchasing_order as pc', 'pc.purchase_order_id', 'pt.purchase_order_id')  
+      .where('pt.bgdetail_id', budgetDetailId)
+      .orderBy('pt.date_time', 'desc');
   }
 
   getTransactionBalance(knex: Knex, budgetDetailId: any, purchaseOrderId: any = null) {

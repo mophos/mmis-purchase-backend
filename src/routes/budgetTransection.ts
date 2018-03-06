@@ -219,4 +219,17 @@ router.get('/purchase-detail/:purchaseOrderId', async (req, res, next) => {
   }
 });
 
+router.get('/history/:budgetDetailId', async (req, res, next) => {
+  let budgetDetailId = req.params.budgetDetailId;
+  let db = req.db;
+
+  try {
+    let rs = await budgetModel.getHistory(db, budgetDetailId);
+    res.send({ ok: true, rows: rs })
+    db.destroy();
+  } catch (error) {
+    res.send({ ok: false, error: error })
+  }
+});
+
 export default router;

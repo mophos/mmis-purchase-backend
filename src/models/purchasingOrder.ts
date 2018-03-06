@@ -111,9 +111,9 @@ export class PurchasingOrderModel {
       .orderBy('pc_purchasing_order.order_date', 'DESC')
       .orderBy('pc_purchasing_order.purchase_order_number', 'DESC');
 
-    if (contract === 'T') {
+    if (contract === 'Y') {
       con.where('pc_purchasing_order.is_contract', 'Y');
-    } else if (contract === 'F') {
+    } else if (contract === 'N') {
       con.where('pc_purchasing_order.is_contract', 'N');
     }
 
@@ -162,7 +162,7 @@ export class PurchasingOrderModel {
       .innerJoin('cm_contract as c', 'poi.contract_ref', 'c.contract_ref')
       .leftJoin('mm_labelers as l', 'poi.labeler_id', 'l.labeler_id')
       .leftJoin('pc_committee as cm', 'poi.verify_committee_id', 'cm.committee_id')
-      .where('poi.is_contract', 'T')
+      .where('poi.is_contract', 'Y')
       .orderBy('poi.purchasing_id', 'DESC');
   }
 
@@ -177,7 +177,7 @@ export class PurchasingOrderModel {
       .select(sumItems, 'poi.*', 'lb.labeler_name', 'p.*')
       .innerJoin('pc_purchasing as p', 'poi.purchasing_id', 'p.purchasing_id')
       .leftJoin('mm_labelers as lb', 'poi.labeler_id', 'lb.labeler_id')
-      .where('poi.is_contract', 'F')
+      .where('poi.is_contract', 'N')
       .orderBy('poi.purchasing_id', 'DESC');
   }
 
@@ -185,7 +185,7 @@ export class PurchasingOrderModel {
     return knex(this.tableName)
       .innerJoin('pc_purchasing', 'pc_purchasing_order.purchasing_id', 'pc_purchasing.purchasing_id')
       .leftJoin('mm_labelers', 'pc_purchasing_order.labeler_id', 'mm_labelers.labeler_id')
-      .where('pc_purchasing_order.is_contract', 'F')
+      .where('pc_purchasing_order.is_contract', 'N')
       .where('pc_purchasing_order.requisition_id', requisitionID);
   }
 
@@ -195,7 +195,7 @@ export class PurchasingOrderModel {
       .innerJoin('pc_purchasing', 'pc_purchasing_order.purchasing_id', 'pc_purchasing.purchasing_id')
       .innerJoin('mm_labelers', 'pc_purchasing_order.labeler_id', 'mm_labelers.labeler_id')
       .leftJoin('pc_committee', 'pc_purchasing_order.verify_committee_id', 'pc_committee.committee_id')
-      .where('pc_purchasing_order.is_contract', 'T')
+      .where('pc_purchasing_order.is_contract', 'Y')
       .where('pc_purchasing.purchasing_status', status);
   }
 
@@ -228,7 +228,7 @@ export class PurchasingOrderModel {
           pc_purchasing_order po
         INNER JOIN pc_purchasing pc ON pc.purchasing_id = po.purchasing_id
         LEFT JOIN pc_committee c on c.committee_id = pc.verify_committee_id        
-        WHERE po.is_contract = 'F'
+        WHERE po.is_contract = 'N'
          ORDER BY pc.purchasing_id DESC
     `);
   }

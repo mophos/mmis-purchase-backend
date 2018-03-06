@@ -633,7 +633,7 @@ router.put('/update-purchase/status', async (req, res, next) => {
             await model.update(db, v.purchase_order_id, {
               cancel_comment: v.cancel_comment,
               cancel_date: moment().format('YYYY-MM-DD HH:mm:ss'),
-              is_cancel: 1
+              is_cancel: 'Y'
             });
 
             let statusLog = {
@@ -645,13 +645,14 @@ router.put('/update-purchase/status', async (req, res, next) => {
             };
 
             await model.updateStatusLog(db, statusLog);
+            await bgModel.cancelTransaction(db, v.purchase_order_id);
           }
 
           if (v.purchase_order_status === 'PREPARED') {
             await model.update(db, v.purchase_order_id, {
               cancel_comment: null,
               cancel_date: null,
-              is_cancel: 0,
+              is_cancel: 'N',
               purchase_order_status: v.purchase_order_status,
             });
 

@@ -570,6 +570,7 @@ export class PurchasingOrderReportModel {
     getPosition(knex: Knex, id: any) {
         return knex('um_people as up')
             .leftJoin('um_positions as upp', 'upp.position_id', 'up.position_id')
+            .leftJoin('um_titles as ut','ut.title_id','up.title_id')
             .where('up.people_id', id)
     }
     purchasing3(knex: Knex, purchaOrderId) {

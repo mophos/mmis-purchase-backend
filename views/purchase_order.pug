@@ -15,7 +15,11 @@ html
     - for(var a=0;a<num;a++)
         |
         br
-        div(style='float: left;') เลขที่ #{array[a][0].purchase_order_number}
+        div(style='float: left;') เลขที่&nbsp;
+        if(array[a][0].purchase_order_book_number)
+          | #{array[a][0].purchase_order_book_number}
+        else
+          | #{array[a][0].purchase_order_number}
         br
         .center
           .bold #{hospname}

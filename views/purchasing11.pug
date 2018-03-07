@@ -19,7 +19,7 @@ html
     center
       table(style='width:100%;')
         tr
-          td(width='180') ที่ #{at_name}
+          td(width='180') ที่ #{poNumber}
           td.center(colspan='3')
             img(src=APIURL+'krut.png', height='130px')
           td(width='200') ศาลากลางจังหวัดสิงห์บุรี
@@ -36,7 +36,7 @@ html
     .fontspace
     .enter &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2. สำเนาใบอนุมัติสั่งซื้อยา&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; จำนวน 1 ฉบับ
     .fontspace
-    .enter &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ด้วยจังหวัดสิงห์บุรี มีความประสงค์จะสั่งซื้อยา จากองค์การเภสัชกรรม เพื่อใช้ในราชการ&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; โรงพยาบาลสิงห์บุรี จำนวน #{countp} รายการ เป็นเงิน #{total} บาท (#{bahtText}) สำเนาใบอนุมัติสั่งซื้อยาและใบสั่งซื้อยาพร้อมเงื่อนไขในการสั่งซื้อที่แนบมาพร้อมนี้
+    .enter(style="line-height: 1.2em;") &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ด้วยจังหวัดสิงห์บุรี มีความประสงค์จะสั่งซื้อยา จากองค์การเภสัชกรรม เพื่อใช้ในราชการ&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; โรงพยาบาลสิงห์บุรี จำนวน #{countp} รายการ เป็นเงิน #{total} บาท (#{bahtText}) สำเนาใบอนุมัติสั่งซื้อยาและใบสั่งซื้อยาพร้อมเงื่อนไขในการสั่งซื้อที่แนบมาพร้อมนี้
     .fontspace
     .enter &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;จึงเรียนมาเพื่อโปรดจัดส่งยา ให้แก่โรงพยาบาลสิงห์บุรี ตามกำหนดเวลาและสถานที่ ที่ระบุในใบสั่งซื้อด้วย จักเป็นพระคุณ
     div(style='margin-left: 40%; width: 40%; text-align:center;')
@@ -45,11 +45,11 @@ html
       br
       br
       br
-      | (#{poraor.title}#{poraor.fname} #{poraor.lname})
+      | (#{poraor})
       br
-      | ผู้อำนวยการโรงพยาบาลสิงห์บุรี
+      | ผู้อำนวยการ#{hospitalName}
       br
-      | ปฏิบัติราชการแทนผู้ว่าราชการจังหวัดสิงห์บุรี
+      | 
     .enter 
     p(style='text-decoration:underline; font-size: 14pt;') เงื่อนไขในการสั่งซื้อ
     div(style='font-size: 14pt;')
@@ -101,30 +101,33 @@ html
     table
       tr
         td.bold(style='font-size: 20pt; width:5px;') ที่
-        td(style='border-bottom: 1px dotted black;').left &nbsp;สห 0032.238/ 
+        td(style='border-bottom: 1px dotted black;').left &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; #{poNumber} 
         td.bold(style='font-size: 20pt; width:40px;') วันที่
-        td(style='border-bottom: 1px dotted black;').left #{dDate} 
+        td(style='border-bottom: 1px dotted black;').left &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#{dDate} 
     table
       tr
         td.bold(style='font-size: 20pt; width:30px;') เรื่อง
-        td(style='border-bottom: 1px dotted black;').left &nbsp;ขออนุมัติซื้อยาด้วย#{budget[0].bgtype_name} ประจำปีงบประมาณ #{budget[0].bg_year}
+        td(style='border-bottom: 1px dotted black;').left &nbsp;ขออนุมัติซื้อยาใบสั่งซื้อเลขที่ #{poNumber} ด้วย#{budget[0].bgtype_name} ประจำปีงบประมาณ #{budget[0].bg_year}
     br
     .enter เรียน ผู้ว่าราชการจังหวัดสิงห์บุรี
     .enter
     .fontspace
-    | ด้วยโรงพยาบาลสิงห์บุรี มีความประสงค์จะสั่งซื้อยา จากองค์การเภสัชกรรม ตามแบบ บส.09/1 ที่แนบมาพร้อมนี้ เพื่อใช้ในการรักษาพยาบาล จำนวน #{countp} รายการ เป็นเงิน #{total} บาท (#{bahtText}) โดยใช้#{budget[0].bgtype_name} ประจำปีงบประมาณ #{budget[0].bg_year}
+    p(style="line-height: 1.2em;") ด้วยโรงพยาบาลสิงห์บุรี มีความประสงค์จะสั่งซื้อยา จากองค์การเภสัชกรรม ตามแบบ บส.09/1 ที่แนบมาพร้อมนี้ เพื่อใช้ในการรักษาพยาบาล จำนวน #{countp} รายการ เป็นเงิน #{total} บาท (#{bahtText}) โดยใช้#{budget[0].bgtype_name} ประจำปีงบประมาณ #{budget[0].bg_year}
     .enter
     .fontspace
-    .conleft จึงเรียนมาเพื่อขออนุมัติซื้อยาดังกล่าว &nbsp;
+    .conleft(style="line-height: 1.2em;") จึงเรียนมาเพื่อขออนุมัติซื้อยาดังกล่าว &nbsp;
     if(type == 8 || type == 9 || type == 10)
-      .conleft ตามพระราชบัญญัติการจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ.2560 
+      .conleft(style="line-height: 1.2em;") ตามพระราชบัญญัติการจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ.2560 
     if(type == 8) 
-      .conleft &nbsp;มาตรา 56 วรรคหนึ่ง (2)(ข) 
+      .conleft(style="line-height: 1.2em;") &nbsp;มาตรา 56 วรรคหนึ่ง (2)(ข) 
     if(type == 9) 
-      .conleft &nbsp;มาตรา 56 วรรคหนึ่ง (2)(ค) 
+      .conleft(style="line-height: 1.2em;") &nbsp;มาตรา 56 วรรคหนึ่ง (2)(ค) 
     if(type == 10) 
-      .conleft &nbsp;มาตรา 56 วรรคหนึ่ง (2)(ซ)
-    .conleft ระเบียบกระทรวงการคลังและกฎกรระทรวงว่าด้วยการจัดซื้อจัดจ้างภาครัฐจากองค์การเภสัชกรรม อนึ่งในการจัดซื้อในครั้งนี้ใคร่ขอเสนอแต่งตั้งให้ผู้มีรายนามต่อไปนี้ เป็นกรรมการตรวจรับของ คือ
+      .conleft(style="line-height: 1.2em;") &nbsp;มาตรา 56 วรรคหนึ่ง (2)(ซ)
+    .conleft(style="line-height: 1.2em;") ระเบียบกระทรวงการคลังและกฎกรระทรวงว่าด้วยการจัดซื้อจัดจ้างภาครัฐจากองค์การเภสัชกรรม อนึ่งในการจัดซื้อในครั้งนี้ใคร่ขอเสนอแต่งตั้งให้ผู้มีรายนามต่อไปนี้ เป็นกรรมการตรวจรับของ คือ
+    br
+    br
+    br
     br
     br
     -var b=0
@@ -140,29 +143,30 @@ html
     br
     br
     br
-    div(style='margin-left: 40%; width: 40%; text-align:center;')
+    div(style='margin-left: 40%; width: 60%; text-align:center;')
       | ( #{purchasingChief.buyer_fullname} )
       br
-      | #{purchasingChief.buyer_position}
+      | #{bposition.position_name}
       br
       | เจ้าหน้าที่ 
     br
     br
     br
-    div(style='margin-left: 40%; width: 40%; text-align:center;')
+    div(style='margin-left: 40%; width: 60%; text-align:center;')
       | ( #{purchasingChief.chief_fullname} )
       br
-      | #{purchasingChief.chief_position}
+      | #{cposition.position_name}
       br
       | หัวหน้าเจ้าหน้าที่ 
     br
-    .bold(style='margin-left: 57%;') อนุมัติ
+    .bold(style='margin-left: 68.5%;') อนุมัติ
     br
     br
     br
-    div(style='margin-left: 40%; width: 43%; text-align:center;')
-      | ( #{poraor.title}#{poraor.fname} #{poraor.lname} )
+    div(style='margin-left: 41%; width: 60%; text-align:center;')
       br
-      | ผู้อำนวยการโรงพยาบาลสิงห์บุรี
+      | (#{poraor})
       br
-      | ปฏิบัติราชการแทนผู้ว่าราชการจังหวัดสิงห์บุรี
+      | ผู้อำนวยการ#{hospitalName}
+      br
+      |

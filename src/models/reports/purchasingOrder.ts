@@ -547,8 +547,14 @@ export class PurchasingOrderReportModel {
             .where('upo.isactive', '1')
     }
     purchasing2Chief(knex: Knex, purchaOrderId) {
-        return knex.select('po.chief_id', 'po.buyer_id', 'po.buyer_fullname', 'po.buyer_position', 'po.chief_fullname', 'po.chief_position')
+        return knex.select('po.chief_id', 'po.buyer_id', knex.raw('concat(tiy.title_name,pey.fname," ",pey.lname) as buyer_fullname'), 'psy.position_name as buyer_position', knex.raw('concat(tic.title_name,pec.fname," ",pec.lname) as chief_fullname'), 'psc.position_name as chief_position')
             .from('pc_purchasing_order as po')
+            .leftJoin('um_people as pey','po.buyer_id','pey.people_id')
+            .leftJoin('um_titles as tiy','pey.title_id','tiy.title_id')
+            .leftJoin('um_positions as psy','psy.position_id','pey.position_id')
+            .leftJoin('um_people as pec','po.chief_id','pec.people_id')
+            .leftJoin('um_titles as tic','pec.title_id','tic.title_id')
+            .leftJoin('um_positions as psc','psc.position_id','pec.position_id')
             .where('po.purchase_order_id', purchaOrderId)
     }
     getPosition(knex: Knex, id: any) {

@@ -90,7 +90,7 @@ export class PurchasingOrderReportModel {
         JOIN mm_products vp ON vp.product_id=pci.product_id
         LEFT JOIN mm_unit_generics mup ON pci.unit_generic_id=mup.unit_generic_id
         LEFT JOIN mm_units mu ON mu.unit_id=mup.to_unit_id
-        JOIN l_bid_type lb ON lb.bid_id=pcpo.purchase_type
+        JOIN l_bid_type lb ON lb.bid_id=pcpo.purchase_type_id
         WHERE pcpo.purchase_order_id = ?`, [purchaOrderId]);
     }
     tPurchase(knex: Knex, createDate) {
@@ -189,7 +189,7 @@ export class PurchasingOrderReportModel {
     FROM
     pc_purchasing_order po
     JOIN pc_purchasing_order_item poi ON poi.purchase_order_id=po.purchase_order_id
-    JOIN cm_bid_process bd ON bd.id=po.purchase_method
+    JOIN cm_bid_process bd ON bd.id=po.purchase_method_id
     WHERE po.order_date BETWEEN ? AND ?
     GROUP BY bd.name ORDER BY bd.id`, [startdate, enddate]);
     }
@@ -583,7 +583,7 @@ export class PurchasingOrderReportModel {
         LEFT JOIN mm_units u ON ug.to_unit_id=u.unit_id
         LEFT JOIN wm_products wp ON wp.product_id=poi.product_id
         LEFT JOIN mm_labelers ml ON ml.labeler_id=po.labeler_id
-        LEFT JOIN l_bid_process cbp ON cbp.id=po.purchase_method
+        LEFT JOIN l_bid_process cbp ON cbp.id=po.purchase_method_id
         WHERE po.purchase_order_id=?
         GROUP BY g.generic_id,poi.purchase_order_item_id`;
         return knex.raw(sql, purchaOrderId);
@@ -640,7 +640,7 @@ export class PurchasingOrderReportModel {
         ml.nin,
         po.purchase_order_id,
         po.purchase_order_number,
-        po.purchase_method,
+        po.purchase_method_id,
         po.purchase_order_book_number,
         cbp. NAME as bname,
         cbt.bid_name,
@@ -665,8 +665,8 @@ export class PurchasingOrderReportModel {
        LEFT JOIN mm_units mu ON mu.unit_id = mup.from_unit_id
        LEFT JOIN wm_products wp ON wp.product_id = poi.product_id
        LEFT JOIN mm_labelers ml ON ml.labeler_id = po.labeler_id
-       LEFT JOIN l_bid_process cbp ON cbp.id = po.purchase_method
-       LEFT JOIN l_bid_type cbt ON cbt.bid_id = po.purchase_type
+       LEFT JOIN l_bid_process cbp ON cbp.id = po.purchase_method_id
+       LEFT JOIN l_bid_type cbt ON cbt.bid_id = po.purchase_type_id
        LEFT JOIN mm_products mp on mp.generic_id = mg.generic_id
        WHERE po.purchase_order_id=? AND mg.generic_id IS NOT NULL
        GROUP BY
@@ -762,7 +762,7 @@ export class PurchasingOrderReportModel {
     pcBudget(knex: Knex, purchaOrderId) {
         return knex('pc_budget_transection')
             .where('purchase_order_id', [purchaOrderId])
-            .andWhere('type', 'spend')
+            .andWhere('transaction_status', 'spend')
     }
 
     getProductHistory(knex: Knex, generic_id: string) {
@@ -793,9 +793,10 @@ export class PurchasingOrderReportModel {
         return (knex.raw(sql))
       }
     allAmountTransaction(knex: Knex, bgdetail_id: any, budgetYear: any) {
-        return knex('pc_budget_transection')
-            .where('bgdetail_id', [bgdetail_id])
-            .andWhere('budget_year', [budgetYear])
-            .andWhere('type', 'spend')
+        return knex('pc_budget_transection as pbt')
+            .where('pbt.bgdetail_id', [bgdetail_id])
+            .leftJoin('bm_budget_detail as bbd','bbd.bgdetail_id','pbt.bgdetail_id')
+            .andWhere('bbd.bg_year', [budgetYear])
+            .andWhere('pbt.transaction_status', 'spend')
     }
 }

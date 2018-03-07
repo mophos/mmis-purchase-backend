@@ -870,4 +870,44 @@ router.get('/period/status', (async (req, res, next) => {
     db.destroy();
   }
 }));
+
+router.get('/getGeneric', async (req, res, next) => {
+  let db = req.db;
+  let generic_type_id = req.decoded.generic_type_id
+  try {
+    let rs: any = await model.getGeneric(db, generic_type_id);
+    res.send({ ok: true, rows: rs[0] });
+  } catch (error) {
+    res.send({ ok: false, error: error.message });
+  } finally {
+    db.destroy();
+  }
+});
+
+router.get('/getProductHistory/:generic_id', async (req, res, next) => {
+  let generic_id = req.params.generic_id
+  let db = req.db;
+  try {
+    let rs: any = await model.getProductHistory(db, generic_id);
+    res.send({ ok: true, rows: rs[0] });
+  } catch (error) {
+    res.send({ ok: false, error: error.message });
+  } finally {
+    db.destroy();
+  }
+});
+
+router.get('/searchGenericHistory', async (req, res, next) => {
+  let key = req.query.key
+  let db = req.db;
+  try {
+    let rs: any = await model.searchGenericHistory(db, key);
+    res.send({ ok: true, rows: rs[0] });
+  } catch (error) {
+    res.send({ ok: false, error: error.message });
+  } finally {
+    db.destroy();
+  }
+});
+
 export default router;

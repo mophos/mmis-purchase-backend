@@ -1349,6 +1349,8 @@ router.post('/report/purchasingorder', wrap(async (req, res, next) => {
     let getchief = await model.purchasing2Chief(db, purchasOrderId[i]);
     getchief = getchief[0].chief_fullname;
     array1.push(getchief);
+    console.log(getchief);
+    
   }
   res.render('porders', {
     array: array,

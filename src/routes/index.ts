@@ -1603,7 +1603,7 @@ router.get('/report/po/egp/singburi', wrap(async (req, res, next) => {
     value.amount = model.comma(value.amount)
     value.order_amt = model.comma(value.order_amt)
   });
-  let bidname = await model.bidName(db, purchasing[0].purchase_method)
+  let bidname = await model.bidName(db, purchasing[0].purchase_method_id)
   purchasing.forEach(value => {
     totalprice += value.total_price
     if (value.qty == null) value.qty = 0;

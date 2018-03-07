@@ -1,0 +1,132 @@
+//- include css.pug
+style(type='text/css').
+  body{
+    font-family:'THSarabunIT';
+  }
+style(type='text/css' media='print').
+   @page{
+   margin-top: 1cm;
+   margin-left: 2cm;
+   margin-right: 1.5cm;
+  }
+doctype html
+html
+  head
+    meta(charset="utf-8")
+    title report
+  body
+    button.btn.btn-sm.btn-success.btnprint(onclick='window.print()') Print
+    table(style='width:100%;')
+        tr
+          td.center
+            img(src=APIURL+'krut.png', height='94.8px')
+    br
+    .center ใบสั่งซื้อ/สั่งจ้าง
+    br
+    table(style='width:100%; font-size: 15pt')
+        tr
+            td.left(style='width:50%;') ผู้ขาย/ผู้รับจ้าง #{purchasing[0].labeler_name}
+            td.left(style='width:50%;') ใบสั่งซื้อ/สั่งจ้างเลขที่ 
+              if(purchasing[0].purchase_order_book_number)
+                | #{purchasing[0].purchase_order_book_number}
+              else
+                | #{purchasing[0].purchase_order_number}
+        tr
+            td.left
+            //- td.left ที่อยู่ #{purchasing[0].address}
+            td.left วันที่ 
+        tr
+            td.left 
+            td.left ส่วนราชการ#{hospitalName}
+        tr
+            td.left
+            //- td.left โทรศัพท์ #{purchasing[0].phone}
+            td.left ที่อยู่ #{hosaddress}
+        tr
+            td.left 
+            //- td.left เลขประจำตัวผู้เสียภาษี #{purchasing[0].nin}
+            //- td.left จังหวัด#{province}
+            td.left
+        tr
+            td.left 
+            //- td.left เลขที่บัญชีเงินฝากธนาคาร
+            td.left โทรศัพท์ #{hostel}
+        tr
+            td.left 
+            //- td.left ชื่อบัญชี
+            td.left
+        tr
+            td.left 
+            //- td.left ธนาคาร
+            td.left
+    br
+    .fontspace
+    label(style="font-size: 15pt;") ตามที่ บริษัท ได้เสนอราคาไว้ต่อ#{hospitalName} ซึ่งได้รับราคาและตกลงซื้อ/จ้าง ตามรายการต่อไปนี้
+    table(style="font-size: 15pt;")
+        thead
+          tr(style="font-size: 15pt;")
+            th(width='5%')(style="font-size: 15pt;") ลำดับ&nbsp;
+            th.center(width='50%')(style="font-size: 15pt;") รายการ
+            th(width='15%')(style="font-size: 15pt;") จำนวนสั่งซื้อ
+            th.right(width='15%')(style="font-size: 15pt;") ราคาต่อหน่วย
+            th.right(width='15%')(style="font-size: 15pt;") จำนวนเงิน
+        tbody
+          - var y=0
+            for b in purchasing
+              - y++
+                tr
+                  td.center #{y}
+                  td.left 
+                    | #{b.generic_name} 
+                    br
+                    | ชื่อการค้า :  #{b.product_name}
+                  td.center #{b.qtyPoi} x #{b.conversion} #{b.primary_unit}
+                  td.right #{b.unit_price}
+                  td.right #{b.total_price}
+          -var count=12-y
+          - for (var i = y; i < count; ++i) {
+            tr
+              td(colspan='5') &nbsp;
+          - }
+          br
+    .left(style='font-size: 12pt;')
+      | การซื้อ/สั่งจ้าง อยู่ภายใต้เงื่อนไขต่อไปนี้
+      br
+      | 1.กำหนดส่งมอบภายใน #{purchasing[0].delivery} วัน นับถัดจากวันที่ผู้รับจ้างได้รับใบสั่งซื้อ
+      br
+      | 2.ครบกำหนดส่งมอบวันที่
+      br
+      | 3.สถานที่ส่งมอบ
+      br
+      | 4.ระยะเวลารับประกัน 1 ปี
+      br
+      | 5.สงวนสิทธิ์ค่าปรับกรณีส่งมอบเกินกำหนด โดยคิดค่าปรับเป็นรายวันในอัตราร้อยละ 0.2 ของราคาสิ่งของที่ยังไม่ได้รับมอบแต่จะต้องไม่ต่ำกว่าวันละ 100.00 บาท
+      br
+      | 6.ส่วนราชการขอสงวนสิทธิ์ที่จะไม่รับมอบถ้าปรากฎว่าสินค้านั้นมีลักษณะไม่ตรงตามรายการที่ระบุไว้ในใบสั่งซื้อ กรณีนี้ผู้รับจ้างจะต้องดำเนินการเปลี่ยนใหม่ให้ถูกต้องตามใบสั่งซื้อทุกประการ
+      br
+      | 7.ผู้กรณีงานจ้าง ผู้จ้างจะต้องไม่เอางานทั้งหมดหรือแต่บางส่วนแห่งสัญญานี้ไปจ้างช่วงอีกทอดนึง เว้นแต่การจ้างช่วงงานแต่บางส่วนที่ได้รับอนุญาติเป็นหนังสือจากผู้ว่าจ้างแล้ว การที่ผู้ว่าจ้างได้อนุญาติให้จ้างช่วงงานแต่บางส่วนดังกล่าวนั้น ไม่เป็นเหตุให้ผู้รับจ้างหลุดพ้นจากความรับผิดหรือพ้นพันธะหน้าที่ตามสัญญานี้ และผู้รับจ้างจะยังคงต้องรับผิดและความประมาทเลินเล่อของผู้รับจ้างช่วง หรือของตัวแทน
+  br
+  br
+  br
+  table.table( style='float:right; width:50%; font-size: 15pt;')
+      tr
+        td.center  ลงชื่อ......................................................ผู้สั่งซื้อ
+      tr
+        td.center
+          |(#{purchasingChief.chief_fullname})
+      tr
+        td.center
+          |#{cposition.position_name}   
+      tr
+        td.center
+          |หัวหน้าเจ้าหน้าที่   
+      tr
+        td(height='40px')
+      tr
+        td.center  ลงชื่อ......................................................ผู้ขาย
+      tr
+        td.center  (......................................................)
+      tr
+        td.center  วันที่รับใบสั่งซื้อ_____/_________/_____
+      tr
+        td.center 

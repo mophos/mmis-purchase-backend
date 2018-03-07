@@ -73,11 +73,14 @@ export class PurchasingOrderReportModel {
         ml.labeler_name,
         ml.address,
         pcpo.order_date,
+        chief_id,
+        buyer_id,
         buyer_fullname,
         buyer_position,
         pcpo.created_date,
         pcpo.delivery,
         pcpo.purchase_order_number,
+        pcpo.purchase_order_book_number,
             lb.bid_name
         FROM
         pc_purchasing_order pcpo
@@ -116,7 +119,7 @@ export class PurchasingOrderReportModel {
     WHERE
     po.created_date LIKE ?`, [createDate]);
     }
-    LsPurchase(knex: Knex, startdate: any, enddate: any, genericTypeId:any) {
+    LsPurchase(knex: Knex, startdate: any, enddate: any, genericTypeId: any) {
         let sql = `SELECT
         g.generic_name,
         u.unit_name,
@@ -141,13 +144,13 @@ export class PurchasingOrderReportModel {
     WHERE
         po.order_date BETWEEN ? 
         AND ? `;
-    if(genericTypeId){
-        sql += ` AND g.generic_type_id = '${genericTypeId}'`
-    }
+        if (genericTypeId) {
+            sql += ` AND g.generic_type_id = '${genericTypeId}'`
+        }
         sql += ` GROUP BY
         g.generic_id `
         console.log(sql);
-        return knex.raw(sql,[startdate, enddate]);
+        return knex.raw(sql, [startdate, enddate]);
     }
     lPurchase(knex: Knex, startdate: any, enddate: any) {
         return knex.raw(`SELECT
@@ -210,29 +213,68 @@ export class PurchasingOrderReportModel {
     }
     pPurchasing(knex: Knex, startdate, enddate) {
         let _query = '%' + startdate + '%'
-        console.log('+++++++++++++++++++++++++++++', _query)
         return knex.raw(`SELECT
+        mp.product_name,
+        uc.qty AS conversion,
+        u.unit_name AS primary_unit,
         poi.purchase_order_id,
         po.purchase_order_number,
-        po.order_date ,
-        g.generic_name ,
-        uc.qty*poi.qty as qty ,
-        u.unit_name ,
-        ROUND(poi.unit_price, 2) AS unit_price ,
-        ROUND(poi.total_price, 2) AS total_price ,
-        b.bgtype_name ,
+        po.purchase_order_book_number,
+        po.order_date,
+        g.generic_name,
+        poi.qty,
+        uu.unit_name,
+        ROUND( poi.unit_price, 2 ) AS unit_price,
+        ROUND( poi.total_price, 2 ) AS total_price,
         l.labeler_name 
-        FROM
-        pc_purchasing_order po 
-        JOIN pc_purchasing_order_item poi ON poi.purchase_order_id = po.purchase_order_id 
-        JOIN mm_labelers l ON po.labeler_id = l.labeler_id 
-        JOIN mm_generics g ON poi.generic_id = g.generic_id 
-        LEFT JOIN bm_bgtype b ON b.bgtype_id = po.budgettype_id 
-        LEFT JOIN mm_unit_generics uc ON uc.generic_id = poi.generic_id
+    FROM
+        pc_purchasing_order po
+        JOIN pc_purchasing_order_item poi ON poi.purchase_order_id = po.purchase_order_id
+        JOIN mm_products mp ON mp.product_id = poi.product_id
+        JOIN mm_labelers l ON po.labeler_id = l.labeler_id
+        JOIN mm_generics g ON poi.generic_id = g.generic_id
+        LEFT JOIN bm_bgtype b ON b.bgtype_id = po.budgettype_id
+        LEFT JOIN mm_unit_generics uc ON uc.unit_generic_id = poi.unit_generic_id
         LEFT JOIN mm_units u ON u.unit_id = uc.to_unit_id 
-        WHERE
-        po.order_date like ?  
-        order by po.purchase_order_number`, [_query]);
+        LEFT JOIN mm_units uu ON uu.unit_id = uc.from_unit_id 
+    WHERE
+        po.order_date LIKE ? 
+    GROUP BY
+        poi.product_id,purchase_order_id 
+    ORDER BY
+        po.purchase_order_number`, [_query]);
+    }
+
+    Purchasing(knex: Knex, startdate: any, enddate: any, type: any, status: any) {
+        status = `%` + status + `%`;
+        return knex.raw(`SELECT
+        uc.qty AS conversion,
+        u.unit_name AS primary_unit,
+        poi.purchase_order_id,
+        po.purchase_order_number,
+        po.purchase_order_book_number,
+        po.order_date,
+        g.generic_name,
+        uc.qty * poi.qty AS qty,
+        muu.unit_name,
+        ROUND( poi.unit_price, 2 ) AS unit_price,
+        ROUND( poi.total_price, 2 ) AS total_price,
+        l.labeler_name 
+    FROM
+        pc_purchasing_order po
+        JOIN pc_purchasing_order_item poi ON poi.purchase_order_id = po.purchase_order_id
+        JOIN mm_labelers l ON po.labeler_id = l.labeler_id
+        JOIN mm_generics g ON poi.generic_id = g.generic_id
+        LEFT JOIN bm_bgtype b ON b.bgtype_id = po.budgettype_id
+        LEFT JOIN mm_unit_generics uc ON uc.unit_generic_id = poi.unit_generic_id
+        LEFT JOIN mm_units u ON u.unit_id = uc.to_unit_id
+        LEFT JOIN mm_units muu ON u.unit_id = uc.from_unit_id	
+    WHERE
+        po.order_date BETWEEN ? and ? and budget_detail_id = ? and purchase_order_status LIKE ?
+    GROUP BY
+        poi.product_id,purchase_order_id 
+    ORDER BY
+        po.purchase_order_number`, [startdate, enddate, type, status]);
     }
     name(knex: Knex, purchaRequisId) {
         let sql = `SELECT
@@ -253,6 +295,11 @@ export class PurchasingOrderReportModel {
         GROUP BY pcp.people_id
         ORDER BY pcp.position_name DESC`;
         return knex.raw(sql, purchaRequisId);
+    }
+
+    async bidName(knex: Knex, id: any) {
+        return knex('l_bid_process')
+            .where('id', id)
     }
 
     async purchasing(knex: Knex, purchaOrderId) {
@@ -462,7 +509,7 @@ export class PurchasingOrderReportModel {
         WHERE
             po.purchase_order_id = ?
         ORDER BY
-        pcp.committee_id`;
+        pcp.committee_people_id`;
         return knex.raw(sql, purchaOrderId);
     }
 
@@ -512,7 +559,7 @@ export class PurchasingOrderReportModel {
     }
     getPosition(knex: Knex, id: any) {
         return knex('um_people as up')
-            .join('um_positions as upp', 'upp.position_id', 'up.position_id')
+            .leftJoin('um_positions as upp', 'upp.position_id', 'up.position_id')
             .where('up.people_id', id)
     }
     purchasing3(knex: Knex, purchaOrderId) {
@@ -583,13 +630,18 @@ export class PurchasingOrderReportModel {
     WHERE po.created_date BETWEEN ? AND ? ORDER BY po.created_date`, [startdate, enddate]);
     }
     purchasing10(knex: Knex, purchaOrderId) {
-        let sql = `SELECT 
+        let sql = `SELECT
+        mp.product_name,
+        mup.qty as conversion, 
+        muu.unit_name as primary_unit,
         po.delivery,
         ml.address,
         ml.phone,
         ml.nin,
         po.purchase_order_id,
         po.purchase_order_number,
+        po.purchase_method,
+        po.purchase_order_book_number,
         cbp. NAME as bname,
         cbt.bid_name,
         cbt.bid_id,
@@ -609,11 +661,13 @@ export class PurchasingOrderReportModel {
        LEFT JOIN pc_purchasing_order_item poi ON poi.purchase_order_id = po.purchase_order_id
        LEFT JOIN mm_generics mg ON poi.generic_id = mg.generic_id
        LEFT JOIN mm_unit_generics mup ON mup.unit_generic_id = poi.unit_generic_id
+       LEFT JOIN mm_units muu on muu.unit_id = mg.primary_unit_id
        LEFT JOIN mm_units mu ON mu.unit_id = mup.from_unit_id
        LEFT JOIN wm_products wp ON wp.product_id = poi.product_id
        LEFT JOIN mm_labelers ml ON ml.labeler_id = po.labeler_id
        LEFT JOIN l_bid_process cbp ON cbp.id = po.purchase_method
        LEFT JOIN l_bid_type cbt ON cbt.bid_id = po.purchase_type
+       LEFT JOIN mm_products mp on mp.generic_id = mg.generic_id
        WHERE po.purchase_order_id=? AND mg.generic_id IS NOT NULL
        GROUP BY
            poi.generic_id`
@@ -704,9 +758,44 @@ export class PurchasingOrderReportModel {
         `
         return knex.raw(sql, [smonth, emonth])
     }
+
     pcBudget(knex: Knex, purchaOrderId) {
         return knex('pc_budget_transection')
             .where('purchase_order_id', [purchaOrderId])
+            .andWhere('type', 'spend')
+    }
+
+    getProductHistory(knex: Knex, generic_id: string) {
+        let sql = `SELECT
+        po.purchase_order_number,
+        mp.working_code AS trading_code,
+        mp.product_name,
+        pp.qty,
+        mu.unit_name AS large_unit_name,
+        mug.qty AS conversion_qty,
+        mmu.unit_name AS small_large_unit_name,
+        pp.unit_price,
+        pp.total_price,
+        po.contract_id
+      FROM
+        mm_generics AS mg
+      JOIN pc_purchasing_order_item AS pp ON mg.generic_id = pp.generic_id
+      JOIN pc_purchasing_order AS po ON pp.purchase_order_id = po.purchase_order_id
+      JOIN mm_products AS mp ON pp.product_id = mp.product_id
+      JOIN mm_unit_generics AS mug ON pp.unit_generic_id = mug.unit_generic_id
+      JOIN mm_units AS mu ON mug.from_unit_id = mu.unit_id
+      JOIN mm_units AS mmu ON mug.to_unit_id = mmu.unit_id
+      WHERE
+        pp.generic_id = '${generic_id}'
+      AND
+        pp.giveaway = 'N'
+        `
+        return (knex.raw(sql))
+      }
+    allAmountTransaction(knex: Knex, bgdetail_id: any, budgetYear: any) {
+        return knex('pc_budget_transection')
+            .where('bgdetail_id', [bgdetail_id])
+            .andWhere('budget_year', [budgetYear])
             .andWhere('type', 'spend')
     }
 }

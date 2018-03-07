@@ -13,7 +13,9 @@ html
       - var y=0
             for b in purchasing
               - y++
-              | &nbsp;#{b.generic_name}&nbsp; 
+              | &nbsp;#{b.generic_name}
+              if(y<countp)
+                | , 
       | ) โดย#{bidname}
     br
     .center
@@ -24,14 +26,18 @@ html
     - var y=0
           for b in purchasing
             - y++
-            | &nbsp;#{b.generic_name}&nbsp; 
+            | &nbsp;#{b.generic_name}
+            if(y<countp)
+              | , 
     | ) โดย#{bidname} นั้น
     br
     .fontspace
     - var y=0
           for b in purchasing
             - y++
-             | #{b.generic_name}&nbsp;#{b.qty} #{unit_name} จำนวน #{b.qtyPoi} #{unit_name} ผู้ได้รับคัดเลือกได้แก่ บริษัท #{lname} (ส่งออก,ขายส่ง,ขายปลีก,ให้บริการ,ผู้ผลิต) โดยเสนอราคา เป็นเงินทั้งสิ้น #{b.total_price} บาท (#{bahtText}) รวมภาษีมูลค่าเพิ่มและภาษีอื่น ค่าขนส่ง ค่าจดทะเบียน และค่าใช้จ่ายอื่นๆทั้งปวง
+             | #{b.generic_name}&nbsp; จำนวน #{b.qtyPoi} x #{b.conversion} #{b.primary_unit} ผู้ได้รับคัดเลือกได้แก่ บริษัท #{lname} (ส่งออก,ขายส่ง,ขายปลีก,ให้บริการ,ผู้ผลิต) โดยเสนอราคา เป็นเงินทั้งสิ้น #{b.total_price} บาท (#{bahtText}) รวมภาษีมูลค่าเพิ่มและภาษีอื่น ค่าขนส่ง ค่าจดทะเบียน และค่าใช้จ่ายอื่นๆทั้งปวง
+            br
+            .fontspace
     br
     br
     .right ประกาศ ณ วันที่ #{nDate}

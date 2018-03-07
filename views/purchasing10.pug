@@ -23,7 +23,11 @@ html
       label.h3(style='margin-top: 5px;')  &nbsp;#{hospitalName}
     p.h2(style='width:50%;float: left;')
       | ที่
-      label.h3(style='margin-top: 5px;')  &nbsp;#{purchasing[0].purchase_order_number}
+      label.h3(style='margin-top: 5px;') 
+        if(purchasing[0].purchase_order_book_number)
+          | &nbsp;#{purchasing[0].purchase_order_book_number}
+        else
+          | &nbsp;#{purchasing[0].purchase_order_number}
     b.h2(style='width:50%;float: left;')
       | วันที่ 
       label.h3 &nbsp;#{nDate}
@@ -68,9 +72,9 @@ html
               - y++
                 tr
                   td.center(style='border: 1px solid black;') #{y}
-                  td(style='border: 1px solid black;font-family:THSarabunNew;') #{b.generic_id} : #{b.generic_name}
-                  td.center(style='border: 1px solid black;') #{b.qty} #{b.unit_name}
-                  td.center(style='border: 1px solid black;') #{b.qtyPoi} #{b.unit_name}
+                  td(style='border: 1px solid black;font-family:THSarabunNew; font-size:11pt;') #{b.generic_id} : #{b.generic_name}
+                  td.center(style='border: 1px solid black;') #{b.qty} x #{b.conversion} #{b.primary_unit}
+                  td.center(style='border: 1px solid black;') #{b.qtyPoi} x #{b.conversion} #{b.primary_unit}
                   td.right(style='border: 1px solid black;') #{b.unit_price}
                   td.right(style='border: 1px solid black;') #{b.total_price}
                   td.right(style='border: 1px solid black;') #{b.unit_price}
@@ -97,13 +101,17 @@ html
     | ในการจัดซื้อในครั้งนี้ ซึ่งมีรายละเอียดการใช้เงินดังนี้
     br
     .fontspace
-    | ยอดเงินที่ได้รับจัดสรร &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#{pcb.incoming_balance} บาท
-    br
-    .fontspace
-    | ยอดจัดซื้อสะสมจากครั้งก่อน &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; #{pcb.amount} บาท
-    br
-    .fontspace
-    | ยอดเงินคงเหลือจากการซื้อครั้งนี้ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; #{pcb.balance} บาท
+    table(style="width: 50%;")
+      tbody
+        tr 
+          td ยอดเงินที่ได้รับจัดสรร
+          td #{budget[0].amount} บาท
+        tr 
+          td ยอดจัดซื้อสะสมจากครั้งก่อน
+          td #{allAmount} บาท
+        tr 
+          td ยอดเงินคงเหลือจากการซื้อครั้งนี้
+          td #{pcb.balance} บาท
     br
     br 
     br 
@@ -151,7 +159,7 @@ html
       if(!poraor)
         |(.....................................................)
       else
-        | #{poraor.title}#{poraor.fname} #{poraor.lname}
+        | #{poraor}
       br
       | ผู้อำนวยการ#{hospitalName}
       br
@@ -159,4 +167,3 @@ html
         | ปฏิบัติราชการแทนผู้ตรวจกระทรวงเขต 4
       if(purchasing[0].bid_id!=2) 
         | #{chief}
-

@@ -61,37 +61,47 @@ export class PurchasingOrderReportModel {
         return d + ' ' + m + ' ' + y;
     }
     purchasingOrder(knex: Knex, purchaOrderId) {
-        return knex.raw(`SELECT 
+        return knex.raw(`SELECT
         pci.purchase_order_id,
         vg.generic_name,
         vp.product_name,
         pci.qty,
         mup.qty AS small_qty,
         mu.unit_name,
-        ROUND(pci.unit_price,2) as unit,
-        ROUND(pci.total_price,2) as total,
+        ROUND(pci.unit_price, 2) AS unit,
+        ROUND(pci.total_price, 2) AS total,
         ml.labeler_name,
         ml.address,
         pcpo.order_date,
-        chief_id,
-        buyer_id,
-        buyer_fullname,
-        buyer_position,
+        pcpo.chief_id,
+        pcpo.buyer_id,
+    CONCAT(t.title_name,p.fname,' ',p.lname) as buyer_fullname,
+    CONCAT(t2.title_name,p2.fname,' ',p2.lname) as chief_fullname,
+    po.position_name as buyer_position,
+    po2.position_name as chief_position,
         pcpo.created_date,
         pcpo.delivery,
         pcpo.purchase_order_number,
         pcpo.purchase_order_book_number,
-            lb.bid_name
-        FROM
+        lb.bid_name
+    FROM
         pc_purchasing_order pcpo
-        JOIN pc_purchasing_order_item pci ON pci.purchase_order_id=pcpo.purchase_order_id
-        JOIN mm_generics vg ON pci.generic_id=vg.generic_id
-        JOIN mm_labelers ml ON ml.labeler_id=pcpo.labeler_id
-        JOIN mm_products vp ON vp.product_id=pci.product_id
-        LEFT JOIN mm_unit_generics mup ON pci.unit_generic_id=mup.unit_generic_id
-        LEFT JOIN mm_units mu ON mu.unit_id=mup.to_unit_id
-        JOIN l_bid_type lb ON lb.bid_id=pcpo.purchase_type
-        WHERE pcpo.purchase_order_id = ?`, [purchaOrderId]);
+    JOIN pc_purchasing_order_item pci ON pci.purchase_order_id = pcpo.purchase_order_id
+    JOIN mm_generics vg ON pci.generic_id = vg.generic_id
+    JOIN mm_labelers ml ON ml.labeler_id = pcpo.labeler_id
+    JOIN mm_products vp ON vp.product_id = pci.product_id
+    LEFT JOIN mm_unit_generics mup ON pci.unit_generic_id = mup.unit_generic_id
+    LEFT JOIN mm_units mu ON mu.unit_id = mup.to_unit_id
+    JOIN l_bid_type lb ON lb.bid_id = pcpo.purchase_type_id
+    join um_people p on pcpo.buyer_id = p.people_id
+    join um_titles t on p.title_id = t.title_id
+    join um_positions po on po.position_id = p.position_id
+    
+    join um_people p2 on pcpo.chief_id = p2.people_id
+    join um_titles t2 on p2.title_id = t2.title_id
+    join um_positions po2 on po2.position_id = p2.position_id
+    WHERE
+        pcpo.purchase_order_id = '${purchaOrderId}'`);
     }
     tPurchase(knex: Knex, createDate) {
         return knex.raw(`SELECT 

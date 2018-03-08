@@ -338,4 +338,74 @@ export class PurchasingOrderModel {
   getPeriodStatus(knex: Knex, month, year) {
     return knex.select('*').from('wm_period').where('budget_year', year).where('period_month', month)
   }
+
+  getGeneric(knex: Knex, generic_type_id: any) {
+    let sql = `SELECT
+    po.purchase_order_number,
+    mg.generic_id,
+    mg.generic_name,
+    mg.working_code AS generic_code
+  FROM
+    mm_generics AS mg
+  JOIN pc_purchasing_order_item AS pp ON mg.generic_id = pp.generic_id
+  JOIN pc_purchasing_order AS po ON pp.purchase_order_id = po.purchase_order_id
+  WHERE
+    mg.generic_type_id IN (${generic_type_id})
+  GROUP BY mg.generic_id`
+    return (knex.raw(sql))
+  }
+
+  getProductHistory(knex: Knex, generic_id: string) {
+    let sql = `SELECT
+    po.purchase_order_number,
+    mp.working_code AS trading_code,
+    mp.product_name,
+    pp.qty,
+    mu.unit_name AS large_unit_name,
+    mug.qty AS conversion_qty,
+    mmu.unit_name AS small_large_unit_name,
+    pp.unit_price,
+    pp.total_price,
+    po.contract_id
+  FROM
+    mm_generics AS mg
+  JOIN pc_purchasing_order_item AS pp ON mg.generic_id = pp.generic_id
+  JOIN pc_purchasing_order AS po ON pp.purchase_order_id = po.purchase_order_id
+  JOIN mm_products AS mp ON pp.product_id = mp.product_id
+  JOIN mm_unit_generics AS mug ON pp.unit_generic_id = mug.unit_generic_id
+  JOIN mm_units AS mu ON mug.from_unit_id = mu.unit_id
+  JOIN mm_units AS mmu ON mug.to_unit_id = mmu.unit_id
+  WHERE
+    pp.generic_id = '${generic_id}'
+  AND
+    pp.giveaway = 'N'
+    `
+    return (knex.raw(sql))
+  }
+
+  searchGenericHistory(knex: Knex, key: string) {
+    let _key = '%' + key + '%'
+    let sql = `SELECT
+    po.purchase_order_number,
+    mg.generic_id,
+    mg.generic_name,
+    mg.working_code AS generic_code,
+    mp.product_name
+  FROM
+    mm_generics AS mg
+  JOIN pc_purchasing_order_item AS pp ON mg.generic_id = pp.generic_id
+  JOIN pc_purchasing_order AS po ON pp.purchase_order_id = po.purchase_order_id
+  JOIN mm_products AS mp ON pp.product_id = mp.product_id
+  WHERE
+    (
+      mg.working_code = '${key}'
+      OR mp.product_name like '${_key}'
+      OR mg.generic_id = '${key}'
+      OR mg.generic_name like'${_key}'
+    )
+  GROUP BY
+    mg.generic_id`
+    return (knex.raw(sql))
+  }
+
 }

@@ -18,7 +18,7 @@ html
       | วันที่ 
       label.h3(style="font-size: 16pt;") &nbsp;#{nDate}
     b.h2(style='border: 1px solid white; width:50%; float: left;') เรื่อง
-      |  รายงานขอซื้อขอจ้าง 
+      |  รายงานขอซื้อ 
     br
     br
     hr
@@ -40,7 +40,7 @@ html
     | &nbsp;&nbsp; เพื่อให้บริการผู้ป่วยที่มารับบริการ และให้เพียงพอต่อการให้บริการผู้ป่วย
     br
     .fontspace 
-    | 2.	ราคากลางและรายละเอียดของรายการตามเอกสาร รายงานผลการพิจารณาและรออนุมัติสั่งซื้อสั่งจ้าง
+    | 2.	ราคากลางและรายละเอียดของรายการตามเอกสาร รายงานผลการพิจารณาและรออนุมัติสั่งซื้อ
     br
     .fontspace 
     | 3.	วงเงินที่จะซื้อ
@@ -85,9 +85,9 @@ html
         | #{bposition.position_name}
       div(style="width:50%;float:left;text-align:center") ลงชื่อ.................................................หัวหน้าเจ้าหน้าที่
         br
-        | ( #{purchasingChief.chief_fullname} )
+        | ( &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; )
         br
-        | #{cposition.position_name}
+        | 
     div(style="width:100%;float:left;text-align:center")
       br
       br
@@ -97,3 +97,8 @@ html
       | ( #{poraor} )
       br
       | ผู้อำนวยการ#{hospitalName}
+      br
+      if(purchasing[0].purchase_method_id==2) 
+        | ปฏิบัติราชการแทนผู้ตรวจกระทรวงเขต 4
+      if(purchasing[0].purchase_method_id!=2) 
+        | #{chief}#{province}

@@ -25,8 +25,8 @@ html
     br
     table(style='width:100%; font-size: 15pt')
         tr
-            td.left(style='width:50%;') ผู้ขาย/ผู้รับจ้าง #{purchasing[0].labeler_name}
-            td.left(style='width:50%;') ใบสั่งซื้อ/สั่งจ้างเลขที่ 
+            td.left(style='width:50%;') ผู้ขาย #{purchasing[0].labeler_name}
+            td.left(style='width:50%;') ใบสั่งซื้อ 
               if(purchasing[0].purchase_order_book_number)
                 | #{purchasing[0].purchase_order_book_number}
               else
@@ -61,7 +61,7 @@ html
             td.left
     br
     .fontspace
-    label(style="font-size: 15pt;") ตามที่ บริษัท ได้เสนอราคาไว้ต่อ#{hospitalName} ซึ่งได้รับราคาและตกลงซื้อ/จ้าง ตามรายการต่อไปนี้
+    label(style="font-size: 15pt;") ตามที่ บริษัท ได้เสนอราคาไว้ต่อ#{hospitalName} ซึ่งได้รับราคาและตกลงซื้อ ตามรายการต่อไปนี้
     table(style="font-size: 15pt;")
         thead
           tr(style="font-size: 15pt;")
@@ -113,10 +113,10 @@ html
         td.center  ลงชื่อ......................................................ผู้สั่งซื้อ
       tr
         td.center
-          |(#{purchasingChief.chief_fullname})
+          |( &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; )
       tr
         td.center
-          |#{cposition.position_name}   
+          |   
       tr
         td.center
           |หัวหน้าเจ้าหน้าที่   

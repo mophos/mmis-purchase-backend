@@ -559,18 +559,18 @@ export class PurchasingOrderReportModel {
     purchasing2Chief(knex: Knex, purchaOrderId) {
         return knex.select('po.chief_id', 'po.buyer_id', knex.raw('concat(tiy.title_name,pey.fname," ",pey.lname) as buyer_fullname'), 'psy.position_name as buyer_position', knex.raw('concat(tic.title_name,pec.fname," ",pec.lname) as chief_fullname'), 'psc.position_name as chief_position')
             .from('pc_purchasing_order as po')
-            .leftJoin('um_people as pey','po.buyer_id','pey.people_id')
-            .leftJoin('um_titles as tiy','pey.title_id','tiy.title_id')
-            .leftJoin('um_positions as psy','psy.position_id','pey.position_id')
-            .leftJoin('um_people as pec','po.chief_id','pec.people_id')
-            .leftJoin('um_titles as tic','pec.title_id','tic.title_id')
-            .leftJoin('um_positions as psc','psc.position_id','pec.position_id')
+            .leftJoin('um_people as pey', 'po.buyer_id', 'pey.people_id')
+            .leftJoin('um_titles as tiy', 'pey.title_id', 'tiy.title_id')
+            .leftJoin('um_positions as psy', 'psy.position_id', 'pey.position_id')
+            .leftJoin('um_people as pec', 'po.chief_id', 'pec.people_id')
+            .leftJoin('um_titles as tic', 'pec.title_id', 'tic.title_id')
+            .leftJoin('um_positions as psc', 'psc.position_id', 'pec.position_id')
             .where('po.purchase_order_id', purchaOrderId)
     }
     getPosition(knex: Knex, id: any) {
         return knex('um_people as up')
             .leftJoin('um_positions as upp', 'upp.position_id', 'up.position_id')
-            .leftJoin('um_titles as ut','ut.title_id','up.title_id')
+            .leftJoin('um_titles as ut', 'ut.title_id', 'up.title_id')
             .where('up.people_id', id)
     }
     purchasing3(knex: Knex, purchaOrderId) {
@@ -802,11 +802,12 @@ export class PurchasingOrderReportModel {
         pp.giveaway = 'N'
         `
         return (knex.raw(sql))
-      }
+    }
     allAmountTransaction(knex: Knex, bgdetail_id: any, budgetYear: any) {
         return knex('pc_budget_transection as pbt')
+            .sum('pbt.amount as amount')
             .where('pbt.bgdetail_id', [bgdetail_id])
-            .leftJoin('bm_budget_detail as bbd','bbd.bgdetail_id','pbt.bgdetail_id')
+            .leftJoin('bm_budget_detail as bbd', 'bbd.bgdetail_id', 'pbt.bgdetail_id')
             .andWhere('bbd.bg_year', [budgetYear])
             .andWhere('pbt.transaction_status', 'spend')
     }

@@ -18,7 +18,7 @@ html
       | วันที่ 
       label.h3(style="font-size: 16pt;") &nbsp;#{nDate}
     b.h2(style='border: 1px solid white; width:50%; float: left;') เรื่อง
-      |  รายงานผลการพิจารณาและขออนุมัติสั่งซื้อสั่งจ้าง 
+      |  รายงานผลการพิจารณาและขออนุมัติสั่งซื้อ 
     br
     br
     hr
@@ -111,9 +111,9 @@ html
         | #{bposition.position_name}
       div(style="width:50%;float:left;text-align:center") ลงชื่อ.................................................หัวหน้าเจ้าหน้าที่
         br
-        | ( #{purchasingChief.chief_fullname} )
+        | ( &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; )
         br
-        | #{cposition.position_name}
+        | 
     div(style="width:100%;float:left;text-align:center")
       br
       br
@@ -123,3 +123,8 @@ html
       | ( #{poraor} )
       br
       | ผู้อำนวยการ#{hospitalName}
+      br
+      if(purchasing[0].purchase_method_id==2) 
+        | ปฏิบัติราชการแทนผู้ตรวจกระทรวงเขต 4
+      if(purchasing[0].purchase_method_id!=2) 
+        | #{chief}#{province}

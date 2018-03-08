@@ -277,7 +277,7 @@ router.get('/report/purchasing/:startdate/:enddate/:bgtypeId/:status', wrap(asyn
   let status = req.params.status;
   let db = req.db;
   let results = await model.Purchasing(db, startdate, enddate, bgtypeId, status);
-  
+
   let hospname = await model.hospital(db);
   results = results[0]
   hospname = hospname[0].hospname
@@ -778,7 +778,7 @@ router.get('/report/purchasing/10/', wrap(async (req, res, next) => {
   let db = req.db;
   let type = req.query.type;
   let purchaOrderId = req.query.purchaOrderId;
-  let chief = "ปฎิบัติราชการแทนผู้ว่าราชการจังหวัด"
+  let chief = "ปฎิบัติราชการแทนผู้ว่าราชการจังหวัด";
 
   let purchasingOfficer = await model.getPurchasingOfficer(db);
   let purchasingChief = await model.purchasing2Chief(db, purchaOrderId);
@@ -1350,7 +1350,7 @@ router.post('/report/purchasingorder', wrap(async (req, res, next) => {
     getchief = getchief[0].chief_fullname;
     array1.push(getchief);
     console.log(getchief);
-    
+
   }
   res.render('porders', {
     array: array,
@@ -1564,6 +1564,7 @@ router.get('/report/po/egp/singburi', wrap(async (req, res, next) => {
   let db = req.db;
   let type = req.query.type;
   let purchaOrderId = req.query.purchaOrderId;
+  let chief = "ปฎิบัติราชการแทนผู้ว่าราชการจังหวัด";
 
   ////ชื่อโรงพยาบาล//////////
   let hosdetail = await model.hospital(db);
@@ -1621,10 +1622,7 @@ router.get('/report/po/egp/singburi', wrap(async (req, res, next) => {
   })
 
   let getAmountTransaction = await model.allAmountTransaction(db, purchasing[0].budget_detail_id, +year - 544);
-  let allAmount: any = 0;
-  getAmountTransaction.forEach(v => {
-    allAmount += v.amount;
-  });
+  let allAmount: any = getAmountTransaction[0].amount;
   allAmount = model.comma(allAmount);
 
 
@@ -1634,10 +1632,10 @@ router.get('/report/po/egp/singburi', wrap(async (req, res, next) => {
 
   let cposition = await model.getPosition(db, purchasingChief[0].chief_id);
   let bposition = await model.getPosition(db, purchasingChief[0].buyer_id);
-  // console.log('++++++++++++++', cposition)
-  // console.log(bposition)
+
 
   res.render('egpSingburi', {
+    chief: chief,
     pcb: pcb[0],
     allAmount: allAmount,
     cposition: cposition[0],

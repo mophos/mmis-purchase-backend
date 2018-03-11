@@ -24,14 +24,7 @@ html
     hr
     .enter เรียน ผู้ว่าราชการจังหวัด#{province}
     .fontspace
-    | ขอรายงานผลการพิจารณาซื้อจำนวน #{countp} รายการ (
-    - var y=0
-          for b in purchasing
-            - y++
-             | &nbsp;#{b.generic_name}
-             if(y<countp)
-              | , 
-    | ) โดย#{bidname} ดังนี้
+    | ขอรายงานผลการพิจารณาซื้อยาจำนวน #{countp} รายการ โดย#{bidname} ดังนี้
     br
     table
       thead

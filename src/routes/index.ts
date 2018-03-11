@@ -1635,6 +1635,8 @@ router.get('/report/po/egp/singburi', wrap(async (req, res, next) => {
 
 
   res.render('egpSingburi', {
+    ttotalprice: ttotalprice,
+    bahtText: bahtText,
     chief: chief,
     pcb: pcb[0],
     allAmount: allAmount,

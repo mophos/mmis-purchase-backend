@@ -83,11 +83,16 @@ html
                   td.center #{b.qtyPoi} x #{b.conversion} #{b.primary_unit}
                   td.right #{b.unit_price}
                   td.right #{b.total_price}
-          -var count=12-y
+          -var count=10-y
           - for (var i = y; i < count; ++i) {
             tr
               td(colspan='5') &nbsp;
           - }
+        tfooter
+          tr
+            td.right(colspan='5' style='border-top: 1px dashed black;') รวมเป็นเงิน #{ttotalprice} บาท
+          tr
+            td.right(colspan='5')  (#{bahtText})
     .left(style='font-size: 12pt;')
       | การซื้อ/สั่งจ้าง อยู่ภายใต้เงื่อนไขต่อไปนี้
       br
@@ -109,15 +114,6 @@ html
   table.table( style='float:right; width:50%; font-size: 15pt;')
       tr
         td.center  ลงชื่อ......................................................ผู้สั่งซื้อ
-      tr
-        td.center
-          |
-      tr
-        td.center
-          |   
-      tr
-        td.center
-          |   
       tr
         td(height='140px')
       tr

@@ -910,4 +910,20 @@ router.get('/searchGenericHistory', async (req, res, next) => {
   }
 });
 
+router.post('/change-purchase-date', async (req, res, next) => {
+  let purchaseOrderIds = req.body.purchaseOrderIds;
+  let purchaseDate = req.body.purchaseDate;
+
+  let db = req.db;
+
+  try {
+    let rs: any = await model.changePurchaseDate(db, purchaseOrderIds, purchaseDate);
+    res.send({ ok: true });
+  } catch (error) {
+    res.send({ ok: false, error: error.message });
+  } finally {
+    db.destroy();
+  }
+});
+
 export default router;

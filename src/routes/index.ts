@@ -8,6 +8,7 @@ import * as _ from 'lodash';
 import { PurchasingOrderReportModel } from '../models/reports/purchasingOrder';
 import { RequisitionOrderReportModel } from '../models/reports/requisitionOrder';
 import { log } from 'util';
+import { each } from 'bluebird';
 // import { load } from 'mime';
 
 const model = new PurchasingOrderReportModel();
@@ -1565,7 +1566,7 @@ router.get('/report/po/egp/singburi', wrap(async (req, res, next) => {
   let type = req.query.type;
   let purchaOrderId = req.query.purchaOrderId;
   let chief = "ปฎิบัติราชการแทนผู้ว่าราชการจังหวัด";
-
+  console.log('===========================', purchaOrderId)
   ////ชื่อโรงพยาบาล//////////
   let hosdetail = await model.hospital(db);
   let hospitalName = hosdetail[0].hospname;
@@ -1661,6 +1662,111 @@ router.get('/report/po/egp/singburi', wrap(async (req, res, next) => {
     purchasingChief: purchasingChief[0]
   });
 }));
+
+// router.get('/report/allpo/egp/singburi', wrap(async (req, res, next) => {
+//   let db = req.db;
+//   let type = req.query.type;
+//   let purchaOrderId = req.query.purchaOrderId;
+//   let chief = "ปฎิบัติราชการแทนผู้ว่าราชการจังหวัด";
+
+//   let hosdetail = await model.hospital(db);
+//   let hospitalName = hosdetail[0].hospname;
+//   let hostel = hosdetail[0].telephone;
+//   let hosaddress = hosdetail[0].address;
+//   let poraor = hosdetail[0].managerName;
+
+//   let ttotalprice = []
+//   let bahtText = []
+//   let province = []
+//   purchaOrderId.forEach(async (v, j: number = 0) => {
+//     let purchasing = await model.purchasing10(db, purchaOrderId);
+//     purchasing[i] = purchasing[0];
+
+//     let committeesVerify = await model.purchasingCommittee2(db, purchaOrderId);
+//     committeesVerify[i] = committeesVerify[0];
+
+//     let count = await model.purchasingCountItem(db, purchaOrderId);
+//     count = count[0][0].count || 0;
+
+//     let pcb = await model.pcBudget(db, purchaOrderId);
+
+//     let purchasingChief = await model.purchasing2Chief(db, purchaOrderId)
+
+//     let budget = await model.budgetType(db, purchasing[i].budget_detail_id)
+//     budget[i] = budget[0]
+
+//     let textamount = model.bahtText(budget[i].amount)
+//     let sum = model.comma(budget[i].amount - budget[i].order_amt)
+//     budget[i].forEach(value => {
+//       value.amount = model.comma(value.amount)
+//       value.order_amt = model.comma(value.order_amt)
+//     });
+
+//     let bidname = []
+//     bidname[i] = await model.bidName(db, purchasing[i].purchase_method_id)
+//     purchasing[i].forEach(value => {
+//       totalprice += value.total_price
+//       if (value.qty == null) value.qty = 0;
+//       value.qty = model.commaQty(value.qty);
+//       value.qtyPoi = model.commaQty(value.qtyPoi);
+//       value.total_price = model.comma(value.total_price);
+//       value.unit_price = model.comma(value.unit_price);
+//       value.total = model.commaQty(value.total)
+//     })
+
+//     pcb[i].forEach(value => {
+//       value.incoming_balance = model.comma(value.incoming_balance)
+//       value.amount = model.comma(value.amount)
+//       value.balance = model.comma(value.balance)
+//     })
+
+//     let getAmountTransaction[i] = await model.allAmountTransaction(db, purchasing[i].budget_detail_id, +year - 544);
+//     let allAmount = []
+//     allAmount[i] = getAmountTransaction[i].amount;
+//     allAmount[i] = model.comma(allAmount);
+
+//     let cposition = await model.getPosition(db, purchasingChief[i].chief_id);
+//     let bposition = await model.getPosition(db, purchasingChief[i].buyer_id);
+
+//     ttotalprice[i] = model.comma(totalprice)
+//     bahtText[i] = model.bahtText(totalprice)
+//     province[i] = hosdetail[0].province;
+//   });
+
+//   let at = await model.at(db)
+//   at = at[0]
+//   moment.locale('th');
+//   let nDate = moment(new Date()).format('D MMMM ') + (moment(new Date()).get('year') + 543)
+//   let year = moment(new Date).get('year') + 544
+//   let totalprice = 0
+
+//   res.render('egpSingburi', {
+//     ttotalprice: ttotalprice,
+//     bahtText: bahtText,
+//     chief: chief,
+//     pcb: pcb[0],
+//     allAmount: allAmount,
+//     cposition: cposition[0],
+//     bposition: bposition[0],
+//     textamount: textamount,
+//     type: type,
+//     purchasing: purchasing,
+//     sum: sum,
+//     hosaddress: hosaddress,
+//     province: province,
+//     hostel: hostel,
+//     countp: count,
+//     total: ttotalprice,
+//     hospitalName: hospitalName,
+//     at_name: at[0].value,
+//     nDate: nDate,
+//     committeesVerify: committeesVerify,
+//     bidname: bidname[0].name,
+//     budget: budget,
+//     poraor: poraor,
+//     purchasingChief: purchasingChief[0]
+//   });
+// }));
 
 router.get('/report/getProductHistory/:generic_code', wrap(async (req, res, next) => {
   let db = req.db;

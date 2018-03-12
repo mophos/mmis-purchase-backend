@@ -21,16 +21,16 @@ html
           td.center
             img(src=APIURL+'krut.png', height='94.8px')
     br
-    .center ใบสั่งซื้อ
+    .center ใบสั่งซื้อยา/เวชภัณฑ์มิใช่ยา
     br
     table(style='width:100%; font-size: 15pt')
         tr
             td.left(style='width:50%;') ผู้ขาย #{purchasing[0].labeler_name}
-            td.left(style='width:50%;') ใบสั่งซื้อยา/เวชภัณฑ์มิใช่ยา
+            td.left(style='width:50%;') เลขที่
               if(purchasing[0].purchase_order_book_number)
-                | #{purchasing[0].purchase_order_book_number}
+                | &nbsp;#{purchasing[0].purchase_order_book_number}
               else
-                | #{purchasing[0].purchase_order_number}
+                | &nbsp;#{purchasing[0].purchase_order_number}
         tr
             td.left
             //- td.left ที่อยู่ #{purchasing[0].address}

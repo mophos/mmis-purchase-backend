@@ -1478,7 +1478,7 @@ router.get('/report/getporder/singburi', wrap(async (req, res, next) => {
     hospname: hospname,
     getchief: array1,
     nDate: nDate,
-    hospAddress: hospAddress, 
+    hospAddress: hospAddress,
     hopsTel: hopsTel,
     hopsprovince: hopsprovince
   })
@@ -1566,7 +1566,7 @@ router.get('/report/po/egp/singburi', wrap(async (req, res, next) => {
   let type = req.query.type;
   let purchaOrderId = req.query.purchaOrderId;
   let chief = "ปฎิบัติราชการแทนผู้ว่าราชการจังหวัด";
-  console.log('===========================', purchaOrderId)
+
   ////ชื่อโรงพยาบาล//////////
   let hosdetail = await model.hospital(db);
   let hospitalName = hosdetail[0].hospname;

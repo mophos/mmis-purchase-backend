@@ -1478,7 +1478,7 @@ router.get('/report/getporder/singburi', wrap(async (req, res, next) => {
     hospname: hospname,
     getchief: array1,
     nDate: nDate,
-    hospAddress: hospAddress,
+    hospAddress: hospAddress, 
     hopsTel: hopsTel,
     hopsprovince: hopsprovince
   })

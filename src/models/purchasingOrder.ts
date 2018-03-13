@@ -96,7 +96,12 @@ export class PurchasingOrderModel {
       .orderBy('pc_purchasing_order.order_date', 'DESC');
   }
 
-  listByStatus(knex: Knex, status: Array<any>, contract: string = 'ALL', query: string = '', start_date: string = '', end_date: string = '', number_start: string = '', number_end: string = '', limit: number = 100, offset: number = 0) {
+  listByStatus(
+    knex: Knex, status: Array<any>,
+    contract: string = 'ALL', query: string = '',
+    start_date: string = '', end_date: string = '',
+    limit: number = 20, offset: number = 0,
+    genericTypeIds: any[]) {
     let sumItems = knex
       .select(knex.raw('sum(po.unit_price*po.qty)'))
       .from('pc_purchasing_order_item as po')
@@ -115,6 +120,7 @@ export class PurchasingOrderModel {
       .leftJoin('mm_labelers as l', 'pc_purchasing_order.labeler_id', 'l.labeler_id')
       .leftJoin('l_bid_process as bp', 'pc_purchasing_order.purchase_method_id', 'bp.id')
       .whereIn('pc_purchasing_order.purchase_order_status', status)
+      .whereIn('pc_purchasing_order.generic_type_id', genericTypeIds)
       .orderBy('pc_purchasing_order.order_date', 'DESC')
       .orderBy('pc_purchasing_order.purchase_order_number', 'DESC');
 
@@ -125,15 +131,15 @@ export class PurchasingOrderModel {
     }
 
     if (query !== '') {
-      con.where('pc_purchasing_order.purchase_order_number', 'like', `%${query}%`);
+      con.where(w => {
+        w.where('pc_purchasing_order.purchase_order_number', 'like', `%${query}%`)
+          .orWhere('pc_purchasing_order.purchase_order_book_number', 'like', `%${query}%`)
+      });
     }
 
     if (start_date !== '' && end_date !== '') {
       con.whereBetween('pc_purchasing_order.order_date', [start_date, end_date]);
     }
-    // if (number_start !== '' && number_end !== ''){
-    //   con.whereBetween('pc_purchasing_order.purchasing_order_number', [number_start, number_end]);
-    // }
 
     con.limit(limit)
       .offset(offset);
@@ -141,19 +147,55 @@ export class PurchasingOrderModel {
     return con;
   }
 
-  isCancel(knex: Knex, limit: number = 100, offset: number = 0) {
-    let sumItems = knex
-      .count('po.purchase_order_id')
-      .from('pc_purchasing_order_item as po')
-      .whereRaw('po.purchase_order_id = pc_purchasing_order.purchase_order_id')
-      .groupBy('po.purchase_order_id').as('puchase_order_count')
-    return knex(this.tableName)
-      .select(sumItems, 'pc_purchasing_order.*', 'l.labeler_name', 'bp.name as bid_process_name')
-      .innerJoin('mm_labelers as l', 'pc_purchasing_order.labeler_id', 'l.labeler_id')
-      .innerJoin('cm_bid_process as bp', 'pc_purchasing_order.purchase_method', 'bp.id')
-      .where('pc_purchasing_order.is_cancel', '1')
-      .orderBy('purchase_order_id', 'DESC');
+  listByStatusTotal(
+    knex: Knex, status: Array<any>,
+    contract: string = 'ALL', query: string = '',
+    start_date: string = '', end_date: string = '',
+    genericTypeIds: any[]) {
+
+    let con = knex(this.tableName)
+      .select(knex.raw('count(*) as total'))
+      // .leftJoin('mm_labelers as l', 'pc_purchasing_order.labeler_id', 'l.labeler_id')
+      // .leftJoin('l_bid_process as bp', 'pc_purchasing_order.purchase_method_id', 'bp.id')
+      .whereIn('pc_purchasing_order.purchase_order_status', status)
+      .whereIn('pc_purchasing_order.generic_type_id', genericTypeIds)
+      // .orderBy('pc_purchasing_order.order_date', 'DESC')
+      // .orderBy('pc_purchasing_order.purchase_order_number', 'DESC');
+
+    if (contract === 'Y') {
+      con.where('pc_purchasing_order.is_contract', 'Y');
+    } else if (contract === 'N') {
+      con.where('pc_purchasing_order.is_contract', 'N');
+    }
+
+    if (query !== '') {
+      con.where(w => {
+        w.where('pc_purchasing_order.purchase_order_number', 'like', `%${query}%`)
+          .orWhere('pc_purchasing_order.purchase_order_book_number', 'like', `%${query}%`)
+      });
+    }
+
+    if (start_date !== '' && end_date !== '') {
+      con.whereBetween('pc_purchasing_order.order_date', [start_date, end_date]);
+    }
+
+    return con;
   }
+
+  // isCancel(knex: Knex, limit: number = 100, offset: number = 0, genericTypeIds: any[]) {
+  //   let sumItems = knex
+  //     .count('po.purchase_order_id')
+  //     .from('pc_purchasing_order_item as po')
+  //     .whereRaw('po.purchase_order_id = pc_purchasing_order.purchase_order_id')
+  //     .groupBy('po.purchase_order_id').as('puchase_order_count')
+  //   return knex(this.tableName)
+  //     .select(sumItems, 'pc_purchasing_order.*', 'l.labeler_name', 'bp.name as bid_process_name')
+  //     .innerJoin('mm_labelers as l', 'pc_purchasing_order.labeler_id', 'l.labeler_id')
+  //     .innerJoin('cm_bid_process as bp', 'pc_purchasing_order.purchase_method', 'bp.id')
+  //     .where('pc_purchasing_order.is_cancel', '1')
+  //     .whereIn('generic_type_id', genericTypeIds)
+  //     .orderBy('purchase_order_id', 'DESC');
+  // }
 
   listContracts(knex: Knex, limit: number = 100, offset: number = 0) {
 

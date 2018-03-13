@@ -1613,6 +1613,8 @@ router.get('/report/po/egp/singburi', wrap(async (req, res, next) => {
     value.qtyPoi = model.commaQty(value.qtyPoi);
     value.total_price = model.comma(value.total_price);
     value.unit_price = model.comma(value.unit_price);
+    value.cost = model.comma(value.cost);
+    value.standard_cost = model.comma(value.standard_cost);
     value.total = model.commaQty(value.total)
   })
 

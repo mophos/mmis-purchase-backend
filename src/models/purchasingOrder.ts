@@ -31,6 +31,13 @@ export class PurchasingOrderModel {
     return true;
   }
 
+  checkApprove(knex: Knex, username: any, password: any, action: any) {
+    return knex('sys_approve as sa')
+      .leftJoin('um_users as uu','uu.user_id','sa.user_id')
+      .where('sa.action_name', action)
+      .andWhere('uu.username', username)
+      .andWhere('sa.password', password)
+  }
 
   getLastOrderByLabeler(knex: Knex, labeler_id: string) {
     return knex('pc_purchasing_order as p')

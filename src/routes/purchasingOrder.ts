@@ -576,6 +576,21 @@ router.put('/:purchaseOrderId', async (req, res, next) => {
 
 // });
 
+router.post('/checkApprove', async (req, res, next) => {
+  let db = req.db;
+  let username = req.body.username;
+  let password = req.body.password;
+  let action = req.body.action;
+  console.log(action,password,username);
+  
+  const isCheck = await model.checkApprove(db, username, password, action);
+  if (isCheck[0]) {
+    res.send({ ok: true })
+  } else {
+    res.send({ ok: false });
+  }
+});
+
 router.put('/update-purchase/status', async (req, res, next) => {
   const db = req.db;
   let items = req.body.items;

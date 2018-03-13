@@ -45,15 +45,18 @@ export class ProductsModel {
     select mp.generic_id, mp.working_code, mp.product_id, mp.product_name, mp.purchase_cost, mp.is_lot_control,
     mp.primary_unit_id, mp.m_labeler_id, mp.v_labeler_id, mp.purchase_unit_id,
     lm.labeler_name as m_labeler_name, lv.labeler_name as v_labeler_name,
-    u.unit_name as primary_unit_name, wp.unit_generic_id, uf.unit_name as from_unit_name,
-    ut.unit_name as to_unit_name, ug.qty as conversion_qty, floor(sum(wp.qty)/ug.qty) as remain_qty, 0 as order_qty
+    u.unit_name as primary_unit_name, uf.unit_name as from_unit_name,
+    ut.unit_name as to_unit_name, ug.qty as conversion_qty, mp.purchase_unit_id as unit_generic_id,
+    (
+      select sum(wp.qty) as total from wm_products as wp where wp.product_id=mp.product_id
+    ) as remain_qty, 
+    0 as order_qty
 
     from mm_products as mp
     inner join mm_labelers as lm on lm.labeler_id=mp.m_labeler_id
     inner join mm_labelers as lv on lv.labeler_id=mp.v_labeler_id
     inner join mm_units as u on u.unit_id=mp.primary_unit_id
-    inner join wm_products as wp on wp.product_id=mp.product_id
-    inner join mm_unit_generics as ug on ug.unit_generic_id=wp.unit_generic_id
+    inner join mm_unit_generics as ug on ug.unit_generic_id=mp.purchase_unit_id
     inner join mm_units as uf on uf.unit_id=ug.from_unit_id
     inner join mm_units as ut on ut.unit_id=ug.to_unit_id
 

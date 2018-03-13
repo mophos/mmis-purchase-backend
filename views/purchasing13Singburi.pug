@@ -13,25 +13,22 @@ html
       label.h3(style='margin-top: 5px; font-size: 16pt;')  &nbsp;#{hospitalName}
     p.h2(style='width:50%;float: left;')
       | ที่
-      label.h3(style='margin-top: 5px;')  &nbsp;#{purchasing[0].purchase_order_book_number}
+      label.h3(style='margin-top: 5px;')  
+        if(purchasing[0].purchase_order_book_number)
+          | &nbsp;#{purchasing[0].purchase_order_book_number}
+        else
+          | &nbsp;#{purchasing[0].purchase_order_number}
     b.h2(style='width:50%;float: left;')
       | วันที่ 
       label.h3(style="font-size: 16pt;") &nbsp;#{nDate}
-    b.h2(style='border: 1px solid white; width:50%; float: left;') เรื่อง
-      |  รายงานผลการพิจารณาและขออนุมัติสั่งซื้อ 
+    b.h2(style='border: 1px solid white; width:75%; float: left;') เรื่อง
+      |  รายงานผลการพิจารณาและขออนุมัติสั่งซื้อยา/เวชภัณฑ์มิใช่ยา
     br
     br
     hr
     .enter เรียน ผู้ว่าราชการจังหวัด#{province}
     .fontspace
-    | ขอรายงานผลการพิจารณาซื้อจำนวน #{countp} รายการ (
-    - var y=0
-          for b in purchasing
-            - y++
-             | &nbsp;#{b.generic_name}
-             if(y<countp)
-              | , 
-    | ) โดย#{bidname} ดังนี้
+    | ขอรายงานผลการพิจารณาซื้อยาจำนวน #{countp} รายการ โดย#{bidname} ดังนี้
     br
     table
       thead
@@ -57,8 +54,8 @@ html
                   td.center(style='border: 1px solid black; font-size:12pt;') #{b.qtyPoi} x #{b.conversion} #{b.primary_unit}
                   td.right(style='border: 1px solid black; font-size:12pt;') #{b.unit_price}
                   td.right(style='border: 1px solid black; font-size:12pt;') #{b.total_price}
-                  td.right(style='border: 1px solid black; font-size:12pt;') #{b.unit_price}
-                  td.right(style='border: 1px solid black; font-size:12pt;') #{b.unit_price}
+                  td.right(style='border: 1px solid black; font-size:12pt;') #{b.standard_cost}
+                  td.right(style='border: 1px solid black; font-size:12pt;') #{b.cost}
       tr
         td
         td(colspan='7').right รวม #{y} รายการ รวมเป็นเงิน #{total} บาท
@@ -67,7 +64,7 @@ html
         td(colspan='7').right (ตัวอักษร) (#{bahtText})
     br
     .fontspace
-    | ระเบียบกระทรวงการคลังและกฎกรระทรวงว่าด้วยการจัดซื้อจัดจ้างภาครัฐจากองค์การเภสัชกรรม อนึ่งในการจัดซื้อในครั้งนี้ใคร่ขอเสนอแต่งตั้งให้ผู้มีรายนามต่อไปนี้ เป็นกรรมการตรวจรับของ คือ
+    | ระเบียบกระทรวงการคลังและกฎกรระทรวงว่าด้วยการจัดซื้อจัดจ้างภาครัฐจาก#{purchasing[0].labeler_name} อนึ่งในการจัดซื้อในครั้งนี้ใคร่ขอเสนอแต่งตั้งให้ผู้มีรายนามต่อไปนี้ เป็นกรรมการตรวจรับของ คือ
     br
     -var b=0
     for c in committeesVerify
@@ -115,6 +112,9 @@ html
         br
         | 
     div(style="width:100%;float:left;text-align:center")
+      br
+      br
+      br
       br
       br
       br

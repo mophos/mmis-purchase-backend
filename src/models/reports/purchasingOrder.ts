@@ -642,6 +642,8 @@ export class PurchasingOrderReportModel {
     }
     purchasing10(knex: Knex, purchaOrderId) {
         let sql = `SELECT
+        mg.standard_cost,
+        mup.cost,
         mp.product_name,
         mup.qty as conversion, 
         muu.unit_name as primary_unit,

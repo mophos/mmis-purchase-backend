@@ -415,4 +415,10 @@ export class PurchasingOrderModel {
     return (knex.raw(sql))
   }
 
+  changePurchaseDate(db: Knex, purchaseIds: any[], purchaseDate: any) {
+    return db('pc_purchasing_order')
+      .update('order_date', purchaseDate)
+      .whereIn('purchase_order_id', purchaseIds);
+  }
+
 }

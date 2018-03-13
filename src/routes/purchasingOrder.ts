@@ -142,27 +142,21 @@ router.post('/by-status', async (req, res, next) => {
   let query = req.body.query;
   let start_date = req.body.start_date || '';
   let end_date = req.body.end_date || '';
-  let number_start = req.body.number_start || '';
-  let number_end = req.body.number_end || '';
+  let limit = req.body.limit || 20;
+  let offset = req.body.offset || 0;
 
-  try {
-    let rs: any = await model.listByStatus(db, status, contract, query, start_date, end_date, number_start, number_end);
-    res.send({ ok: true, rows: rs });
-  } catch (error) {
-    res.send({ ok: false, error: error.message });
-  } finally {
-    db.destroy();
+  let genericTypeIds = [];
+
+  let g = req.decoded.generic_type_id;
+  if (g) {
+    genericTypeIds = g.split(',');
   }
-});
-
-router.get('/by-cancel', async (req, res, next) => {
-
-  let db = req.db;
-  let status = req.body.status;
 
   try {
-    let rs: any = await model.isCancel(db, status);
-    res.send({ ok: true, rows: rs });
+    let rs: any = await model.listByStatus(db, status, contract, query, start_date, end_date, limit, offset, genericTypeIds);
+    let rsTotal: any = await model.listByStatusTotal(db, status, contract, query, start_date, end_date, genericTypeIds);
+
+    res.send({ ok: true, rows: rs, total: rsTotal[0].total });
   } catch (error) {
     res.send({ ok: false, error: error.message });
   } finally {

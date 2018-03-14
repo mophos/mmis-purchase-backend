@@ -844,11 +844,9 @@ router.get('/report/purchasing/10/', wrap(async (req, res, next) => {
   let sum = model.comma(budgetsave - sumTotal[0].sum)
   sumTotal = model.comma(sumTotal[0].sum - totalprice)
 
-  let getAmountTransaction = await model.allAmountTransaction(db, purchasing[0].budget_detail_id, _year);
-  let allAmount: any = 0;
-  getAmountTransaction.forEach(v => {
-    allAmount += v.amount;
-  });
+  let getAmountTransaction = await model.allAmountTransaction(db, purchasing[0].budget_detail_id, _year, purchasing[0].purchase_order_id)
+  getAmountTransaction = getAmountTransaction[0];
+  let allAmount: any = getAmountTransaction[0].amount;
   allAmount = model.comma(allAmount);
 
   if (pcb[0] == null
@@ -945,13 +943,14 @@ router.get('/report/purchasing/11', wrap(async (req, res, next) => {
     value.balance = model.comma(value.balance)
   })
 
-  let getAmountTransaction = await model.allAmountTransaction(db, purchasing[0].budget_detail_id, +year - 544);
+  let getAmountTransaction = await model.allAmountTransaction(db, purchasing[0].budget_detail_id, +year - 544, purchasing[0].purchase_order_id);
+  getAmountTransaction = getAmountTransaction[0];
   let allAmount: any = getAmountTransaction[0].amount;
   allAmount = model.comma(allAmount);
 
   res.render('purchasing11', {
-    allAmount:allAmount,
-    pcb:pcb[0],
+    allAmount: allAmount,
+    pcb: pcb[0],
     poNumber: poNumber,
     cposition: cposition[0],
     bposition: bposition[0],
@@ -962,7 +961,7 @@ router.get('/report/purchasing/11', wrap(async (req, res, next) => {
     total: ttotalprice,
     hospitalName: hospitalName,
     at_name: at[0].value,
-    chief:chief,
+    chief: chief,
     nDate: nDate,
     dDate: dDate,
     committeesVerify: committeesVerify,
@@ -1640,7 +1639,8 @@ router.get('/report/po/egp/singburi', wrap(async (req, res, next) => {
     value.balance = model.comma(value.balance)
   })
 
-  let getAmountTransaction = await model.allAmountTransaction(db, purchasing[0].budget_detail_id, +year - 544);
+  let getAmountTransaction = await model.allAmountTransaction(db, purchasing[0].budget_detail_id, +year - 544, purchasing[0].purchase_order_id);
+  getAmountTransaction = getAmountTransaction[0];
   let allAmount: any = getAmountTransaction[0].amount;
   allAmount = model.comma(allAmount);
 
@@ -1738,7 +1738,7 @@ router.get('/report/po/egp/singburi', wrap(async (req, res, next) => {
 //       value.balance = model.comma(value.balance)
 //     })
 
-//     let getAmountTransaction[i] = await model.allAmountTransaction(db, purchasing[i].budget_detail_id, +year - 544);
+//     let getAmountTransaction[i] = await model.allAmountTransaction(db, purchasing[i].budget_detail_id, +year- 544,purchasing[0].purchase_order_id);
 //     let allAmount = []
 //     allAmount[i] = getAmountTransaction[i].amount;
 //     allAmount[i] = model.comma(allAmount);

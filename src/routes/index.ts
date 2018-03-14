@@ -936,7 +936,21 @@ router.get('/report/purchasing/11', wrap(async (req, res, next) => {
   })
   let ttotalprice = model.comma(totalprice)
   let bahtText = model.bahtText(totalprice)
+
+  let pcb = await model.pcBudget(db, purchaOrderId);
+  pcb.forEach(value => {
+    value.incoming_balance = model.comma(value.incoming_balance)
+    value.amount = model.comma(value.amount)
+    value.balance = model.comma(value.balance)
+  })
+
+  let getAmountTransaction = await model.allAmountTransaction(db, purchasing[0].budget_detail_id, +year - 544);
+  let allAmount: any = getAmountTransaction[0].amount;
+  allAmount = model.comma(allAmount);
+
   res.render('purchasing11', {
+    allAmount:allAmount,
+    pcb:pcb[0],
     poNumber: poNumber,
     cposition: cposition[0],
     bposition: bposition[0],

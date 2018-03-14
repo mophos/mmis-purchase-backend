@@ -892,6 +892,7 @@ router.get('/report/purchasing/11', wrap(async (req, res, next) => {
   let bgtypesub = req.query.bgtypesub;
   let bgtype = req.query.bgtype;
   let purchaOrderId = req.query.purchaOrderId;
+  let chief = "ปฎิบัติราชการแทนผู้ว่าราชการจังหวัด";
 
   let purchasingOfficer = await model.getPurchasingOfficer(db);
   let purchasingChief = await model.purchasing2Chief(db, purchaOrderId)
@@ -961,6 +962,7 @@ router.get('/report/purchasing/11', wrap(async (req, res, next) => {
     total: ttotalprice,
     hospitalName: hospitalName,
     at_name: at[0].value,
+    chief:chief,
     nDate: nDate,
     dDate: dDate,
     committeesVerify: committeesVerify,

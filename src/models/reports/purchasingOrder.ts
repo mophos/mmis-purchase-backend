@@ -805,12 +805,27 @@ export class PurchasingOrderReportModel {
         `
         return (knex.raw(sql))
     }
-    allAmountTransaction(knex: Knex, bgdetail_id: any, budgetYear: any) {
-        return knex('pc_budget_transection as pbt')
-            .sum('pbt.amount as amount')
-            .where('pbt.bgdetail_id', [bgdetail_id])
-            .leftJoin('bm_budget_detail as bbd', 'bbd.bgdetail_id', 'pbt.bgdetail_id')
-            .andWhere('bbd.bg_year', [budgetYear])
-            .andWhere('pbt.transaction_status', 'spend')
+    allAmountTransaction(knex: Knex, bgdetail_id: any, budgetYear: any, pid: any) {
+        let sql = `SELECT SUM( pbt.amount ) AS amount FROM pc_budget_transection AS pbt
+        LEFT JOIN bm_budget_detail AS bbd ON bbd.bgdetail_id = pbt.bgdetail_id
+        LEFT JOIN pc_purchasing_order AS po ON po.purchase_order_id = pbt.purchase_order_id 
+        WHERE
+            pbt.bgdetail_id = ${bgdetail_id}
+            AND bbd.bg_year = ${budgetYear} 
+            AND pbt.transaction_status = 'SPEND' 
+            AND pbt.transection_id < (
+        SELECT
+            t.transection_id 
+        FROM
+            pc_budget_transection t
+            JOIN pc_purchasing_order p ON p.purchase_order_id = t.purchase_order_id
+            JOIN bm_budget_detail b ON b.bgdetail_id = t.bgdetail_id 
+        WHERE
+            t.bgdetail_id = ${bgdetail_id}
+            AND b.bg_year = ${budgetYear} 
+            AND t.transaction_status = 'SPEND' 
+            AND t.purchase_order_id = ${pid} 
+        )`;
+        return knex.raw(sql)
     }
 }

@@ -159,9 +159,53 @@ export class PurchasingOrderReportModel {
         }
         sql += ` GROUP BY
         g.generic_id `
-        console.log(sql);
         return knex.raw(sql, [startdate, enddate]);
     }
+
+    getOrderPoint(knex: Knex, warehouseId: any, genericTypeIds: any) {
+        return knex.raw(`SELECT
+            (
+        SELECT
+            ifnull( sum( wp.qty ), 0 ) 
+        FROM
+            wm_products AS wp
+            INNER JOIN mm_products AS mp ON mp.product_id = wp.product_id 
+        WHERE
+            mp.generic_id = mg.generic_id 
+            AND wp.warehouse_id = ${warehouseId} 
+            ) AS remain_qty,	
+            mlv.labeler_name as mlabeler,
+            mlm.labeler_name as vlabeler,
+            mp.product_name,
+            ug.qty,	
+            gt.generic_type_name,
+            u.unit_name AS primary_unit_name,
+            mg.working_code,
+            mg.generic_id,
+            mg.generic_name,
+            mg.min_qty,
+            mg.max_qty,
+            mg.unit_cost
+        FROM
+            mm_generics AS mg
+            INNER JOIN mm_generic_types AS gt ON gt.generic_type_id = mg.generic_type_id
+            INNER JOIN mm_units AS u ON u.unit_id = mg.primary_unit_id 
+            INNER JOIN mm_products as mp on mp.generic_id = mg.generic_id
+            INNER JOIN wm_products as wp on wp.product_id = mp.product_id
+            INNER JOIN mm_unit_generics as ug on ug.unit_generic_id = wp.unit_generic_id
+            INNER JOIN mm_labelers as mlv on mlv.labeler_id = mp.v_labeler_id
+            INNER JOIN mm_labelers as mlm on mlm.labeler_id = mp.m_labeler_id
+        WHERE
+            mg.mark_deleted = "N" 
+            AND mg.is_active = "Y"
+            AND mg.generic_type_id = ${genericTypeIds} 
+        GROUP BY wp.product_id
+        HAVING
+            remain_qty <= mg.min_qty AND remain_qty > 0 
+        ORDER BY
+            mg.generic_name ASC`)
+    }
+
     lPurchase(knex: Knex, startdate: any, enddate: any) {
         return knex.raw(`SELECT
         g.generic_name,

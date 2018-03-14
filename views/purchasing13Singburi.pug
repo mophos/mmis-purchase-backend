@@ -124,7 +124,7 @@ html
       br
       | ผู้อำนวยการ#{hospitalName}
       br
-      if(purchasing[0].purchase_method_id==2) 
+      if(purchasing.purchase_method_id==2) 
         | ปฏิบัติราชการแทนผู้ตรวจกระทรวงเขต 4
-      if(purchasing[0].purchase_method_id!=2) 
+      if(purchasing.purchase_method_id!=2) 
         | #{chief}#{province}

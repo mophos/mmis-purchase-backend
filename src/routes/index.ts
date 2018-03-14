@@ -114,28 +114,33 @@ router.get('/report/purchaseRequset', wrap(async (req, res, next) => {
 }));
 
 //======================================================================
-router.get('/report/list/purchaseSelec/:startdate/:enddate/', wrap(async (req, res, next) => {
-  let startdate = req.params.startdate;
-  let enddate = req.params.enddate;
+router.get('/report/list/purchaseSelec', wrap(async (req, res, next) => {
   let generic_type_id = req.query.generic_type_id;
+  // let warehouseId = req.decoded.warehouseId;
   let db = req.db;
 
-  let results = await model.LsPurchase(db, startdate, enddate, generic_type_id);
+  ////// แก้ไขคลัง //////
+  let results = await model.getOrderPoint(db, 505, generic_type_id);
   let hospname = await model.hospital(db);
   results = results[0]
   if (results[0] === undefined) res.render('error404')
   hospname = hospname[0].hospname
   let nDate = model.prettyDate(new Date())
+  let i = 0;
+  let fill = [];
   results.forEach(value => {
+    fill[i] = value.max_qty - value.remain_qty;
     if (value.qty === null) value.qty = 0
     // if(value.unit_name===null) value.unit_name=0
     if (value.min_qty === null) value.min_qty = 0
+    i++;
   });
-  moment.locale('th');
-  let sdate = moment(startdate).format('D MMMM ') + (moment(startdate).get('year') + 543);
-  let edate = moment(enddate).format('D MMMM ') + (moment(enddate).get('year') + 543);
 
-  res.render('listpurchase', { nDate: nDate, hospname: hospname, results: results, sdate: sdate, edate: edate })
+  console.log('===========', fill)
+  moment.locale('th');
+  let sdate = moment(new Date()).format('D MMMM ') + (moment(new Date()).get('year') + 543);
+
+  res.render('listpurchase', { fill: fill, nDate: nDate, hospname: hospname, results: results, sdate: sdate })
 }));
 
 router.get('/report/list/purchase/:startdate/:enddate', wrap(async (req, res, next) => {

@@ -40,7 +40,7 @@ export class ProductsModel {
     return knex('mm_generic_types').whereIn('generic_type_id',types)
   }
 
-  getOrderProductListByGeneric(knex: Knex, genericId: any) {
+  getOrderProductListByGeneric(knex: Knex, warehouseId: any, genericId: any) {
     let sql = `
     select mp.generic_id, mp.working_code, mp.product_id, mp.product_name, mp.purchase_cost, mp.is_lot_control,
     mp.primary_unit_id, mp.m_labeler_id, mp.v_labeler_id, mp.purchase_unit_id,
@@ -49,6 +49,7 @@ export class ProductsModel {
     ut.unit_name as to_unit_name, ug.qty as conversion_qty, mp.purchase_unit_id as unit_generic_id,
     (
       select sum(wp.qty) as total from wm_products as wp where wp.product_id=mp.product_id
+      and wp.warehouse_id=?
     ) as remain_qty, 
     0 as order_qty
 
@@ -66,24 +67,26 @@ export class ProductsModel {
     group by mp.product_id
     `;
 
-    return knex.raw(sql, [genericId]);
+    return knex.raw(sql, [warehouseId, genericId]);
   }
 
-  getOrderPoint(knex: Knex, query: string = '', genericTypeIds: string[], limit: number = 100, offset: number = 0) {
+  getOrderPoint(knex: Knex, warehouseId: any, query: string = '', genericTypeIds: string[], limit: number = 100, offset: number = 0) {
     let _query = `${query}%`;
 
-    let subQuery = knex('view_product_reserve as pr')
-      .select(knex.raw('sum(pr.remain_qty)'))
-      .innerJoin('mm_products as mp', 'mp.product_id', 'pr.product_id')
+    let subQuery = knex('wm_products as wp')
+      .select(knex.raw('ifnull(sum(wp.qty), 0)'))
+      .innerJoin('mm_products as mp', 'mp.product_id', 'wp.product_id')
       .whereRaw('mp.generic_id=mg.generic_id')
+      .where('wp.warehouse_id', warehouseId)
       .as('remain_qty');
+    
     let subQueryPurchased = knex('pc_purchasing_order_item as pci')
       .select(knex.raw('sum(pci.qty*ug.qty) as total_qty'))
       .innerJoin('pc_purchasing_order as pco', 'pco.purchase_order_id', 'pci.purchase_order_id')
       .innerJoin('mm_unit_generics as ug', 'ug.unit_generic_id', 'pci.unit_generic_id')
       .innerJoin('mm_products as mp', 'mp.product_id', 'pci.product_id')
       .whereRaw('pco.purchase_order_status in ("ORDERPOINT", "PREPARED", "CONFIRM", "CONFIRMED")')
-      .whereRaw('pco.is_cancel=0')
+      .whereRaw('pco.is_cancel="N"')
       .whereRaw('mp.generic_id=mg.generic_id')
       .whereRaw(`pco.purchase_order_id not in (
         select purchase_order_id from wm_receives as rp
@@ -92,14 +95,13 @@ export class ProductsModel {
     .as('total_purchased')
 
     const con = knex('mm_generics as mg')
-      .select(
-        subQuery, subQueryPurchased, 'gt.generic_type_name', 'u.unit_name as primary_unit_name',
+      .select(subQueryPurchased, subQuery, 'gt.generic_type_name', 'u.unit_name as primary_unit_name',
         'mg.working_code', 'mg.generic_id', 'mg.generic_name', 'mg.min_qty', 'mg.max_qty')
       .innerJoin('mm_generic_types as gt', 'gt.generic_type_id', 'mg.generic_type_id')
       .innerJoin('mm_units as u', 'u.unit_id', 'mg.primary_unit_id')
       .whereRaw('mg.mark_deleted="N" and mg.is_active="Y"')
       .where('mg.generic_name', 'like', _query)
-      .havingRaw('remain_qty<=mg.min_qty')
+      .havingRaw('remain_qty<=mg.min_qty and remain_qty>0')
       .whereIn('mg.generic_type_id', genericTypeIds)
       .orderBy('mg.generic_name');
     
@@ -107,23 +109,23 @@ export class ProductsModel {
     return con;
   }
 
-  getTotalOrderPoint(knex: Knex, query: string = '', genericTypeIds: string[]) {
+  getTotalOrderPoint(knex: Knex, warehouseId: any, query: string = '', genericTypeIds: string[]) {
     let _query = `${query}%`;
 
-    let subQuery = knex('view_product_reserve as pr')
-      .select(knex.raw('sum(pr.remain_qty)'))
-      .innerJoin('mm_products as mp', 'mp.product_id', 'pr.product_id')
+    let subQuery = knex('wm_products as wp')
+      .select(knex.raw('ifnull(sum(wp.qty), 0)'))
+      .innerJoin('mm_products as mp', 'mp.product_id', 'wp.product_id')
       .whereRaw('mp.generic_id=mg.generic_id')
+      .where('wp.warehouse_id', warehouseId)
       .as('remain_qty');
     
     const con = knex('mm_generics as mg')
       .select(
-      subQuery,
-      'mg.working_code', 'mg.generic_id', 'mg.generic_name', 'mg.min_qty', 'mg.max_qty')
+        subQuery, 'mg.working_code', 'mg.generic_id', 'mg.generic_name', 'mg.min_qty', 'mg.max_qty')
       .innerJoin('mm_generic_types as gt', 'gt.generic_type_id', 'mg.generic_type_id')
       .whereRaw('mg.mark_deleted="N" and mg.is_active="Y"')
       .where('mg.generic_name', 'like', _query)
-      .havingRaw('remain_qty<=mg.min_qty')
+      .havingRaw('remain_qty<=mg.min_qty and remain_qty>0')
       .whereIn('mg.generic_type_id', genericTypeIds)
       .orderBy('mg.generic_name');
 

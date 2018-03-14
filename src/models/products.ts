@@ -45,15 +45,18 @@ export class ProductsModel {
     select mp.generic_id, mp.working_code, mp.product_id, mp.product_name, mp.purchase_cost, mp.is_lot_control,
     mp.primary_unit_id, mp.m_labeler_id, mp.v_labeler_id, mp.purchase_unit_id,
     lm.labeler_name as m_labeler_name, lv.labeler_name as v_labeler_name,
-    u.unit_name as primary_unit_name, wp.unit_generic_id, uf.unit_name as from_unit_name,
-    ut.unit_name as to_unit_name, ug.qty as conversion_qty, floor(sum(wp.qty)/ug.qty) as remain_qty, 0 as order_qty
+    u.unit_name as primary_unit_name, uf.unit_name as from_unit_name,
+    ut.unit_name as to_unit_name, ug.qty as conversion_qty, mp.purchase_unit_id as unit_generic_id,
+    (
+      select sum(wp.qty) as total from wm_products as wp where wp.product_id=mp.product_id
+    ) as remain_qty, 
+    0 as order_qty
 
     from mm_products as mp
     inner join mm_labelers as lm on lm.labeler_id=mp.m_labeler_id
     inner join mm_labelers as lv on lv.labeler_id=mp.v_labeler_id
     inner join mm_units as u on u.unit_id=mp.primary_unit_id
-    inner join wm_products as wp on wp.product_id=mp.product_id
-    inner join mm_unit_generics as ug on ug.unit_generic_id=wp.unit_generic_id
+    inner join mm_unit_generics as ug on ug.unit_generic_id=mp.purchase_unit_id
     inner join mm_units as uf on uf.unit_id=ug.from_unit_id
     inner join mm_units as ut on ut.unit_id=ug.to_unit_id
 
@@ -66,7 +69,7 @@ export class ProductsModel {
     return knex.raw(sql, [genericId]);
   }
 
-  getOrderPoint(knex: Knex, query: string = '', generictype: string = null, limit: number = 100, offset: number = 0) {
+  getOrderPoint(knex: Knex, query: string = '', genericTypeIds: string[], limit: number = 100, offset: number = 0) {
     let _query = `${query}%`;
 
     let subQuery = knex('view_product_reserve as pr')
@@ -87,40 +90,24 @@ export class ProductsModel {
         inner join wm_receive_approve as ra on ra.receive_id = rp.receive_id
       )`)
     .as('total_purchased')
-    /*
-select sum(pci.qty*ug.qty) as total_qty
-from pc_purchasing_order_item as pci
-inner join pc_purchasing_order as pco on pco.purchase_order_id=pci.purchase_order_id
-inner join mm_unit_generics as ug on ug.unit_generic_id=pci.unit_generic_id
-inner join mm_products as mp on mp.product_id=pci.product_id
-where pco.purchase_order_status in ('ORDERPOINT', 'PREPARED', 'CONFIRM', 'CONFIRMED')
-and pco.is_cancel=0
-and mp.generic_id='1200410'
-and pco.purchase_order_id not in (
-select purchase_order_id from wm_receives as rp
-inner join wm_receive_approve as ra on ra.receive_id=rp.receive_id
-)
-    */
+
     const con = knex('mm_generics as mg')
       .select(
-      subQuery, subQueryPurchased, 'gt.generic_type_name', 'u.unit_name as primary_unit_name',
-      'mg.working_code', 'mg.generic_id', 'mg.generic_name', 'mg.min_qty', 'mg.max_qty')
+        subQuery, subQueryPurchased, 'gt.generic_type_name', 'u.unit_name as primary_unit_name',
+        'mg.working_code', 'mg.generic_id', 'mg.generic_name', 'mg.min_qty', 'mg.max_qty')
       .innerJoin('mm_generic_types as gt', 'gt.generic_type_id', 'mg.generic_type_id')
       .innerJoin('mm_units as u', 'u.unit_id', 'mg.primary_unit_id')
       .whereRaw('mg.mark_deleted="N" and mg.is_active="Y"')
       .where('mg.generic_name', 'like', _query)
       .havingRaw('remain_qty<=mg.min_qty')
+      .whereIn('mg.generic_type_id', genericTypeIds)
       .orderBy('mg.generic_name');
-    
-    if (generictype !== 'null') {
-      con.where('mg.generic_type_id', generictype);
-    }
     
     con.limit(limit).offset(offset)
     return con;
   }
 
-  getTotalOrderPoint(knex: Knex, query: string = '', generictype: string = null) {
+  getTotalOrderPoint(knex: Knex, query: string = '', genericTypeIds: string[]) {
     let _query = `${query}%`;
 
     let subQuery = knex('view_product_reserve as pr')
@@ -137,11 +124,8 @@ inner join wm_receive_approve as ra on ra.receive_id=rp.receive_id
       .whereRaw('mg.mark_deleted="N" and mg.is_active="Y"')
       .where('mg.generic_name', 'like', _query)
       .havingRaw('remain_qty<=mg.min_qty')
+      .whereIn('mg.generic_type_id', genericTypeIds)
       .orderBy('mg.generic_name');
-    
-    if (generictype !== 'null') {
-      con.where('mg.generic_type_id', generictype);
-    }
 
     return con;
   }

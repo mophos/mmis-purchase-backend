@@ -35,11 +35,21 @@ router.post('/orderspoint', async (req, res, next) => {
   let limit = +req.body.limit || 50;
   let offset = +req.body.offset || 0;
 
+  let genericTypeIds = [];
+
+  if (generictype === null || generictype === 'null' || generictype === '') {
+    let g = req.decoded.generic_type_id;
+    if (g) {
+      genericTypeIds = g.split(',');
+    }
+  } else {
+    genericTypeIds.push(generictype);
+  }
   // let count = await model.orderspoint(db, q, contract, minmax, generictype, true, limit, offset);
   // let result = await model.orderspoint(db, q, contract, minmax, generictype, false, limit, offset);
   try {
-    let rs: any = await model.getOrderPoint(db, q, generictype, limit, offset);
-    let rsCount: any = await model.getTotalOrderPoint(db, q, generictype);
+    let rs: any = await model.getOrderPoint(db, q, genericTypeIds, limit, offset);
+    let rsCount: any = await model.getTotalOrderPoint(db, q, genericTypeIds);
     res.send({
       ok: true,
       rows: rs,

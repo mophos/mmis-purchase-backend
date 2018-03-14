@@ -28,12 +28,13 @@ router.get('/', (req, res, next) => {
 
 router.post('/orderspoint', async (req, res, next) => {
   let db = req.db;
-  let q = req.query.q;
-  let contract = req.query.contract;
-  // let minmax = req.query.minmax;
-  let generictype = req.query.generictype;
+  let q = req.body.q;
+  let contract = req.body.contract;
+  let generictype = req.body.generictype;
   let limit = +req.body.limit || 50;
   let offset = +req.body.offset || 0;
+
+  let warehouseId = req.decoded.warehouseId;
 
   let genericTypeIds = [];
 
@@ -45,11 +46,10 @@ router.post('/orderspoint', async (req, res, next) => {
   } else {
     genericTypeIds.push(generictype);
   }
-  // let count = await model.orderspoint(db, q, contract, minmax, generictype, true, limit, offset);
-  // let result = await model.orderspoint(db, q, contract, minmax, generictype, false, limit, offset);
+ 
   try {
-    let rs: any = await model.getOrderPoint(db, q, genericTypeIds, limit, offset);
-    let rsCount: any = await model.getTotalOrderPoint(db, q, genericTypeIds);
+    let rs: any = await model.getOrderPoint(db, warehouseId, q, genericTypeIds, limit, offset);
+    let rsCount: any = await model.getTotalOrderPoint(db, warehouseId, q, genericTypeIds);
     res.send({
       ok: true,
       rows: rs,
@@ -66,9 +66,10 @@ router.post('/orderspoint', async (req, res, next) => {
 router.get('/orderspoint/product-list-by-generic/:genericId', async (req, res, next) => {
   let db = req.db;
   let genericId = req.params.genericId;
+  let warehouseId = req.decoded.warehouseId;
 
   try {
-    let rs: any = await model.getOrderProductListByGeneric(db, genericId);
+    let rs: any = await model.getOrderProductListByGeneric(db, warehouseId, genericId);
     res.send({ ok: true, rows: rs[0] });
   } catch (error) {
     res.send({ ok: false, error: error.message });    

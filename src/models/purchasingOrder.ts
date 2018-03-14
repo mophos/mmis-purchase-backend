@@ -309,8 +309,9 @@ export class PurchasingOrderModel {
 
   detail(knex: Knex, id: string) {
     return knex(this.tableName)
-      .select('pc_purchasing_order.*', 'mm_labelers.labeler_name')
+      .select('pc_purchasing_order.*', 'mm_labelers.labeler_name', 'bgd.bgtypesub_id')
       .innerJoin('mm_labelers', 'mm_labelers.labeler_id', 'pc_purchasing_order.labeler_id')
+      .leftJoin('bm_budget_detail as bgd', 'bgd.bgdetail_id', 'pc_purchasing_order.budget_detail_id')
       .where(this.primaryKey, id);
   }
 

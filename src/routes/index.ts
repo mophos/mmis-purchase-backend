@@ -117,9 +117,10 @@ router.get('/report/purchaseRequset', wrap(async (req, res, next) => {
 router.get('/report/list/purchaseSelec', wrap(async (req, res, next) => {
   let generic_type_id = req.query.generic_type_id;
   // let warehouseId = req.decoded.warehouseId;
+  
   let db = req.db;
 
-  ////// แก้ไขคลัง //////
+  ////// แก้ไขคลัง decoded warehouseId //////
   let results = await model.getOrderPoint(db, 505, generic_type_id);
   let hospname = await model.hospital(db);
   results = results[0]
@@ -129,7 +130,8 @@ router.get('/report/list/purchaseSelec', wrap(async (req, res, next) => {
   let i = 0;
   let fill = [];
   results.forEach(value => {
-    fill[i] = value.max_qty - value.remain_qty;
+    fill[i] = ((value.max_qty - value.remain_qty) / value.qty).toFixed(0);
+    value.remain_qty = (value.remain_qty / value.qty).toFixed(0);
     if (value.qty === null) value.qty = 0
     // if(value.unit_name===null) value.unit_name=0
     if (value.min_qty === null) value.min_qty = 0

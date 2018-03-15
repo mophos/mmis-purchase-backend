@@ -8,6 +8,7 @@ import * as _ from 'lodash';
 import { PurchasingOrderReportModel } from '../models/reports/purchasingOrder';
 import { RequisitionOrderReportModel } from '../models/reports/requisitionOrder';
 import { log } from 'util';
+import { PurchasingOrderModel} from '../models/purchasingOrder'
 // import { load } from 'mime';
 
 const model = new PurchasingOrderReportModel();

@@ -43,8 +43,8 @@ import unitRoute from './routes/unit';
 import genericTypeRoute from './routes/genericType';
 import settingRoute from './routes/setting';
 import budgetTransectionRoute from './routes/budgetTransection';
-import userRoute  from './routes/users';
-import stdRoute  from './routes/standard';
+import userRoute from './routes/users';
+import stdRoute from './routes/standard';
 import officerRoute from './routes/officer'
 
 const app: express.Express = express();
@@ -136,7 +136,7 @@ app.use('/products', checkAuth, productRoute);
 app.use('/committee-people', checkAuth, committeePeopleRoute);
 app.use('/budgettype', checkAuth, budgetTypeRoute);
 app.use('/bidtype', checkAuth, bidTypeRoute);
-app.use('/labeler', checkAuth,labelerRoute);
+app.use('/labeler', checkAuth, labelerRoute);
 app.use('/package', checkAuth, packageRoute);
 app.use('/requisition', checkAuth, requisitionRoute);
 app.use('/contract', checkAuth, contractRoute);
@@ -151,9 +151,10 @@ app.use('/setting', settingRoute);
 app.use('/docs', poReportRoute);
 app.use('/budget-transection', budgetTransectionRoute);
 app.use('/std', stdRoute);
-app.use('/officer',officerRoute);
+app.use('/officer', officerRoute);
 
-app.use('/', indexRoute);
+// app.use('/', checkAuth, indexRoute);
+app.use('/', checkAuth, indexRoute);
 
 //catch 404 and forward to error handler
 app.use((req, res, next) => {

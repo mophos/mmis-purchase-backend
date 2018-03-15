@@ -26,6 +26,32 @@ router.get('/', (req, res, next) => {
     });
 });
 
+router.post('/reorderpoint/trade', async (req, res, next) => {
+  let db = req.db;
+  let warehouseId = req.decoded.warehouseId;
+  let genericTypeId = req.body.genericTypeId;
+
+  let genericTypeIds = [];
+  if (!genericTypeId || genericTypeId === 'null' || genericTypeId === '') {
+    let g = req.decoded.generic_type_id;
+    if (g) {
+      genericTypeIds = g.split(',');
+    }
+  } else {
+    genericTypeIds.push(genericTypeId);
+  }
+
+  try {
+    let rs: any = await model.getReOrderPointTrade(db, warehouseId, genericTypeIds);
+    res.send({ ok: true, rows: rs });
+  } catch (error) {
+    res.send({ ok: false, error: error.message });
+  } finally {
+    db.destroy();
+  }
+
+});
+
 router.post('/orderspoint', async (req, res, next) => {
   let db = req.db;
   let q = req.body.q;

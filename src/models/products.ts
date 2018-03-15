@@ -24,20 +24,20 @@ export class ProductsModel {
     let nullColumn = knex.raw("null as contract_id");
     return knex('view_products_labeler as pl')
       .select(
-      'pl.*',
-      'vu.from_unit_id',
-      'vu.to_unit_id',
-      'vu.unitname_from',
-      'vu.unitname_to',
-      'vu.qty',
-      'r.total as remain')
+        'pl.*',
+        'vu.from_unit_id',
+        'vu.to_unit_id',
+        'vu.unitname_from',
+        'vu.unitname_to',
+        'vu.qty',
+        'r.total as remain')
       .innerJoin('view_mm_unit_products as vu', 'vu.unit_product_id', 'pl.purchase_unit_id')
       .leftJoin('view_remain_all_products as r', 'r.product_id', 'pl.product_id')
       .whereRaw(`( pl.product_name like '${_query}' or pl.generic_name like '${_query}' )`)
   }
 
-  types(knex:Knex,types){
-    return knex('mm_generic_types').whereIn('generic_type_id',types)
+  types(knex: Knex, types) {
+    return knex('mm_generic_types').whereIn('generic_type_id', types)
   }
 
   getOrderProductListByGeneric(knex: Knex, warehouseId: any, genericId: any) {
@@ -80,7 +80,7 @@ export class ProductsModel {
       .whereRaw('mp.generic_id=mg.generic_id')
       .where('wp.warehouse_id', warehouseId)
       .as('remain_qty');
-    
+
     let subQueryPurchased = knex('pc_purchasing_order_item as pci')
       .select(knex.raw('sum(pci.qty*ug.qty) as total_qty'))
       .innerJoin('pc_purchasing_order as pco', 'pco.purchase_order_id', 'pci.purchase_order_id')
@@ -93,7 +93,7 @@ export class ProductsModel {
         select purchase_order_id from wm_receives as rp
         inner join wm_receive_approve as ra on ra.receive_id = rp.receive_id
       )`)
-    .as('total_purchased')
+      .as('total_purchased')
 
     const con = knex('mm_generics as mg')
       .select(subQueryPurchased, subQuery, 'gt.generic_type_name', 'gt.generic_type_id', 'u.unit_name as primary_unit_name',
@@ -106,9 +106,44 @@ export class ProductsModel {
       // .havingRaw('remain_qty<=mg.min_qty and remain_qty>0')
       .whereIn('mg.generic_type_id', genericTypeIds)
       .orderBy('mg.generic_name');
-    
+
     con.limit(limit).offset(offset)
     return con;
+  }
+
+  getReOrderPointTrade(knex: Knex, warehouseId: any, genericTypeIds: string[]) {
+
+    let subQuery = knex('wm_products as wp')
+      .select(knex.raw('sum(wp.qty)'))
+      .where('wp.warehouse_id', warehouseId)
+      .whereRaw('wp.product_id=mp.product_id')
+      .groupBy('wp.product_id')
+      .as('remain_qty');
+    
+    let query = knex('mm_products as mp')
+      .select(subQuery, 'mp.product_id', 'mp.generic_id', 'mp.product_name', 'gt.generic_type_name',
+        'mg.min_qty', 'mg.max_qty')
+      .innerJoin('mm_generics as mg', 'mg.generic_id', 'mp.generic_id')
+      .innerJoin('mm_generic_types as gt', 'gt.generic_type_id', 'mg.generic_type_id');
+    
+    if (genericTypeIds.length) {
+      query.whereIn('mg.generic_type_id', genericTypeIds);
+    }
+
+    return query.havingRaw('remain_qty<mg.min_qty')
+      .orderBy('mp.product_name');
+    /*
+    select mp.product_id, mp.generic_id, mp.product_name, 
+    mg.min_qty, mg.max_qty, sum(wp.qty) as remain_qty
+    from wm_products as wp
+    inner join mm_products as mp on mp.product_id=wp.product_id
+    inner join mm_generics as mg on mg.generic_id=mp.generic_id
+    where wp.warehouse_id=505
+    group by wp.product_id
+    having remain_qty<mg.min_qty
+    order by mp.product_name
+    */
+
   }
 
   getTotalOrderPoint(knex: Knex, warehouseId: any, query: string = '', genericTypeIds: string[]) {
@@ -120,7 +155,7 @@ export class ProductsModel {
       .whereRaw('mp.generic_id=mg.generic_id')
       .where('wp.warehouse_id', warehouseId)
       .as('remain_qty');
-    
+
     const con = knex('mm_generics as mg')
       .select(
         subQuery, 'mg.working_code', 'mg.generic_id', 'mg.generic_name', 'mg.min_qty', 'mg.max_qty')
@@ -139,18 +174,18 @@ export class ProductsModel {
     let _query = `%${query}%`;
     const con = knex('wm_products as p')
       .select(
-      knex.raw('0 as isContract'),
-      'l.labeler_name',
-      'l.labeler_id',
-      'p.product_id',
-      'mp.product_name',
-      'r.total as remain',
-      'ufrom.unit_name as unitname_from',
-      'uto.unit_name as unitname_to',
-      'ug.cost',
-      'ug.qty as to_unit_qty',
-      'gt.generic_type_name',
-      'gd.*')
+        knex.raw('0 as isContract'),
+        'l.labeler_name',
+        'l.labeler_id',
+        'p.product_id',
+        'mp.product_name',
+        'r.total as remain',
+        'ufrom.unit_name as unitname_from',
+        'uto.unit_name as unitname_to',
+        'ug.cost',
+        'ug.qty as to_unit_qty',
+        'gt.generic_type_name',
+        'gd.*')
       .innerJoin('mm_products as mp', 'mp.product_id', 'p.product_id')
       .innerJoin('mm_generics as gd', 'gd.generic_id', 'mp.generic_id')
       .innerJoin('mm_generic_types as gt', 'gt.generic_type_id', 'gd.generic_type_id')
@@ -185,24 +220,24 @@ export class ProductsModel {
 
     let con = knex('view_products_labeler as pl')
       .select(
-      'pl.*',
-      'vu.from_unit_id',
-      'vu.to_unit_id',
-      'vu.unitname_from',
-      'vu.unitname_to',
-      'vu.qty',
-      'cm.contract_id',
-      'cm.contract_ref',
-      'cm.labeler_people',
-      'cm.labeler',
-      'cm.budget_source',
-      'cm.bid_type',
-      'cm.bid_process',
-      'cmlabeler.labeler_name as cm_labeler_name',
-      knex.raw(`IF( cm.contract_id IS NULL, 0, 1 ) AS isContract`),
-      knex.raw(`IF( rm.total IS NULL, 0, rm.total ) AS remain`),
-      knex.raw(`IF( pototal.order_lage_quantity IS NULL, 0, pototal.order_lage_quantity ) AS order_lage_quantity`),
-      knex.raw(`IF( pototal.order_small_quantity IS NULL, 0, pototal.order_small_quantity ) AS order_small_quantity`)
+        'pl.*',
+        'vu.from_unit_id',
+        'vu.to_unit_id',
+        'vu.unitname_from',
+        'vu.unitname_to',
+        'vu.qty',
+        'cm.contract_id',
+        'cm.contract_ref',
+        'cm.labeler_people',
+        'cm.labeler',
+        'cm.budget_source',
+        'cm.bid_type',
+        'cm.bid_process',
+        'cmlabeler.labeler_name as cm_labeler_name',
+        knex.raw(`IF( cm.contract_id IS NULL, 0, 1 ) AS isContract`),
+        knex.raw(`IF( rm.total IS NULL, 0, rm.total ) AS remain`),
+        knex.raw(`IF( pototal.order_lage_quantity IS NULL, 0, pototal.order_lage_quantity ) AS order_lage_quantity`),
+        knex.raw(`IF( pototal.order_small_quantity IS NULL, 0, pototal.order_small_quantity ) AS order_small_quantity`)
       )
       .leftJoin('view_mm_unit_products as vu', 'vu.unit_product_id', 'pl.purchase_unit_id')
       .leftJoin('view_cm_product as cm', w => {
@@ -289,13 +324,13 @@ export class ProductsModel {
     let nullColumn = knex.raw("null as contract_id");
     return knex('view_products_labeler as pl')
       .select('pl.*',
-      'cmp.contract_id',
-      'vu.from_unit_id',
-      'vu.to_unit_id',
-      'vu.unitname_from',
-      'vu.unitname_to',
-      'vu.qty',
-      'r.total as remain')
+        'cmp.contract_id',
+        'vu.from_unit_id',
+        'vu.to_unit_id',
+        'vu.unitname_from',
+        'vu.unitname_to',
+        'vu.qty',
+        'r.total as remain')
       .innerJoin('view_mm_unit_products as vu', 'vu.unit_product_id', 'pl.purchase_unit_id')
       .innerJoin('view_remain_all_products as r', 'r.product_id', 'pl.product_id')
       .innerJoin('view_cm_product as cmp', 'cmp.product_id', 'pl.product_id')
@@ -308,13 +343,13 @@ export class ProductsModel {
     let nullColumn = knex.raw("null as contract_id");
     return knex('view_products_labeler as pl')
       .select('pl.*',
-      nullColumn,
-      'vu.from_unit_id',
-      'vu.to_unit_id',
-      'vu.unitname_from',
-      'vu.unitname_to',
-      'vu.qty',
-      'r.total as remain')
+        nullColumn,
+        'vu.from_unit_id',
+        'vu.to_unit_id',
+        'vu.unitname_from',
+        'vu.unitname_to',
+        'vu.qty',
+        'r.total as remain')
       .innerJoin('view_mm_unit_products as vu', 'vu.unit_product_id', 'pl.purchase_unit_id')
       .innerJoin('view_remain_all_products as r', 'r.product_id', 'pl.product_id')
       .whereRaw(`( pl.product_name like '${_query}' or pl.generic_name like '${_query}' )`)
@@ -366,8 +401,8 @@ export class ProductsModel {
       .where('p.v_labeler_id', lebelerId)
       .where(w => {
         w.where('p.product_name', 'like', `%${q}%`)
-        .orWhere('gd.generic_name', 'like', `%${q}%`)
-        .orWhere('p.keywords', 'like', `%${q}%`)
+          .orWhere('gd.generic_name', 'like', `%${q}%`)
+          .orWhere('p.keywords', 'like', `%${q}%`)
       })
       .orderBy('p.product_name')
       .limit(limit)

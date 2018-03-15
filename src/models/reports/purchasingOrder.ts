@@ -203,7 +203,7 @@ export class PurchasingOrderReportModel {
         HAVING
             remain_qty <= mg.min_qty AND remain_qty > 0 
         ORDER BY
-            mg.generic_name ASC`)
+            mlm.labeler_name ASC`)
     }
 
     lPurchase(knex: Knex, startdate: any, enddate: any) {

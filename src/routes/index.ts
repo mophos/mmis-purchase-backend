@@ -117,7 +117,7 @@ router.get('/report/purchaseRequset', wrap(async (req, res, next) => {
 router.get('/report/list/purchaseSelec', wrap(async (req, res, next) => {
   let generic_type_id = req.query.generic_type_id;
   // let warehouseId = req.decoded.warehouseId;
-  
+
   let db = req.db;
 
   ////// แก้ไขคลัง decoded warehouseId //////
@@ -131,6 +131,7 @@ router.get('/report/list/purchaseSelec', wrap(async (req, res, next) => {
   let fill = [];
   results.forEach(value => {
     fill[i] = ((value.max_qty - value.remain_qty) / value.qty).toFixed(0);
+    fill[i] < 0 ? fill[i] = 1 : fill[i];
     value.remain_qty = (value.remain_qty / value.qty).toFixed(0);
     if (value.qty === null) value.qty = 0
     // if(value.unit_name===null) value.unit_name=0

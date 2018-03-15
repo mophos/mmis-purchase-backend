@@ -174,8 +174,8 @@ export class PurchasingOrderReportModel {
             mp.generic_id = mg.generic_id 
             AND wp.warehouse_id = ${warehouseId} 
             ) AS remain_qty,	
-            mlv.labeler_name as mlabeler,
-            mlm.labeler_name as vlabeler,
+            mlv.labeler_name as vlabeler,
+            mlm.labeler_name as mlabeler,
             mp.product_name,
             ug.qty,	
             gt.generic_type_name,

@@ -51,7 +51,7 @@ export class ProductsModel {
       select sum(wp.qty) as total from wm_products as wp where wp.product_id=mp.product_id
       and wp.warehouse_id=?
     ) as remain_qty, 
-    0 as order_qty
+    0 as order_qty, vcmp.contract_no, vcmp.contract_id
 
     from mm_products as mp
     inner join mm_labelers as lm on lm.labeler_id=mp.m_labeler_id
@@ -60,6 +60,7 @@ export class ProductsModel {
     inner join mm_unit_generics as ug on ug.unit_generic_id=mp.purchase_unit_id
     inner join mm_units as uf on uf.unit_id=ug.from_unit_id
     inner join mm_units as ut on ut.unit_id=ug.to_unit_id
+    left join view_cm_products_active as vcmp on vcmp.product_id=mp.product_id and vcmp.contract_status='APPROVED'
 
     where mp.generic_id=?
 
@@ -95,7 +96,7 @@ export class ProductsModel {
     .as('total_purchased')
 
     const con = knex('mm_generics as mg')
-      .select(subQueryPurchased, subQuery, 'gt.generic_type_name', 'u.unit_name as primary_unit_name',
+      .select(subQueryPurchased, subQuery, 'gt.generic_type_name', 'gt.generic_type_id', 'u.unit_name as primary_unit_name',
         'mg.working_code', 'mg.generic_id', 'mg.generic_name', 'mg.min_qty', 'mg.max_qty')
       .innerJoin('mm_generic_types as gt', 'gt.generic_type_id', 'mg.generic_type_id')
       .innerJoin('mm_units as u', 'u.unit_id', 'mg.primary_unit_id')

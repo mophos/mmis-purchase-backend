@@ -118,15 +118,9 @@ router.post('/selectData', (req, res, next) => {
 router.post('/getPurchasingOfficer', (req, res, next) => {
   let ref = req.body.ref;
   let db = req.db;
-  let tokenKey: string = req.body.tokenKey;
-  console.log("\nget: um_purchasing_officer ref:" + ref);
-  if (tokenKey === "") {
-      res.send({ ok: false, err: 'token error' });
-  }
 
   officerModel.getPurchasingOfficer(db, ref)
       .then((results: any) => {
-          console.log("\nget um_purchasing_officer =" + results.length);
           res.send({ ok: true, rows: results });
       })
       .catch(error => {

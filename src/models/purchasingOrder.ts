@@ -63,10 +63,10 @@ export class PurchasingOrderModel {
   officers(knex: Knex, limit: number = 100, offset: number = 0) {
     return knex('um_purchasing_officer')
       .select(knex.raw('concat(um_titles.title_name, um_people.fname," ",um_people.lname) as  fullname'), 'um_positions.position_name', 'um_purchasing_officer.*', 'um_purchasing_officer_type.type_name')
-      .innerJoin('um_people', 'um_people.people_id', 'um_purchasing_officer.people_id')
+      .leftJoin('um_people', 'um_people.people_id', 'um_purchasing_officer.people_id')
       .leftJoin('um_positions', 'um_positions.position_id', 'um_people.position_id')
-      .innerJoin('um_titles', 'um_titles.title_id', 'um_people.title_id')
-      .innerJoin('um_purchasing_officer_type', 'um_purchasing_officer_type.type_id', 'um_purchasing_officer.type_id')
+      .leftJoin('um_titles', 'um_titles.title_id', 'um_people.title_id')
+      .leftJoin('um_purchasing_officer_type', 'um_purchasing_officer_type.type_id', 'um_purchasing_officer.type_id')
       .orderBy('um_purchasing_officer.type_id', 'ASC');
   }
 
@@ -117,11 +117,12 @@ export class PurchasingOrderModel {
 
     let con = knex(this.tableName)
       .select(sumItems, sumReceive, 'pc_purchasing_order.*', 'l.labeler_name',
-      'bp.name as bid_process_name', 'bgs.bgtypesub_name')
+      'bp.name as bid_process_name', 'bgs.bgtypesub_name', 'cm.contract_no')
       .leftJoin('mm_labelers as l', 'pc_purchasing_order.labeler_id', 'l.labeler_id')
       .leftJoin('l_bid_process as bp', 'pc_purchasing_order.purchase_method_id', 'bp.id')
       .leftJoin('bm_budget_detail as bgd', 'bgd.bgdetail_id', 'pc_purchasing_order.budget_detail_id')
       .leftJoin('bm_bgtypesub as bgs', 'bgs.bgtypesub_id', 'bgd.bgtypesub_id')
+      .leftJoin('cm_contracts as cm', 'cm.contract_id', 'pc_purchasing_order.contract_id')
       .whereIn('pc_purchasing_order.purchase_order_status', status)
       .whereIn('pc_purchasing_order.generic_type_id', genericTypeIds)
       .orderBy('pc_purchasing_order.order_date', 'DESC')
@@ -309,9 +310,10 @@ export class PurchasingOrderModel {
 
   detail(knex: Knex, id: string) {
     return knex(this.tableName)
-      .select('pc_purchasing_order.*', 'mm_labelers.labeler_name', 'bgd.bgtypesub_id')
+      .select('pc_purchasing_order.*', 'mm_labelers.labeler_name', 'bgd.bgtypesub_id', 'cm.contract_no')
       .innerJoin('mm_labelers', 'mm_labelers.labeler_id', 'pc_purchasing_order.labeler_id')
       .leftJoin('bm_budget_detail as bgd', 'bgd.bgdetail_id', 'pc_purchasing_order.budget_detail_id')
+      .leftJoin('cm_contracts as cm', 'cm.contract_id', 'pc_purchasing_order.contract_id')
       .where(this.primaryKey, id);
   }
 

@@ -293,13 +293,15 @@ router.post('/purchase-reorder', async (req, res, next) => {
             purchase_order_id: v.purchase_order_id,
             labeler_id: v.labeler_id,
             is_contract: v.is_contract,
-            sub_total: v.sub_total,
+            contract_id: v.contract_id,
+            generic_type_id: v.generic_type_id,
+            // sub_total: v.sub_total,
             delivery: v.delivery,
             vat_rate: v.vat_rate,
-            vat: v.vat,
-            is_reorder: v.is_reorder,
+            // vat: v.vat,
+            // is_reorder: v.is_reorder,
             budget_year: v.budget_year,
-            total_price: v.total_price,
+            // total_price: v.total_price,
             order_date: v.order_date,
             purchase_order_number: serial,
             people_user_id: req.decoded.people_user_id
@@ -309,6 +311,7 @@ router.post('/purchase-reorder', async (req, res, next) => {
 
         await modelItems.save(db, productItems);
         await model.save(db, _poItems);
+
         res.send({ ok: true });
 
       } catch (error) {
@@ -797,6 +800,7 @@ router.get('/detail', (req, res, next) => {
       res.send({ ok: true, detail: results[0] })
     })
     .catch(error => {
+      console.log(error);
       res.send({ ok: false, error: error })
     })
     .finally(() => {

@@ -200,8 +200,6 @@ export class PurchasingOrderReportModel {
             AND mg.is_active = "Y"
             AND mg.generic_type_id = ${genericTypeIds} 
         GROUP BY wp.product_id
-        HAVING
-            remain_qty <= mg.min_qty AND remain_qty > 0 
         ORDER BY
             mlv.labeler_name ASC`)
     }

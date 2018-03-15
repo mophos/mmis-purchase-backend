@@ -101,7 +101,8 @@ export class ProductsModel {
       .innerJoin('mm_units as u', 'u.unit_id', 'mg.primary_unit_id')
       .whereRaw('mg.mark_deleted="N" and mg.is_active="Y"')
       .where('mg.generic_name', 'like', _query)
-      .havingRaw('remain_qty<=mg.min_qty and remain_qty>0')
+      .havingRaw('remain_qty<=mg.min_qty')
+      // .havingRaw('remain_qty<=mg.min_qty and remain_qty>0')
       .whereIn('mg.generic_type_id', genericTypeIds)
       .orderBy('mg.generic_name');
     
@@ -125,7 +126,8 @@ export class ProductsModel {
       .innerJoin('mm_generic_types as gt', 'gt.generic_type_id', 'mg.generic_type_id')
       .whereRaw('mg.mark_deleted="N" and mg.is_active="Y"')
       .where('mg.generic_name', 'like', _query)
-      .havingRaw('remain_qty<=mg.min_qty and remain_qty>0')
+      // .havingRaw('remain_qty<=mg.min_qty and remain_qty>0')
+      .havingRaw('remain_qty<=mg.min_qty')
       .whereIn('mg.generic_type_id', genericTypeIds)
       .orderBy('mg.generic_name');
 

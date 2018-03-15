@@ -116,12 +116,42 @@ router.get('/report/purchaseRequset', wrap(async (req, res, next) => {
 //======================================================================
 router.get('/report/list/purchaseSelec', wrap(async (req, res, next) => {
   let generic_type_id = req.query.generic_type_id;
-  // let warehouseId = req.decoded.warehouseId;
+  let warehouseId = req.decoded.warehouseId;
 
   let db = req.db;
 
-  ////// แก้ไขคลัง decoded warehouseId //////
-  let results = await model.getOrderPoint(db, 505, generic_type_id);
+  let results = await model.getOrderPoint(db, warehouseId, generic_type_id);
+  let hospname = await model.hospital(db);
+  results = results[0]
+  if (results[0] === undefined) res.render('error404')
+  hospname = hospname[0].hospname
+  let nDate = model.prettyDate(new Date())
+  let i = 0;
+  let fill = [];
+  results.forEach(value => {
+    fill[i] = ((value.max_qty - value.remain_qty) / value.qty).toFixed(0);
+    fill[i] < 0 ? fill[i] = 1 : fill[i];
+    value.remain_qty = (value.remain_qty / value.qty).toFixed(0);
+    if (value.qty === null) value.qty = 0
+    // if(value.unit_name===null) value.unit_name=0
+    if (value.min_qty === null) value.min_qty = 0
+    i++;
+  });
+
+  console.log('===========', fill)
+  moment.locale('th');
+  let sdate = moment(new Date()).format('D MMMM ') + (moment(new Date()).get('year') + 543);
+
+  res.render('listpurchase', { fill: fill, nDate: nDate, hospname: hospname, results: results, sdate: sdate })
+}));
+
+router.get('/report/list/purchase-trade-select', wrap(async (req, res, next) => {
+  let product_id = req.query.product_id;
+  let warehouseId = req.decoded.warehouseId;
+
+  let db = req.db;
+
+  let results = await model.getSelectOrderPoint(db, warehouseId, product_id);
   let hospname = await model.hospital(db);
   results = results[0]
   if (results[0] === undefined) res.render('error404')

@@ -154,7 +154,7 @@ app.use('/std', stdRoute);
 app.use('/officer', officerRoute);
 
 // app.use('/', checkAuth, indexRoute);
-app.use('/', indexRoute);
+app.use('/', checkAuth, indexRoute);
 
 //catch 404 and forward to error handler
 app.use((req, res, next) => {

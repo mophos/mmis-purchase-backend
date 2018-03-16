@@ -386,10 +386,6 @@ router.post('/', async (req, res, next) => {
         purchase.generic_type_id = summary.generic_type_id;
         purchase.purchase_method_id = summary.purchase_method_id;
         purchase.purchase_type_id = summary.purchase_type_id;
-        // buyer_fullname: summary.buyer_fullname;
-        // chief_fullname: summary.chief_fullname;
-        // chief_position: summary.chief_position;
-        // buyer_position: summary.buyer_position;
         purchase.chief_id = summary.chief_id;
         purchase.buyer_id = summary.buyer_id;
         purchase.budget_year = summary.budget_year;
@@ -400,8 +396,9 @@ router.post('/', async (req, res, next) => {
         purchase.delivery = summary.delivery;
         purchase.is_contract = summary.is_contract ? summary.is_contract : null;
         purchase.purchase_order_book_number = summary.purchase_order_book_number ? summary.purchase_order_book_number : null;
-        purchase.people_user_id = req.decoded.people_user_id;
+        purchase.contract_id = summary.contract_id;
 
+        purchase.people_user_id = req.decoded.people_user_id;
 
         items.forEach(v => {
           let obj: any = {
@@ -489,10 +486,6 @@ router.put('/:purchaseOrderId', async (req, res, next) => {
         purchase.generic_type_id = summary.generic_type_id;
         purchase.purchase_method_id = summary.purchase_method_id;
         purchase.purchase_type_id = summary.purchase_type_id;
-        // buyer_fullname: summary.buyer_fullname;
-        // chief_fullname: summary.chief_fullname;
-        // chief_position: summary.chief_position;
-        // buyer_position: summary.buyer_position;
         purchase.chief_id = summary.chief_id;
         purchase.buyer_id = summary.buyer_id;
         purchase.budget_year = summary.budget_year;
@@ -551,27 +544,6 @@ router.put('/:purchaseOrderId', async (req, res, next) => {
   }
 
 });
-
-// router.put('/newponumber/:id', (req, res, next) => {
-//   let id = req.params.id;
-//   let data = model.load(req);
-//   let db = req.db;
-//   if (data.purchase_order_number) {
-//     model.createPoNumber(db, id, data)
-//       .then((results: any) => {
-//         res.send({ ok: true })
-//       })
-//       .catch(error => {
-//         res.send({ ok: false, error: data })
-//       })
-//       .finally(() => {
-//         db.destroy();
-//       });
-//   } else {
-//     res.send({ ok: false, error: 'กรุณาระบุ po number' })
-//   }
-
-// });
 
 router.post('/checkApprove', async (req, res, next) => {
   let db = req.db;

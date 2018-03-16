@@ -139,7 +139,7 @@ app.use('/bidtype', checkAuth, bidTypeRoute);
 app.use('/labeler', checkAuth, labelerRoute);
 app.use('/package', checkAuth, packageRoute);
 app.use('/requisition', checkAuth, requisitionRoute);
-app.use('/contract', checkAuth, contractRoute);
+app.use('/contracts', checkAuth, contractRoute);
 app.use('/requisitionitem', checkAuth, requisitionItemRoute);
 app.use('/contract-product', checkAuth, contractProductRoute);
 app.use('/bid-process', checkAuth, bidProcessRoute);

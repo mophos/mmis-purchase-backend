@@ -121,10 +121,11 @@ export class ProductsModel {
       .as('remain_qty');
     
     let query = knex('mm_products as mp')
-      .select(subQuery, 'mp.product_id', 'mp.generic_id', 'mp.product_name', 'gt.generic_type_name',
+      .select(subQuery, 'mp.product_id', 'mp.generic_id', 'mp.product_name','mg.generic_name', 'gt.generic_type_name','ml.labeler_name',
         'mg.min_qty', 'mg.max_qty')
       .innerJoin('mm_generics as mg', 'mg.generic_id', 'mp.generic_id')
-      .innerJoin('mm_generic_types as gt', 'gt.generic_type_id', 'mg.generic_type_id');
+      .innerJoin('mm_generic_types as gt', 'gt.generic_type_id', 'mg.generic_type_id')
+      .innerJoin('mm_labelers as ml', 'ml.labeler_id', 'mp.v_labeler_id');
     
     if (genericTypeIds.length) {
       query.whereIn('mg.generic_type_id', genericTypeIds);

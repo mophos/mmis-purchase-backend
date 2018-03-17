@@ -51,7 +51,12 @@ updatePurchasingOfficer(knex: Knex, officerId: number, data) {
 }
 
 getPurchasingOfficer(knex: Knex) {
-  return knex('view_um_purchasing_officer').select('*');
+  return knex('um_purchasing_officer as pu')
+  .select('pu.p_id','pu.people_id','pu.type_id','type.type_name','type.type_code','pu.isactive',knex.raw('concat(t.title_name,p.fname," ",p.lname) AS fullname'))
+  .innerJoin('um_people as p','pu.people_id','p.people_id')
+  .innerJoin('um_titles as t','t.title_id','p.title_id')
+  .innerJoin('um_purchasing_officer_type as type','pu.type_id','type.type_id')
+  .where('pu.isactive',1);
 }
 
 getPurchasingOfficerType(knex: Knex) {

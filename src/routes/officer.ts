@@ -94,60 +94,64 @@ router.post('/', wrap(async (req, res, next) => {
     res.send({ ok: false, error: 'ข้อมูลไม่สมบูรณ์' });
   }
 }));
-router.post('/selectData', (req, res, next) => {
-  let tableName = req.body.tableName;
-  let selectText = req.body.selectText;
-  let whereText = req.body.whereText;
-  let groupBy = req.body.groupBy;
-  let orderText = req.body.orderText;
-  let db = req.db;
-  let tokenKey: string = req.body.tokenKey;
-  if (tokenKey === "") {
-      res.send({ ok: false, err: 'token error' });
-  }
 
-  officerModel.selectSql(db, tableName, selectText, whereText, groupBy, orderText)
-      .then((results: any) => {
-          console.log("\nget: " + tableName + ' = ' + results[0].length + ' record<s> founded.');
-          res.send({ ok: true, rows: results[0] });
-      })
-      .catch(error => {
-          res.send({ ok: false, error: error })
-      });
+router.get('/getPurchasingOfficer', (req, res, next) => {
+  let db = req.db;
+  officerModel.getPurchasingOfficer(db)
+    .then((results: any) => {
+      res.send({ ok: true, rows: results });
+    })
+    .catch(error => {
+      res.send({ ok: false, error: error });
+    });
 });
-router.post('/getPurchasingOfficer', (req, res, next) => {
-  let ref = req.body.ref;
+
+router.get('/getPeoples', (req, res, next) => {
+  let db = req.db;
+  officerModel.getPeoples(db)
+    .then((results: any) => {
+      res.send({ ok: true, rows: results });
+    })
+    .catch(error => {
+      res.send({ ok: false, error: error });
+    });
+});
+
+router.get('/getPurchasingOfficerType', (req, res, next) => {
   let db = req.db;
 
-  officerModel.getPurchasingOfficer(db, ref)
-      .then((results: any) => {
-          res.send({ ok: true, rows: results });
-      })
-      .catch(error => {
-          console.log({ ok: false, error: error });
-          res.send({ ok: false, error: error });
-      });
+  officerModel.getPurchasingOfficerType(db)
+    .then((results: any) => {
+      res.send({ ok: true, rows: results });
+    })
+    .catch(error => {
+      res.send({ ok: false, error: error });
+    });
 });
 
 router.post('/savePurchasingOfficer', (req, res, next) => {
-  let ref = req.body.ref;
-  let datas = req.body.data;
   let db = req.db;
-  let tokenKey: string = req.body.tokenKey;
-  console.log("\nsave: um_purchasing_officer ref:" + ref);
-  if (tokenKey === "") {
-      res.send({ ok: false, err: 'token error' });
-  }
+  let data = req.body.data;
+  officerModel.savePurchasingOfficer(db, data)
+    .then((results: any) => {
+      res.send({ ok: true, rows: results });
+    })
+    .catch(error => {
+      res.send({ ok: false, error: error });
+    });
+});
 
-  officerModel.savePurchasingOfficer(db, ref, datas)
-      .then((results: any) => {
-          console.log("\nsave result: um_purchasing_officer ref:" + results[0]);
-          res.send({ ok: true, ref: results[0] });
-      })
-      .catch(error => {
-          console.log({ ok: false, error: error });
-          res.send({ ok: false, error: error });
-      });
+router.put('/updatePurchasingOfficer', (req, res, next) => {
+  let db = req.db;
+  let data = req.body.data;
+  let officerId = req.body.officerId;
+  officerModel.updatePurchasingOfficer(db, officerId, data)
+    .then((results: any) => {
+      res.send({ ok: true, rows: results });
+    })
+    .catch(error => {
+      res.send({ ok: false, error: error });
+    });
 });
 
 router.post('/deletePurchasingOfficer', (req, res, next) => {
@@ -156,20 +160,20 @@ router.post('/deletePurchasingOfficer', (req, res, next) => {
   let tokenKey: string = req.body.tokenKey;
   console.log("\ndelete: um_purchasing_officer ref:" + ref);
   if (tokenKey === "") {
-      res.send({ ok: false, err: 'token error' });
+    res.send({ ok: false, err: 'token error' });
   }
   if (!ref || ref < 0) {
-      res.send({ ok: false, err: 'reference not found' });
+    res.send({ ok: false, err: 'reference not found' });
   }
 
   officerModel.deletePurchasingOfficer(db, ref)
-      .then((results: any) => {
-          console.log("\ndelete um_purchasing_officer =" + results[0]);
-          res.send({ ok: true, ref: results[0] });
-      })
-      .catch(error => {
-          console.log({ ok: false, error: error });
-          res.send({ ok: false, error: error });
-      });
+    .then((results: any) => {
+      console.log("\ndelete um_purchasing_officer =" + results[0]);
+      res.send({ ok: true, ref: results[0] });
+    })
+    .catch(error => {
+      console.log({ ok: false, error: error });
+      res.send({ ok: false, error: error });
+    });
 });
 export default router;

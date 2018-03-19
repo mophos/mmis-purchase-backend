@@ -31,18 +31,8 @@ router.post('/reorderpoint/trade', async (req, res, next) => {
   let warehouseId = req.decoded.warehouseId;
   let genericTypeId = req.body.genericTypeId;
 
-  let genericTypeIds = [];
-  if (!genericTypeId || genericTypeId === 'null' || genericTypeId === '') {
-    let g = req.decoded.generic_type_id;
-    if (g) {
-      genericTypeIds = g.split(',');
-    }
-  } else {
-    genericTypeIds.push(genericTypeId);
-  }
-
   try {
-    let rs: any = await model.getReOrderPointTrade(db, warehouseId, genericTypeIds);
+    let rs: any = await model.getReOrderPointTrade(db, warehouseId, genericTypeId);
     res.send({ ok: true, rows: rs });
   } catch (error) {
     res.send({ ok: false, error: error.message });

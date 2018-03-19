@@ -335,6 +335,7 @@ export class PurchasingOrderReportModel {
         LEFT JOIN mm_units uu ON uu.unit_id = uc.from_unit_id 
     WHERE
         po.order_date LIKE ? 
+        AND po.is_cancel = 'N' 
     GROUP BY
         poi.product_id,purchase_order_id 
     ORDER BY
@@ -367,6 +368,7 @@ export class PurchasingOrderReportModel {
         LEFT JOIN mm_units muu ON u.unit_id = uc.from_unit_id	
     WHERE
         po.order_date BETWEEN ? and ? and budget_detail_id = ? and purchase_order_status LIKE ?
+        AND po.is_cancel = 'N'
     GROUP BY
         poi.product_id,purchase_order_id 
     ORDER BY

@@ -2,30 +2,15 @@ include css.pug
 style(media='print').
   @page {
     size:landscape;
-    margin-top: 1.2cm;
+    margin-top: 1cm;
     margin-left: 1cm;
     margin-right: 1cm;
   }
 style.
   table, tr, td, th {
-    border: 0px solid #000;
-    position: relative;
-    padding: 2;
     font-size: 12pt;
-    border: 1px solid black;
-  }
-  td{
-    font-size: 10pt;
-  }
-  th span {
-    transform-origin: 0 50%;
-    transform: rotate(-90deg); 
-    white-space: nowrap; 
-    display: block;
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-  }
+    padding: 2;
+   }
 doctype html
 html
   head
@@ -33,43 +18,55 @@ html
     title report
   body
     button.btn.btn-sm.btn-success(onclick='window.print()') Print
-    .center(style='font-weight: bold;') #{hospname}
-    .center(style='font-weight: bold;') รายการสั่งซื้อยา
-    .center ณ วันที่ #{sdate}
-    table(cellpadding="0" cellspacing="0" style='padding: 0;')
-      tr 
-        th( valign='bottom' height='100') ชื่อยา
-        th
-          span ขนาดบรรจุ
-        th
-          span รูปแบบ
-        th(width='10px')
-          span จำนวนขั้นต่ำ
-        th
-          span อัตราการใช้ต่อเดือน
-        th
-          span ราคาหลังสุด
-        th
-          span จำนวนคงคลัง
-        th(valign='bottom') สั่งเพิ่ม
-        th(valign='bottom') ยอดสั่ง
-        th(valign='bottom') ชื่อการค้า
-        th(valign='bottom') บริษัทจำหน่าย
-        th(valign='bottom') บริษัทที่ผลิต
+    //- .center(style='font-weight: bold;') #{hospname}
+    //- .center(style='font-weight: bold;') รายการสั่งซื้อยา
+    //- .center ณ วันที่ #{sdate}
+    table
+      thead
+        tr
+          td(colspan="12").center(style='font-weight: bold;') #{hospname}
+        tr
+          td(colspan="12").center(style='font-weight: bold;') รายการสั่งซื้อยา
+        tr
+          td(colspan="12").center ณ วันที่ #{sdate}
+        tr(style=" border: 1px solid black;") 
+          th(style=" border: 1px solid black;font-size:12pt;")( valign='middle') ชื่อยา
+          th(style=" border: 1px solid black;font-size:12pt;") ขนาด
+          th(style=" border: 1px solid black;font-size:12pt;") รูปแบบ
+          th(style=" border: 1px solid black;font-size:12pt;")(width='10px') จำนวนขั้นต่ำ
+          th(style=" border: 1px solid black;font-size:12pt;") อัตรา
+            |  
+            br 
+            | การใช้
+            br 
+            | ต่อเดือน
+          th(style=" border: 1px solid black;font-size:12pt;") ราคา
+            |
+            br 
+            | หลังสุด
+          th(style=" border: 1px solid black;font-size:12pt;") จำนวน
+            |
+            br 
+            | คงคลัง
+          th(style=" border: 1px solid black;font-size:12pt;")(valign='bottom') สั่งเพิ่ม
+          th(style=" border: 1px solid black;font-size:12pt;")(valign='bottom') ยอดสั่ง
+          th(style=" border: 1px solid black;font-size:12pt;")(valign='bottom') ชื่อการค้า
+          th(style=" border: 1px solid black;font-size:12pt;")(valign='bottom') บริษัทจำหน่าย
+          th(style=" border: 1px solid black;font-size:12pt;")(valign='bottom') บริษัทที่ผลิต
       tbody
         - var y=0
         for b in results
           - y++
-            tr
-              td #{b.generic_name}
-              td.left #{b.qty}
-              td.left #{b.primary_unit_name}
-              td.right #{b.min_qty}
-              td.right &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-              td.right #{b.unit_cost}
-              td.right #{b.remain_qty} x #{b.qty} #{b.primary_unit_name}
-              td.right #{fill[y-1]} x #{b.qty} #{b.primary_unit_name}
-              td.right 
-              td #{b.product_name}
-              td #{b.vlabeler}
-              td #{b.mlabeler}
+            tr(style=" border: 1px solid black;")
+              td(style=" border: 1px solid black;") #{b.generic_name}
+              td(style=" border: 1px solid black;").left #{b.qty}
+              td(style=" border: 1px solid black;").left #{b.primary_unit_name}
+              td(style=" border: 1px solid black;").right #{b.min_qty}
+              td(style=" border: 1px solid black;").right &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              td(style=" border: 1px solid black;").right #{b.unit_cost}
+              td(style=" border: 1px solid black;").right #{b.remain_qty} x #{b.qty} #{b.primary_unit_name}
+              td(style=" border: 1px solid black;").right #{fill[y-1]} x #{b.qty} #{b.primary_unit_name}
+              td(style=" border: 1px solid black;").right 
+              td(style=" border: 1px solid black;") #{b.product_name}
+              td(style=" border: 1px solid black;") #{b.vlabeler}
+              td(style=" border: 1px solid black;") #{b.mlabeler}

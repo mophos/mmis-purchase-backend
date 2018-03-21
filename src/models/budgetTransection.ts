@@ -4,19 +4,14 @@ import * as express from 'express';
 
 export class BudgetTransectionModel {
 
-  // list(knex: Knex, limit: number = 100, offset: number = 0) {
-  //   return knex('pc_budget_transection')
-  //     .limit(limit)
-  //     .offset(offset);
-  // }
 
-  // incomingBalance(knex: Knex, detail_id: any) {
-  //   return knex('pc_budget_transection')
-  //     .where('type', 'spend')
-  //     .andWhere('bgdetail_id', detail_id)
-  //     .limit(1)
-  //     .orderBy('transection_id', 'DESC')
-  // }
+  getCurrentAmount(db: Knex, purchaseOrderId: any) {
+    return db('pc_budget_transection')
+      .select('amount')
+      .where('purchase_order_id', purchaseOrderId)
+      .where('transaction_status', 'SPEND')
+      .limit(1);
+  }
 
   // save transaction
   save(knex: Knex, datas: any) {

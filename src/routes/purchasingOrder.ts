@@ -527,10 +527,18 @@ router.put('/:purchaseOrderId', async (req, res, next) => {
         await model.update(db, purchaseOrderId, purchase);
         await modelItems.removePurchaseItem(db, purchaseOrderId);
         await modelItems.save(db, products);
-        // revoke transaction
-        await bgModel.cancelTransaction(db, purchaseOrderId);
-        // save transaction
-        await bgModel.save(db, transactionData);
+
+        // check 
+        let rsAmount = await bgModel.getCurrentAmount(db, purchaseOrderId, transaction.budgetDetailId);
+        if (rsAmount.length) {
+          if (rsAmount[0].amount !== transaction.totalPurchase) {
+            // revoke transaction
+            await bgModel.cancelTransaction(db, purchaseOrderId);
+            // save transaction
+            await bgModel.save(db, transactionData);
+          }
+        }
+
         res.send({ ok: true });
       }
 

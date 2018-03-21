@@ -538,7 +538,7 @@ router.put('/:purchaseOrderId', async (req, res, next) => {
             await bgModel.save(db, transactionData);
           }
         } else {
-          // await bgModel.cancelTransaction(db, purchaseOrderId);
+          await bgModel.cancelTransaction(db, purchaseOrderId);
           // save transaction
           await bgModel.save(db, transactionData);
         }

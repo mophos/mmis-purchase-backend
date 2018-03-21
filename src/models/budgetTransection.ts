@@ -5,11 +5,12 @@ import * as express from 'express';
 export class BudgetTransectionModel {
 
 
-  getCurrentAmount(db: Knex, purchaseOrderId: any) {
+  getCurrentAmount(db: Knex, purchaseOrderId: any, budgetDetailId: any) {
     return db('pc_budget_transection')
       .select('amount')
       .where('purchase_order_id', purchaseOrderId)
       .where('transaction_status', 'SPEND')
+      .where('bgdetail_id', budgetDetailId)
       .limit(1);
   }
 

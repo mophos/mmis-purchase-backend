@@ -529,7 +529,7 @@ router.put('/:purchaseOrderId', async (req, res, next) => {
         await modelItems.save(db, products);
 
         // check 
-        let rsAmount = await bgModel.getCurrentAmount(db, purchaseOrderId);
+        let rsAmount = await bgModel.getCurrentAmount(db, purchaseOrderId, transaction.budgetDetailId);
         if (rsAmount.length) {
           if (rsAmount[0].amount !== transaction.totalPurchase) {
             // revoke transaction

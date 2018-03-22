@@ -153,11 +153,18 @@ html
     br
     br
     div(style='margin-left: 40%; width: 60%; text-align:center;')
-      | ( #{purchasingChief.chief_fullname} )
-      br
-      | #{cposition.position_name}
-      br
-      | หัวหน้าเจ้าหน้าที่ 
+      if(cposition=='')
+        |
+        br
+        |
+        br
+        | 
+      else 
+        | ( #{purchasingChief.chief_fullname} )
+        br
+        | #{cposition.position_name}
+        br
+        | หัวหน้าเจ้าหน้าที่ 
     br
     .bold(style='margin-left: 68.5%;') อนุมัติ
     br

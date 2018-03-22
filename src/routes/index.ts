@@ -822,8 +822,18 @@ router.get('/report/purchasing/10/', wrap(async (req, res, next) => {
   let purchasingOfficer = await model.getPurchasingOfficer(db);
   let purchasingChief = await model.purchasing2Chief(db, purchaOrderId);
 
-  let cposition = await model.getPosition(db, purchasingChief[0].chief_id);
-  let bposition = await model.getPosition(db, purchasingChief[0].buyer_id);
+  let cposition
+  if (purchasingChief[0].chief_id) {
+    cposition = await model.getPosition(db, purchasingChief[0].chief_id);
+    cposition = cposition[0]
+  } else cposition = '';
+
+  let bposition
+  if (purchasingChief[0].buyer_id) {
+    bposition = await model.getPosition(db, purchasingChief[0].buyer_id);
+    bposition = bposition[0]
+  } else bposition = '';
+  
   let pcb = await model.pcBudget(db, purchaOrderId);
 
   let hosdetail = await model.hospital(db);
@@ -917,8 +927,8 @@ router.get('/report/purchasing/10/', wrap(async (req, res, next) => {
     poraor: poraor,
     purchasingChief: purchasingChief[0],
     sumTotal: sumTotal,
-    cposition: cposition[0],
-    bposition: bposition[0]
+    cposition: cposition,
+    bposition: bposition
   });
 }));
 
@@ -937,8 +947,19 @@ router.get('/report/purchasing/11', wrap(async (req, res, next) => {
   let poraor = hosdetail[0].managerName;
   let purchasing = await model.purchasing10(db, purchaOrderId);
   purchasing = purchasing[0];
-  let cposition = await model.getPosition(db, purchasingChief[0].chief_id);
-  let bposition = await model.getPosition(db, purchasingChief[0].buyer_id);
+
+  let cposition
+  if (purchasingChief[0].chief_id) {
+    cposition = await model.getPosition(db, purchasingChief[0].chief_id);
+    cposition = cposition[0]
+  } else cposition = '';
+
+  let bposition
+  if (purchasingChief[0].buyer_id) {
+    bposition = await model.getPosition(db, purchasingChief[0].buyer_id);
+    bposition = bposition[0]
+  } else bposition = '';
+
   let committeesVerify = await model.purchasingCommittee2(db, purchaOrderId);
   committeesVerify = committeesVerify[0];
   let count = await model.purchasingCountItem(db, purchaOrderId);
@@ -990,8 +1011,8 @@ router.get('/report/purchasing/11', wrap(async (req, res, next) => {
     allAmount: allAmount,
     pcb: pcb[0],
     poNumber: poNumber,
-    cposition: cposition[0],
-    bposition: bposition[0],
+    cposition: cposition,
+    bposition: bposition,
     type: type,
     purchasing: purchasing,
     sum: sum,
@@ -1687,18 +1708,26 @@ router.get('/report/po/egp/singburi', wrap(async (req, res, next) => {
   let bahtText = model.bahtText(totalprice)
   let province = hosdetail[0].province;
 
-  let cposition = await model.getPosition(db, purchasingChief[0].chief_id);
-  let bposition = await model.getPosition(db, purchasingChief[0].buyer_id);
+  let cposition
+  if (purchasingChief[0].chief_id) {
+    cposition = await model.getPosition(db, purchasingChief[0].chief_id);
+    cposition = cposition[0]
+  } else cposition = '';
 
-
+  let bposition
+  if (purchasingChief[0].buyer_id) {
+    bposition = await model.getPosition(db, purchasingChief[0].buyer_id);
+    bposition = bposition[0]
+  } else bposition = '';
+  
   res.render('egpSingburi', {
     ttotalprice: ttotalprice,
     bahtText: bahtText,
     chief: chief,
     pcb: pcb[0],
     allAmount: allAmount,
-    cposition: cposition[0],
-    bposition: bposition[0],
+    cposition: cposition,
+    bposition: bposition,
     textamount: textamount,
     type: type,
     purchasing: purchasing,

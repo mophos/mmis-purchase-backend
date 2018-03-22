@@ -62,7 +62,6 @@ html
       tr
         td
         td(colspan='7').right (ตัวอักษร) (#{bahtText})
-    br
     .fontspace
     | ระเบียบกระทรวงการคลังและกฎกรระทรวงว่าด้วยการจัดซื้อจัดจ้างภาครัฐจาก#{purchasing[0].labeler_name} อนึ่งในการจัดซื้อในครั้งนี้ใคร่ขอเสนอแต่งตั้งให้ผู้มีรายนามต่อไปนี้ เป็นกรรมการตรวจรับของ คือ
     br
@@ -72,7 +71,6 @@ html
       | #{b+1}. #{c.fullname}  #{c.position_name}  #{c.position}
       br
       -b++
-    br
     .fontspace
     | จึงเรียนมาเพื่อโปรดพิจารณาอนุมัติ โดยใช้เงิน #{budget[0].bgtype_name} ประเภท#{budget[0].bgtypesub_name} ปี #{budget[0].bg_year} 
     br
@@ -90,7 +88,6 @@ html
         tr 
           td ยอดเงินคงเหลือจากการซื้อครั้งนี้
           td #{pcb.balance} บาท
-    br
     .fontspace 
     | เกณฑ์การพิจารณาผลการยื่นข้อเสนอครั้งนี้ จะพิจารณาตัดสินโดยใช้หลักเกณฑ์ราคาประกอบคุณภาพ
     br
@@ -109,13 +106,18 @@ html
         br 
         | #{bposition.position_name}
       div(style="width:50%;float:left;text-align:center") ลงชื่อ.................................................หัวหน้าเจ้าหน้าที่
-        br
-        | 
-        br
-        | 
+        if(cposition=='')
+          |
+          br
+          |
+          br
+          | 
+        else
+          br 
+          | ( #{purchasingChief.chief_fullname} )
+          br
+          | #{cposition.position_name}  
     div(style="width:100%;float:left;text-align:center")
-      br
-      br
       br
       br
       br

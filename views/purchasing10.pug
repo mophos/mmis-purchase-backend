@@ -118,37 +118,33 @@ html
     div(style="width:100%;float:left;")
       div(style="width:50%;float:left;text-align:center") ลงชื่อ............................................................
         br
-        if(purchasingChief.buyer_fullname=="")
-          |(.....................................................)
-        else
-          |(#{purchasingChief.buyer_fullname})
-        br
-        if(!bposition)
-          |(.....................................................)
-        else
+        if(bposition=='')
+          |
+          br
+          |
+          br
+          | 
+        else 
+          | ( #{purchasingChief.buyer_fullname} )
+          br
           | #{bposition.position_name}
-        br 
-        if(!purchasingChief.buyer_position)
-          |(.....................................................)
-        else
-          | เจ้าหน้าที่
-        br 
+          br
+          | เจ้าหน้าที่ 
+          br 
       div(style="width:50%;float:left;text-align:center") ลงชื่อ............................................................
         br
-        if(purchasingChief.chief_fullname=="")
-          |(.....................................................)
-        else
-          |(#{purchasingChief.chief_fullname})
-        br
-        if(!cposition)
-          |(.....................................................)
-        else
+        if(cposition=='')
+          |
+          br
+          |
+          br
+          | 
+        else 
+          | ( #{purchasingChief.chief_fullname} )
+          br
           | #{cposition.position_name}
-        br
-        if(!purchasingChief.chief_position)
-          |(.....................................................)
-        else
-          | หัวหน้าเจ้าหน้าที่
+          br
+          | หัวหน้าเจ้าหน้าที่ 
         br 
     div(style="width:100%;float:left;text-align:center") อนุมัติ
       br

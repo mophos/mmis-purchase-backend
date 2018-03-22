@@ -229,7 +229,7 @@ export class PurchasingOrderReportModel {
             mg.generic_name,
             mg.min_qty,
             mg.max_qty,
-            mg.unit_cost
+            ug.cost as unit_cost
         FROM
             mm_generics AS mg
             INNER JOIN mm_generic_types AS gt ON gt.generic_type_id = mg.generic_type_id

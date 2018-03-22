@@ -728,7 +728,7 @@ export class PurchasingOrderReportModel {
     JOIN mm_units mu ON mu.unit_id=mup.to_unit_id
     WHERE po.created_date BETWEEN ? AND ? ORDER BY po.created_date`, [startdate, enddate]);
     }
-    purchasing10(knex: Knex, purchaOrderId) {
+    purchasing10(knex: Knex, purchaOrderId, warehouseId: any) {
         let sql = `SELECT
         mg.standard_cost,
         mup.cost,
@@ -769,7 +769,9 @@ export class PurchasingOrderReportModel {
        LEFT JOIN l_bid_process cbp ON cbp.id = po.purchase_method_id
        LEFT JOIN l_bid_type cbt ON cbt.bid_id = po.purchase_type_id
        LEFT JOIN mm_products mp on mp.generic_id = mg.generic_id
-       WHERE po.purchase_order_id=? AND mg.generic_id IS NOT NULL
+       WHERE po.purchase_order_id=?
+       AND wp.warehouse_id = ${warehouseId}
+       AND mg.generic_id IS NOT NULL
        GROUP BY
            poi.generic_id`
         return knex.raw(sql, purchaOrderId)

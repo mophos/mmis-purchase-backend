@@ -39,6 +39,12 @@ SELECT
       .offset(offset);
   }
 
+  listType(knex: Knex, limit: number = 100, offset: number = 0) {
+    return knex('view_budget_subtype')
+      .limit(limit)
+      .offset(offset);
+  }
+
   save(knex: Knex, datas: any) {
     return knex(this.tableName)
       .insert(datas);

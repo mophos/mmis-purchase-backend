@@ -97,10 +97,10 @@ export class PurchasingOrderModel {
   }
 
   getOrderList(knex: Knex, genericTypeId: any) {
-    knex('pc_purchasing_order as po')
+    return knex('pc_purchasing_order as po')
       .join('pc_purchasing_order_item as poi', 'po.purchase_order_id', 'poi.purchase_order_id')
       .where('is_cancel', 'N')
-      .andWhere('generic_type_id', genericTypeId)
+      .andWhere('po.generic_type_id', genericTypeId)
   }
 
   listByStatus(

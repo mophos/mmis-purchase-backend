@@ -135,6 +135,21 @@ router.get('/', async (req, res, next) => {
   }
 });
 
+router.get('/get-list-po/:generic_type_id', async (req, res, next) => {
+  
+  let generic_type_id = req.params.generic_type_id;
+  let db = req.db;
+
+  try {
+    let rs: any = await model.getOrderList(db,generic_type_id);
+    res.send({ ok: true, rows: rs });
+  } catch (error) {
+    res.send({ ok: false, error: error.error });
+  } finally {
+    db.destroy();
+  }
+});
+
 router.post('/by-status', async (req, res, next) => {
   let db = req.db;
   let status = req.body.status;

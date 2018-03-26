@@ -96,8 +96,11 @@ export class PurchasingOrderModel {
       .orderBy('pc_purchasing_order.order_date', 'DESC');
   }
 
-  getOrderList(knex: Knex, limit: number = 100, offset: number = 0) {
-
+  getOrderList(knex: Knex, genericTypeId: any) {
+    knex('pc_purchasing_order as po')
+      .join('pc_purchasing_order_item as poi', 'po.purchase_order_id', 'poi.purchase_order_id')
+      .where('is_cancel', 'N')
+      .andWhere('generic_type_id', genericTypeId)
   }
 
   listByStatus(

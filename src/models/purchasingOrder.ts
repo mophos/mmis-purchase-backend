@@ -31,6 +31,13 @@ export class PurchasingOrderModel {
     return true;
   }
 
+  checkApprove(knex: Knex, username: any, password: any, action: any) {
+    return knex('sys_approve as sa')
+      .leftJoin('um_users as uu', 'uu.user_id', 'sa.user_id')
+      .where('sa.action_name', action)
+      .andWhere('uu.username', username)
+      .andWhere('sa.password', password)
+  }
 
   getLastOrderByLabeler(knex: Knex, labeler_id: string) {
     return knex('pc_purchasing_order as p')
@@ -56,10 +63,10 @@ export class PurchasingOrderModel {
   officers(knex: Knex, limit: number = 100, offset: number = 0) {
     return knex('um_purchasing_officer')
       .select(knex.raw('concat(um_titles.title_name, um_people.fname," ",um_people.lname) as  fullname'), 'um_positions.position_name', 'um_purchasing_officer.*', 'um_purchasing_officer_type.type_name')
-      .innerJoin('um_people', 'um_people.people_id', 'um_purchasing_officer.people_id')
+      .leftJoin('um_people', 'um_people.people_id', 'um_purchasing_officer.people_id')
       .leftJoin('um_positions', 'um_positions.position_id', 'um_people.position_id')
-      .innerJoin('um_titles', 'um_titles.title_id', 'um_people.title_id')
-      .innerJoin('um_purchasing_officer_type', 'um_purchasing_officer_type.type_id', 'um_purchasing_officer.type_id')
+      .leftJoin('um_titles', 'um_titles.title_id', 'um_people.title_id')
+      .leftJoin('um_purchasing_officer_type', 'um_purchasing_officer_type.type_id', 'um_purchasing_officer.type_id')
       .orderBy('um_purchasing_officer.type_id', 'ASC');
   }
 
@@ -89,7 +96,16 @@ export class PurchasingOrderModel {
       .orderBy('pc_purchasing_order.order_date', 'DESC');
   }
 
-  listByStatus(knex: Knex, status: Array<any>, contract: string = 'ALL', query: string = '', start_date: string = '', end_date: string = '', number_start: string = '', number_end: string = '', limit: number = 100, offset: number = 0) {
+  getOrderList(knex: Knex, limit: number = 100, offset: number = 0) {
+
+  }
+
+  listByStatus(
+    knex: Knex, status: Array<any>,
+    contract: string = 'ALL', query: string = '',
+    start_date: string = '', end_date: string = '',
+    limit: number = 20, offset: number = 0,
+    genericTypeIds: any[]) {
     let sumItems = knex
       .select(knex.raw('sum(po.unit_price*po.qty)'))
       .from('pc_purchasing_order_item as po')
@@ -104,10 +120,15 @@ export class PurchasingOrderModel {
 
 
     let con = knex(this.tableName)
-      .select(sumItems, sumReceive, 'pc_purchasing_order.*', 'l.labeler_name', 'bp.name as bid_process_name')
+      .select(sumItems, sumReceive, 'pc_purchasing_order.*', 'l.labeler_name',
+        'bp.name as bid_process_name', 'bgs.bgtypesub_name', 'cm.contract_no')
       .leftJoin('mm_labelers as l', 'pc_purchasing_order.labeler_id', 'l.labeler_id')
       .leftJoin('l_bid_process as bp', 'pc_purchasing_order.purchase_method_id', 'bp.id')
+      .leftJoin('bm_budget_detail as bgd', 'bgd.bgdetail_id', 'pc_purchasing_order.budget_detail_id')
+      .leftJoin('bm_bgtypesub as bgs', 'bgs.bgtypesub_id', 'bgd.bgtypesub_id')
+      .leftJoin('cm_contracts as cm', 'cm.contract_id', 'pc_purchasing_order.contract_id')
       .whereIn('pc_purchasing_order.purchase_order_status', status)
+      .whereIn('pc_purchasing_order.generic_type_id', genericTypeIds)
       .orderBy('pc_purchasing_order.order_date', 'DESC')
       .orderBy('pc_purchasing_order.purchase_order_number', 'DESC');
 
@@ -118,15 +139,15 @@ export class PurchasingOrderModel {
     }
 
     if (query !== '') {
-      con.where('pc_purchasing_order.purchase_order_number', 'like', `%${query}%`);
+      con.where(w => {
+        w.where('pc_purchasing_order.purchase_order_number', 'like', `%${query}%`)
+          .orWhere('pc_purchasing_order.purchase_order_book_number', 'like', `%${query}%`)
+      });
     }
 
     if (start_date !== '' && end_date !== '') {
       con.whereBetween('pc_purchasing_order.order_date', [start_date, end_date]);
     }
-    // if (number_start !== '' && number_end !== ''){
-    //   con.whereBetween('pc_purchasing_order.purchasing_order_number', [number_start, number_end]);
-    // }
 
     con.limit(limit)
       .offset(offset);
@@ -134,19 +155,55 @@ export class PurchasingOrderModel {
     return con;
   }
 
-  isCancel(knex: Knex, limit: number = 100, offset: number = 0) {
-    let sumItems = knex
-      .count('po.purchase_order_id')
-      .from('pc_purchasing_order_item as po')
-      .whereRaw('po.purchase_order_id = pc_purchasing_order.purchase_order_id')
-      .groupBy('po.purchase_order_id').as('puchase_order_count')
-    return knex(this.tableName)
-      .select(sumItems, 'pc_purchasing_order.*', 'l.labeler_name', 'bp.name as bid_process_name')
-      .innerJoin('mm_labelers as l', 'pc_purchasing_order.labeler_id', 'l.labeler_id')
-      .innerJoin('cm_bid_process as bp', 'pc_purchasing_order.purchase_method', 'bp.id')
-      .where('pc_purchasing_order.is_cancel', '1')
-      .orderBy('purchase_order_id', 'DESC');
+  listByStatusTotal(
+    knex: Knex, status: Array<any>,
+    contract: string = 'ALL', query: string = '',
+    start_date: string = '', end_date: string = '',
+    genericTypeIds: any[]) {
+
+    let con = knex(this.tableName)
+      .select(knex.raw('count(*) as total'))
+      // .leftJoin('mm_labelers as l', 'pc_purchasing_order.labeler_id', 'l.labeler_id')
+      // .leftJoin('l_bid_process as bp', 'pc_purchasing_order.purchase_method_id', 'bp.id')
+      .whereIn('pc_purchasing_order.purchase_order_status', status)
+      .whereIn('pc_purchasing_order.generic_type_id', genericTypeIds)
+    // .orderBy('pc_purchasing_order.order_date', 'DESC')
+    // .orderBy('pc_purchasing_order.purchase_order_number', 'DESC');
+
+    if (contract === 'Y') {
+      con.where('pc_purchasing_order.is_contract', 'Y');
+    } else if (contract === 'N') {
+      con.where('pc_purchasing_order.is_contract', 'N');
+    }
+
+    if (query !== '') {
+      con.where(w => {
+        w.where('pc_purchasing_order.purchase_order_number', 'like', `%${query}%`)
+          .orWhere('pc_purchasing_order.purchase_order_book_number', 'like', `%${query}%`)
+      });
+    }
+
+    if (start_date !== '' && end_date !== '') {
+      con.whereBetween('pc_purchasing_order.order_date', [start_date, end_date]);
+    }
+
+    return con;
   }
+
+  // isCancel(knex: Knex, limit: number = 100, offset: number = 0, genericTypeIds: any[]) {
+  //   let sumItems = knex
+  //     .count('po.purchase_order_id')
+  //     .from('pc_purchasing_order_item as po')
+  //     .whereRaw('po.purchase_order_id = pc_purchasing_order.purchase_order_id')
+  //     .groupBy('po.purchase_order_id').as('puchase_order_count')
+  //   return knex(this.tableName)
+  //     .select(sumItems, 'pc_purchasing_order.*', 'l.labeler_name', 'bp.name as bid_process_name')
+  //     .innerJoin('mm_labelers as l', 'pc_purchasing_order.labeler_id', 'l.labeler_id')
+  //     .innerJoin('cm_bid_process as bp', 'pc_purchasing_order.purchase_method', 'bp.id')
+  //     .where('pc_purchasing_order.is_cancel', '1')
+  //     .whereIn('generic_type_id', genericTypeIds)
+  //     .orderBy('purchase_order_id', 'DESC');
+  // }
 
   listContracts(knex: Knex, limit: number = 100, offset: number = 0) {
 
@@ -257,8 +314,10 @@ export class PurchasingOrderModel {
 
   detail(knex: Knex, id: string) {
     return knex(this.tableName)
-      .select('pc_purchasing_order.*', 'mm_labelers.labeler_name')
+      .select('pc_purchasing_order.*', 'mm_labelers.labeler_name', 'bgd.bgtypesub_id', 'cm.contract_no')
       .innerJoin('mm_labelers', 'mm_labelers.labeler_id', 'pc_purchasing_order.labeler_id')
+      .leftJoin('bm_budget_detail as bgd', 'bgd.bgdetail_id', 'pc_purchasing_order.budget_detail_id')
+      .leftJoin('cm_contracts as cm', 'cm.contract_id', 'pc_purchasing_order.contract_id')
       .where(this.primaryKey, id);
   }
 
@@ -406,6 +465,12 @@ export class PurchasingOrderModel {
   GROUP BY
     mg.generic_id`
     return (knex.raw(sql))
+  }
+
+  changePurchaseDate(db: Knex, purchaseIds: any[], purchaseDate: any) {
+    return db('pc_purchasing_order')
+      .update('order_date', purchaseDate)
+      .whereIn('purchase_order_id', purchaseIds);
   }
 
 }

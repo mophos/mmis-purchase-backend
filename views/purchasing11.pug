@@ -22,23 +22,23 @@ html
           td(width='180') ที่ #{poNumber}
           td.center(colspan='3')
             img(src=APIURL+'krut.png', height='130px')
-          td(width='200') ศาลากลางจังหวัดสิงห์บุรี
+          td(width='200') ศาลากลางจังหวัด#{province}
         tr
           td(colspan='4')
-          td ถนนสิงห์บุรี-บางพาน สห 16000
+          td 
         tr
           td(colspan='3')
           td(colspan='2') #{nDate}
     br
     .enter เรื่อง สั่งซื้อยา
     .enter เรียน ผู้อำนวยการองค์การเภสัชกรรม
-    .enter ส่งที่ส่งมาด้วย 1. ใบสั่งซื้อยา พร้อมเงื่อนไข&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; จำนวน 1 ฉบับ
+    .enter สิ่งที่ส่งมาด้วย 1. ใบสั่งซื้อยา พร้อมเงื่อนไข&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; จำนวน 1 ฉบับ
     .fontspace
     .enter &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2. สำเนาใบอนุมัติสั่งซื้อยา&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; จำนวน 1 ฉบับ
     .fontspace
-    .enter(style="line-height: 1.2em;") &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ด้วยจังหวัดสิงห์บุรี มีความประสงค์จะสั่งซื้อยา จากองค์การเภสัชกรรม เพื่อใช้ในราชการ&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; โรงพยาบาลสิงห์บุรี จำนวน #{countp} รายการ เป็นเงิน #{total} บาท (#{bahtText}) สำเนาใบอนุมัติสั่งซื้อยาและใบสั่งซื้อยาพร้อมเงื่อนไขในการสั่งซื้อที่แนบมาพร้อมนี้
+    .enter(style="line-height: 1.2em;") &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ด้วยจังหวัด#{province} มีความประสงค์จะสั่งซื้อยา จากองค์การเภสัชกรรม เพื่อใช้ในราชการ #{hospitalName} จำนวน #{countp} รายการ เป็นเงิน #{total} บาท (#{bahtText}) สำเนาใบอนุมัติสั่งซื้อยาและใบสั่งซื้อยาพร้อมเงื่อนไขในการสั่งซื้อที่แนบมาพร้อมนี้
     .fontspace
-    .enter &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;จึงเรียนมาเพื่อโปรดจัดส่งยา ให้แก่โรงพยาบาลสิงห์บุรี ตามกำหนดเวลาและสถานที่ ที่ระบุในใบสั่งซื้อด้วย จักเป็นพระคุณ
+    .enter &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;จึงเรียนมาเพื่อโปรดจัดส่งยา ให้แก่#{hospitalName} ตามกำหนดเวลาและสถานที่ ที่ระบุในใบสั่งซื้อด้วย จักเป็นพระคุณ
     div(style='margin-left: 40%; width: 40%; text-align:center;')
       | ขอแสดงความนับถือ
       br
@@ -54,7 +54,7 @@ html
     p(style='text-decoration:underline; font-size: 14pt;') เงื่อนไขในการสั่งซื้อ
     div(style='font-size: 14pt;')
       .fontspace
-      | 1.ให้ส่งมอบ ณ โรงพยาบาลสิงห์บุรี ถนนขุนสรรค์ หมู่ - ตำบลบางพุทรา จังหวัดสิงห์บุรี
+      | 1.ให้ส่งมอบ ณ #{hospitalName} #{address}
       br
       .fontspace
       | 2.การส่งมอบ ให้ส่งมอบดังนี้คือ
@@ -72,32 +72,29 @@ html
       | ถ้าหากส่งมอบเกินกำหนดเวลาดังกล่าวในข้อ 2.1 หรือ 2.2 แล้วแต่กรณีขอสงวนการปรับเป็นรายวันในอัตราร้อยละ 0.1 ของราคาสิ่งของที่ยังไม่ได้รับมอบ
       br
       .fontspace
-      | 3.รายการใดที่ไม่สามารถส่งมอบได้ภายในกำหนด องค์การดภสัชกรรมต้องแจ้งยกเลิกรายการนั้นให้ทราบภายใน 30 วันหลังจากที่ได้รับใบสั่งซื้อนี้ และจะต้องไม่นำวงเงินในรายการดังกล่าวไปเพิ่มในรายการอื่นเว้นแต่ผู้สั่งซื้อได้ระบุไว้ในใบสั่งซื้อ
+      | 3.รายการใดที่ไม่สามารถส่งมอบได้ภายในกำหนด องค์การเภสัชกรรมต้องแจ้งยกเลิกรายการนั้นให้ทราบภายใน 30 วันหลังจากที่ได้รับใบสั่งซื้อนี้ และจะต้องไม่นำวงเงินในรายการดังกล่าวไปเพิ่มในรายการอื่นเว้นแต่ผู้สั่งซื้อได้ระบุไว้ในใบสั่งซื้อ
       br
       .fontspace
       | 4.การชำระเงินตามใบสั่งซื้อนี้จะชำระเป็นรายงวด หรือรายการตามที่คณะกรรมการตรวจรับพัสดุของทางรายการได้รับมอบไว้
     br
     br
-    div(style='font-size:12pt; width:30%;')
-      | สำนักงานสาธารณสุขจังหวัดสิงห์บุรี
+    div(style='font-size:14pt; width:30%;')
+      | สำนักงานสาธารณสุขจังหวัด#{province}
       br
-      | โรงพยาบาลสิงห์บุรี
+      | #{hospitalName}
       br
-      | โทร. 0 3651 1060 ต่อ 1127
+      | โทร. #{tel}
       br
-      | โทรสาร 0 3652 2514
+      | โทรสาร #{fax}
     hr.hideprint
     div(style='page-break-after: always;')
-    table
-      tr
-        td
-          img(src=APIURL+'krut.png', height='60px')
-        td(style='font-size: 24pt; padding-left:120px;').bold บันทึกข้อความ
+    img(src=APIURL+'krut.png', height='60px')
+    .headkut.bold(style="font-size: 24pt;") บันทึกข้อความ
     .enter  
     table
       tr
         td.bold(style='font-size: 20pt; width:90px;') ส่วนราชการ
-        td(style='border-bottom: 1px dotted black;').left กลุ่มงานเภสัชกรรม โรงพยาบาลสิงห์บุรี
+        td(style='border-bottom: 1px dotted black;').left กลุ่มงานเภสัชกรรม #{hospitalName}
     table
       tr
         td.bold(style='font-size: 20pt; width:5px;') ที่
@@ -109,10 +106,10 @@ html
         td.bold(style='font-size: 20pt; width:30px;') เรื่อง
         td(style='border-bottom: 1px dotted black;').left &nbsp;ขออนุมัติซื้อยาใบสั่งซื้อเลขที่ #{poNumber} ด้วย#{budget[0].bgtype_name} ประจำปีงบประมาณ #{budget[0].bg_year}
     br
-    .enter เรียน ผู้ว่าราชการจังหวัดสิงห์บุรี
+    .enter เรียน ผู้ว่าราชการจังหวัด#{province}
     .enter
     .fontspace
-    p(style="line-height: 1.2em;") ด้วยโรงพยาบาลสิงห์บุรี มีความประสงค์จะสั่งซื้อยา จากองค์การเภสัชกรรม ตามแบบ บส.09/1 ที่แนบมาพร้อมนี้ เพื่อใช้ในการรักษาพยาบาล จำนวน #{countp} รายการ เป็นเงิน #{total} บาท (#{bahtText}) โดยใช้#{budget[0].bgtype_name} ประจำปีงบประมาณ #{budget[0].bg_year}
+    p(style="line-height: 1.2em;") ด้วย#{hospitalName} มีความประสงค์จะสั่งซื้อยา จากองค์การเภสัชกรรม ตามแบบ บส.09/1 ที่แนบมาพร้อมนี้ เพื่อใช้ในการรักษาพยาบาล จำนวน #{countp} รายการ เป็นเงิน #{total} บาท (#{bahtText}) โดยใช้#{budget[0].bgtype_name} ประจำปีงบประมาณ #{budget[0].bg_year}
     .enter
     .fontspace
     .conleft(style="line-height: 1.2em;") จึงเรียนมาเพื่อขออนุมัติซื้อยาดังกล่าว &nbsp;
@@ -153,11 +150,28 @@ html
     br
     br
     div(style='margin-left: 40%; width: 60%; text-align:center;')
-      | ( #{purchasingChief.chief_fullname} )
-      br
-      | #{cposition.position_name}
-      br
-      | หัวหน้าเจ้าหน้าที่ 
+      if(cposition=='')
+        |
+        br
+        |
+        br
+        |
+        br
+        |
+        br
+        | 
+        br
+        | 
+        br
+        | 
+        br
+        | 
+      else 
+        | ( #{purchasingChief.chief_fullname} )
+        br
+        | #{cposition.position_name}
+        br
+        | หัวหน้าเจ้าหน้าที่ 
     br
     .bold(style='margin-left: 68.5%;') อนุมัติ
     br
@@ -170,3 +184,6 @@ html
       | ผู้อำนวยการ#{hospitalName}
       br
       |
+    hr.hideprint
+    div(style='page-break-after: always;')
+  include purchasing13Singburi.pug

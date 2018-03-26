@@ -142,27 +142,21 @@ router.post('/by-status', async (req, res, next) => {
   let query = req.body.query;
   let start_date = req.body.start_date || '';
   let end_date = req.body.end_date || '';
-  let number_start = req.body.number_start || '';
-  let number_end = req.body.number_end || '';
+  let limit = req.body.limit || 20;
+  let offset = req.body.offset || 0;
 
-  try {
-    let rs: any = await model.listByStatus(db, status, contract, query, start_date, end_date, number_start, number_end);
-    res.send({ ok: true, rows: rs });
-  } catch (error) {
-    res.send({ ok: false, error: error.message });
-  } finally {
-    db.destroy();
+  let genericTypeIds = [];
+
+  let g = req.decoded.generic_type_id;
+  if (g) {
+    genericTypeIds = g.split(',');
   }
-});
-
-router.get('/by-cancel', async (req, res, next) => {
-
-  let db = req.db;
-  let status = req.body.status;
 
   try {
-    let rs: any = await model.isCancel(db, status);
-    res.send({ ok: true, rows: rs });
+    let rs: any = await model.listByStatus(db, status, contract, query, start_date, end_date, limit, offset, genericTypeIds);
+    let rsTotal: any = await model.listByStatusTotal(db, status, contract, query, start_date, end_date, genericTypeIds);
+
+    res.send({ ok: true, rows: rs, total: rsTotal[0].total });
   } catch (error) {
     res.send({ ok: false, error: error.message });
   } finally {
@@ -299,13 +293,15 @@ router.post('/purchase-reorder', async (req, res, next) => {
             purchase_order_id: v.purchase_order_id,
             labeler_id: v.labeler_id,
             is_contract: v.is_contract,
-            sub_total: v.sub_total,
+            contract_id: v.contract_id,
+            generic_type_id: v.generic_type_id,
+            // sub_total: v.sub_total,
             delivery: v.delivery,
             vat_rate: v.vat_rate,
-            vat: v.vat,
-            is_reorder: v.is_reorder,
+            // vat: v.vat,
+            // is_reorder: v.is_reorder,
             budget_year: v.budget_year,
-            total_price: v.total_price,
+            // total_price: v.total_price,
             order_date: v.order_date,
             purchase_order_number: serial,
             people_user_id: req.decoded.people_user_id
@@ -315,6 +311,7 @@ router.post('/purchase-reorder', async (req, res, next) => {
 
         await modelItems.save(db, productItems);
         await model.save(db, _poItems);
+
         res.send({ ok: true });
 
       } catch (error) {
@@ -389,10 +386,6 @@ router.post('/', async (req, res, next) => {
         purchase.generic_type_id = summary.generic_type_id;
         purchase.purchase_method_id = summary.purchase_method_id;
         purchase.purchase_type_id = summary.purchase_type_id;
-        // buyer_fullname: summary.buyer_fullname;
-        // chief_fullname: summary.chief_fullname;
-        // chief_position: summary.chief_position;
-        // buyer_position: summary.buyer_position;
         purchase.chief_id = summary.chief_id;
         purchase.buyer_id = summary.buyer_id;
         purchase.budget_year = summary.budget_year;
@@ -403,8 +396,9 @@ router.post('/', async (req, res, next) => {
         purchase.delivery = summary.delivery;
         purchase.is_contract = summary.is_contract ? summary.is_contract : null;
         purchase.purchase_order_book_number = summary.purchase_order_book_number ? summary.purchase_order_book_number : null;
-        purchase.people_user_id = req.decoded.people_user_id;
+        purchase.contract_id = summary.contract_id;
 
+        purchase.people_user_id = req.decoded.people_user_id;
 
         items.forEach(v => {
           let obj: any = {
@@ -492,10 +486,6 @@ router.put('/:purchaseOrderId', async (req, res, next) => {
         purchase.generic_type_id = summary.generic_type_id;
         purchase.purchase_method_id = summary.purchase_method_id;
         purchase.purchase_type_id = summary.purchase_type_id;
-        // buyer_fullname: summary.buyer_fullname;
-        // chief_fullname: summary.chief_fullname;
-        // chief_position: summary.chief_position;
-        // buyer_position: summary.buyer_position;
         purchase.chief_id = summary.chief_id;
         purchase.buyer_id = summary.buyer_id;
         purchase.budget_year = summary.budget_year;
@@ -537,10 +527,22 @@ router.put('/:purchaseOrderId', async (req, res, next) => {
         await model.update(db, purchaseOrderId, purchase);
         await modelItems.removePurchaseItem(db, purchaseOrderId);
         await modelItems.save(db, products);
-        // revoke transaction
-        await bgModel.cancelTransaction(db, purchaseOrderId);
-        // save transaction
-        await bgModel.save(db, transactionData);
+
+        // check 
+        let rsAmount = await bgModel.getCurrentAmount(db, purchaseOrderId, transaction.budgetDetailId);
+        if (rsAmount.length) {
+          if (rsAmount[0].amount !== transaction.totalPurchase) {
+            // revoke transaction
+            await bgModel.cancelTransaction(db, purchaseOrderId);
+            // save transaction
+            await bgModel.save(db, transactionData);
+          }
+        } else {
+          await bgModel.cancelTransaction(db, purchaseOrderId);
+          // save transaction
+          await bgModel.save(db, transactionData);
+        }
+
         res.send({ ok: true });
       }
 
@@ -555,26 +557,20 @@ router.put('/:purchaseOrderId', async (req, res, next) => {
 
 });
 
-// router.put('/newponumber/:id', (req, res, next) => {
-//   let id = req.params.id;
-//   let data = model.load(req);
-//   let db = req.db;
-//   if (data.purchase_order_number) {
-//     model.createPoNumber(db, id, data)
-//       .then((results: any) => {
-//         res.send({ ok: true })
-//       })
-//       .catch(error => {
-//         res.send({ ok: false, error: data })
-//       })
-//       .finally(() => {
-//         db.destroy();
-//       });
-//   } else {
-//     res.send({ ok: false, error: 'กรุณาระบุ po number' })
-//   }
-
-// });
+router.post('/checkApprove', async (req, res, next) => {
+  let db = req.db;
+  let username = req.body.username;
+  let password = req.body.password;
+  let action = req.body.action;
+  console.log(action,password,username);
+  
+  const isCheck = await model.checkApprove(db, username, password, action);
+  if (isCheck[0]) {
+    res.send({ ok: true })
+  } else {
+    res.send({ ok: false });
+  }
+});
 
 router.put('/update-purchase/status', async (req, res, next) => {
   const db = req.db;
@@ -788,6 +784,7 @@ router.get('/detail', (req, res, next) => {
       res.send({ ok: true, detail: results[0] })
     })
     .catch(error => {
+      console.log(error);
       res.send({ ok: false, error: error })
     })
     .finally(() => {
@@ -903,6 +900,22 @@ router.get('/searchGenericHistory', async (req, res, next) => {
   try {
     let rs: any = await model.searchGenericHistory(db, key);
     res.send({ ok: true, rows: rs[0] });
+  } catch (error) {
+    res.send({ ok: false, error: error.message });
+  } finally {
+    db.destroy();
+  }
+});
+
+router.post('/change-purchase-date', async (req, res, next) => {
+  let purchaseOrderIds = req.body.purchaseOrderIds;
+  let purchaseDate = req.body.purchaseDate;
+
+  let db = req.db;
+
+  try {
+    let rs: any = await model.changePurchaseDate(db, purchaseOrderIds, purchaseDate);
+    res.send({ ok: true });
   } catch (error) {
     res.send({ ok: false, error: error.message });
   } finally {

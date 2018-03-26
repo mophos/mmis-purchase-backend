@@ -13,25 +13,33 @@ html
       label.h3(style='margin-top: 5px; font-size: 16pt;')  &nbsp;#{hospitalName}
     p.h2(style='width:50%;float: left;')
       | ที่
-      label.h3(style='margin-top: 5px;')  &nbsp;#{purchasing[0].purchase_order_book_number}
+      label.h3(style='margin-top: 5px;')  
+        if(purchasing[0].purchase_order_book_number)
+          | &nbsp;#{purchasing[0].purchase_order_book_number}
+        else
+          | &nbsp;#{purchasing[0].purchase_order_number}
     b.h2(style='width:50%;float: left;')
       | วันที่ 
       label.h3(style="font-size: 16pt;") &nbsp;#{nDate}
     b.h2(style='border: 1px solid white; width:50%; float: left;') เรื่อง
-      |  รายงานขอซื้อ 
+      |  รายงานขอซื้อยา/เวชภัณฑ์มิใช่ยา
     br
     br
     hr
     .enter เรียน ผู้ว่าราชการจังหวัด#{province}
     .fontspace
-    | ด้วย#{hospitalName}มีความประสงค์จะ ซื้อจำนวน #{countp} รายการ (
+    | ด้วย#{hospitalName}มีความประสงค์จะ ซื้อยา/เวชภัณฑ์มิใช่ยา จำนวน #{countp} รายการ 
+    br
     - var y=0
           for b in purchasing
             - y++
-             | &nbsp;#{b.generic_name}
+             .fontspace
+             .fontspace
+             label(style="font-size: 15pt;") &nbsp;- #{b.generic_name}
              if(y<countp) 
-              | , 
-    | ) โดย#{bidname} ซึ่งมีรายละเอียดดังต่อไปนี้
+              br 
+    br
+    | โดย#{bidname} ซึ่งมีรายละเอียดดังต่อไปนี้
     br
     .fontspace
     | 1.  เหตุผลและความจำเป็นที่ต้องซื้อ
@@ -89,6 +97,9 @@ html
         br
         | 
     div(style="width:100%;float:left;text-align:center")
+      br
+      br
+      br
       br
       br
       br

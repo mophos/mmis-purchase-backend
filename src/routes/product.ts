@@ -26,20 +26,46 @@ router.get('/', (req, res, next) => {
     });
 });
 
+router.post('/reorderpoint/trade', async (req, res, next) => {
+  let db = req.db;
+  let warehouseId = req.decoded.warehouseId;
+  let genericTypeId = req.body.genericTypeId;
+
+  try {
+    let rs: any = await model.getReOrderPointTrade(db, warehouseId, genericTypeId);
+    res.send({ ok: true, rows: rs });
+  } catch (error) {
+    res.send({ ok: false, error: error.message });
+  } finally {
+    db.destroy();
+  }
+
+});
+
 router.post('/orderspoint', async (req, res, next) => {
   let db = req.db;
-  let q = req.query.q;
-  let contract = req.query.contract;
-  // let minmax = req.query.minmax;
-  let generictype = req.query.generictype;
+  let q = req.body.q;
+  let contract = req.body.contract;
+  let generictype = req.body.generictype;
   let limit = +req.body.limit || 50;
   let offset = +req.body.offset || 0;
 
-  // let count = await model.orderspoint(db, q, contract, minmax, generictype, true, limit, offset);
-  // let result = await model.orderspoint(db, q, contract, minmax, generictype, false, limit, offset);
+  let warehouseId = req.decoded.warehouseId;
+
+  let genericTypeIds = [];
+
+  if (generictype === null || generictype === 'null' || generictype === '') {
+    let g = req.decoded.generic_type_id;
+    if (g) {
+      genericTypeIds = g.split(',');
+    }
+  } else {
+    genericTypeIds.push(generictype);
+  }
+ 
   try {
-    let rs: any = await model.getOrderPoint(db, q, generictype, limit, offset);
-    let rsCount: any = await model.getTotalOrderPoint(db, q, generictype);
+    let rs: any = await model.getOrderPoint(db, warehouseId, q, genericTypeIds, limit, offset);
+    let rsCount: any = await model.getTotalOrderPoint(db, warehouseId, q, genericTypeIds);
     res.send({
       ok: true,
       rows: rs,
@@ -56,9 +82,10 @@ router.post('/orderspoint', async (req, res, next) => {
 router.get('/orderspoint/product-list-by-generic/:genericId', async (req, res, next) => {
   let db = req.db;
   let genericId = req.params.genericId;
+  let warehouseId = req.decoded.warehouseId;
 
   try {
-    let rs: any = await model.getOrderProductListByGeneric(db, genericId);
+    let rs: any = await model.getOrderProductListByGeneric(db, warehouseId, genericId);
     res.send({ ok: true, rows: rs[0] });
   } catch (error) {
     res.send({ ok: false, error: error.message });    

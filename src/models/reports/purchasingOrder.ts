@@ -86,21 +86,20 @@ export class PurchasingOrderReportModel {
         lb.bid_name
     FROM
         pc_purchasing_order pcpo
-    JOIN pc_purchasing_order_item pci ON pci.purchase_order_id = pcpo.purchase_order_id
-    JOIN mm_generics vg ON pci.generic_id = vg.generic_id
-    JOIN mm_labelers ml ON ml.labeler_id = pcpo.labeler_id
-    JOIN mm_products vp ON vp.product_id = pci.product_id
-    LEFT JOIN mm_unit_generics mup ON pci.unit_generic_id = mup.unit_generic_id
-    LEFT JOIN mm_units mu ON mu.unit_id = mup.to_unit_id
-    JOIN l_bid_type lb ON lb.bid_id = pcpo.purchase_type_id
-    join um_people p on pcpo.buyer_id = p.people_id
-    join um_titles t on p.title_id = t.title_id
-    join um_positions po on po.position_id = p.position_id
-    
-    join um_people p2 on pcpo.chief_id = p2.people_id
-    join um_titles t2 on p2.title_id = t2.title_id
-    join um_positions po2 on po2.position_id = p2.position_id
-    WHERE
+        LEFT JOIN pc_purchasing_order_item pci ON pci.purchase_order_id = pcpo.purchase_order_id
+        LEFT JOIN mm_generics vg ON pci.generic_id = vg.generic_id
+        LEFT JOIN mm_labelers ml ON ml.labeler_id = pcpo.labeler_id
+        LEFT JOIN mm_products vp ON vp.product_id = pci.product_id
+        LEFT JOIN mm_unit_generics mup ON pci.unit_generic_id = mup.unit_generic_id
+        LEFT JOIN mm_units mu ON mu.unit_id = mup.to_unit_id
+        LEFT JOIN l_bid_type lb ON lb.bid_id = pcpo.purchase_type_id
+        LEFT JOIN um_people p ON pcpo.buyer_id = p.people_id
+        LEFT JOIN um_titles t ON p.title_id = t.title_id
+        LEFT JOIN um_positions po ON po.position_id = p.position_id
+        LEFT JOIN um_people p2 ON pcpo.chief_id = p2.people_id
+        LEFT JOIN um_titles t2 ON p2.title_id = t2.title_id
+        LEFT JOIN um_positions po2 ON po2.position_id = p2.position_id 
+        WHERE
         pcpo.purchase_order_id = '${purchaOrderId}'`);
     }
     tPurchase(knex: Knex, createDate) {
@@ -159,9 +158,95 @@ export class PurchasingOrderReportModel {
         }
         sql += ` GROUP BY
         g.generic_id `
-        console.log(sql);
         return knex.raw(sql, [startdate, enddate]);
     }
+
+    getOrderPoint(knex: Knex, warehouseId: any, genericTypeIds: any) {
+        return knex.raw(`SELECT
+            (
+        SELECT
+            ifnull( sum( wp.qty ), 0 ) 
+        FROM
+            wm_products AS wp
+            INNER JOIN mm_products AS mp ON mp.product_id = wp.product_id 
+        WHERE
+            mp.generic_id = mg.generic_id 
+            AND wp.warehouse_id = ${warehouseId} 
+            ) AS remain_qty,	
+            mlv.labeler_name as vlabeler,
+            mlm.labeler_name as mlabeler,
+            mp.product_name,
+            ug.qty,	
+            gt.generic_type_name,
+            u.unit_name AS primary_unit_name,
+            mg.working_code,
+            mg.generic_id,
+            mg.generic_name,
+            mg.min_qty,
+            mg.max_qty,
+            mg.unit_cost
+        FROM
+            mm_generics AS mg
+            INNER JOIN mm_generic_types AS gt ON gt.generic_type_id = mg.generic_type_id
+            INNER JOIN mm_units AS u ON u.unit_id = mg.primary_unit_id 
+            INNER JOIN mm_products as mp on mp.generic_id = mg.generic_id
+            INNER JOIN wm_products as wp on wp.product_id = mp.product_id
+            INNER JOIN mm_unit_generics as ug on ug.unit_generic_id = wp.unit_generic_id
+            INNER JOIN mm_labelers as mlv on mlv.labeler_id = mp.v_labeler_id
+            INNER JOIN mm_labelers as mlm on mlm.labeler_id = mp.m_labeler_id
+        WHERE
+            mg.mark_deleted = "N" 
+            AND mg.is_active = "Y"
+            AND mg.generic_type_id = ${genericTypeIds} 
+        GROUP BY wp.product_id
+        HAVING
+            remain_qty <= mg.min_qty 
+        ORDER BY
+            mlv.labeler_name ASC`)
+    }
+
+    getSelectOrderPoint(knex: Knex, warehouseId: any, product_id: any) {
+        return knex.raw(`SELECT
+            (
+        SELECT
+            ifnull( sum( wp.qty ), 0 ) 
+        FROM
+            wm_products AS wp
+            INNER JOIN mm_products AS mp ON mp.product_id = wp.product_id 
+        WHERE
+            mp.generic_id = mg.generic_id 
+            AND wp.warehouse_id = ${warehouseId} 
+            ) AS remain_qty,	
+            mlv.labeler_name as vlabeler,
+            mlm.labeler_name as mlabeler,
+            mp.product_name,
+            ug.qty,	
+            gt.generic_type_name,
+            u.unit_name AS primary_unit_name,
+            mg.working_code,
+            mg.generic_id,
+            mg.generic_name,
+            mg.min_qty,
+            mg.max_qty,
+            ug.cost as unit_cost
+        FROM
+            mm_generics AS mg
+            INNER JOIN mm_generic_types AS gt ON gt.generic_type_id = mg.generic_type_id
+            INNER JOIN mm_units AS u ON u.unit_id = mg.primary_unit_id 
+            INNER JOIN mm_products as mp on mp.generic_id = mg.generic_id
+            INNER JOIN wm_products as wp on wp.product_id = mp.product_id
+            INNER JOIN mm_unit_generics as ug on ug.unit_generic_id = wp.unit_generic_id
+            INNER JOIN mm_labelers as mlv on mlv.labeler_id = mp.v_labeler_id
+            INNER JOIN mm_labelers as mlm on mlm.labeler_id = mp.m_labeler_id
+        WHERE
+            mg.mark_deleted = "N" 
+            AND mg.is_active = "Y"
+            AND wp.product_id IN (${product_id}) 
+        GROUP BY wp.product_id
+        ORDER BY
+            mlv.labeler_name ASC`)
+    }
+
     lPurchase(knex: Knex, startdate: any, enddate: any) {
         return knex.raw(`SELECT
         g.generic_name,
@@ -249,6 +334,7 @@ export class PurchasingOrderReportModel {
         LEFT JOIN mm_units uu ON uu.unit_id = uc.from_unit_id 
     WHERE
         po.order_date LIKE ? 
+        AND po.is_cancel = 'N' 
     GROUP BY
         poi.product_id,purchase_order_id 
     ORDER BY
@@ -281,6 +367,7 @@ export class PurchasingOrderReportModel {
         LEFT JOIN mm_units muu ON u.unit_id = uc.from_unit_id	
     WHERE
         po.order_date BETWEEN ? and ? and budget_detail_id = ? and purchase_order_status LIKE ?
+        AND po.is_cancel = 'N'
     GROUP BY
         poi.product_id,purchase_order_id 
     ORDER BY
@@ -640,8 +727,10 @@ export class PurchasingOrderReportModel {
     JOIN mm_units mu ON mu.unit_id=mup.to_unit_id
     WHERE po.created_date BETWEEN ? AND ? ORDER BY po.created_date`, [startdate, enddate]);
     }
-    purchasing10(knex: Knex, purchaOrderId) {
+    purchasing10(knex: Knex, purchaOrderId, warehouseId: any) {
         let sql = `SELECT
+        mg.standard_cost,
+        mup.cost,
         mp.product_name,
         mup.qty as conversion, 
         muu.unit_name as primary_unit,
@@ -679,7 +768,9 @@ export class PurchasingOrderReportModel {
        LEFT JOIN l_bid_process cbp ON cbp.id = po.purchase_method_id
        LEFT JOIN l_bid_type cbt ON cbt.bid_id = po.purchase_type_id
        LEFT JOIN mm_products mp on mp.generic_id = mg.generic_id
-       WHERE po.purchase_order_id=? AND mg.generic_id IS NOT NULL
+       WHERE po.purchase_order_id=?
+       AND wp.warehouse_id = ${warehouseId}
+       AND mg.generic_id IS NOT NULL
        GROUP BY
            poi.generic_id`
         return knex.raw(sql, purchaOrderId)
@@ -803,12 +894,27 @@ export class PurchasingOrderReportModel {
         `
         return (knex.raw(sql))
     }
-    allAmountTransaction(knex: Knex, bgdetail_id: any, budgetYear: any) {
-        return knex('pc_budget_transection as pbt')
-            .sum('pbt.amount as amount')
-            .where('pbt.bgdetail_id', [bgdetail_id])
-            .leftJoin('bm_budget_detail as bbd', 'bbd.bgdetail_id', 'pbt.bgdetail_id')
-            .andWhere('bbd.bg_year', [budgetYear])
-            .andWhere('pbt.transaction_status', 'spend')
+    allAmountTransaction(knex: Knex, bgdetail_id: any, budgetYear: any, pid: any) {
+        let sql = `SELECT SUM( pbt.amount ) AS amount FROM pc_budget_transection AS pbt
+        LEFT JOIN bm_budget_detail AS bbd ON bbd.bgdetail_id = pbt.bgdetail_id
+        LEFT JOIN pc_purchasing_order AS po ON po.purchase_order_id = pbt.purchase_order_id 
+        WHERE
+            pbt.bgdetail_id = ${bgdetail_id}
+            AND bbd.bg_year = ${budgetYear} 
+            AND pbt.transaction_status = 'SPEND' 
+            AND pbt.transection_id < (
+        SELECT
+            t.transection_id 
+        FROM
+            pc_budget_transection t
+            JOIN pc_purchasing_order p ON p.purchase_order_id = t.purchase_order_id
+            JOIN bm_budget_detail b ON b.bgdetail_id = t.bgdetail_id 
+        WHERE
+            t.bgdetail_id = ${bgdetail_id}
+            AND b.bg_year = ${budgetYear} 
+            AND t.transaction_status = 'SPEND' 
+            AND t.purchase_order_id = ${pid} 
+        )`;
+        return knex.raw(sql)
     }
 }

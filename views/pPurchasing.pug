@@ -30,9 +30,9 @@ html
                 else
                   | #{b.purchase_order_number}
               td.center #{b.order_date}
-              td(style='width:300px; font-size:13pt;') #{b.product_name}
+              td(style='width:280px; font-size:13pt;') #{b.product_name}
               //- td.center #{b.unit_price}
-              td.right #{b.qty} x #{b.conversion} #{b.primary_unit}  
+              td.right(style='font-size:11pt;') #{b.qty} x #{b.conversion} #{b.primary_unit}  
               //- td.center(style='padding-left: 5pt;') #{b.bgtype_name}
               td.right #{b.total_price}
               td(style='padding-left:10px; font-size:10pt;') #{b.labeler_name}

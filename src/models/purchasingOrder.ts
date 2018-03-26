@@ -33,7 +33,7 @@ export class PurchasingOrderModel {
 
   checkApprove(knex: Knex, username: any, password: any, action: any) {
     return knex('sys_approve as sa')
-      .leftJoin('um_users as uu','uu.user_id','sa.user_id')
+      .leftJoin('um_users as uu', 'uu.user_id', 'sa.user_id')
       .where('sa.action_name', action)
       .andWhere('uu.username', username)
       .andWhere('sa.password', password)
@@ -96,6 +96,10 @@ export class PurchasingOrderModel {
       .orderBy('pc_purchasing_order.order_date', 'DESC');
   }
 
+  getOrderList(knex: Knex, limit: number = 100, offset: number = 0) {
+
+  }
+
   listByStatus(
     knex: Knex, status: Array<any>,
     contract: string = 'ALL', query: string = '',
@@ -117,7 +121,7 @@ export class PurchasingOrderModel {
 
     let con = knex(this.tableName)
       .select(sumItems, sumReceive, 'pc_purchasing_order.*', 'l.labeler_name',
-      'bp.name as bid_process_name', 'bgs.bgtypesub_name', 'cm.contract_no')
+        'bp.name as bid_process_name', 'bgs.bgtypesub_name', 'cm.contract_no')
       .leftJoin('mm_labelers as l', 'pc_purchasing_order.labeler_id', 'l.labeler_id')
       .leftJoin('l_bid_process as bp', 'pc_purchasing_order.purchase_method_id', 'bp.id')
       .leftJoin('bm_budget_detail as bgd', 'bgd.bgdetail_id', 'pc_purchasing_order.budget_detail_id')
@@ -163,8 +167,8 @@ export class PurchasingOrderModel {
       // .leftJoin('l_bid_process as bp', 'pc_purchasing_order.purchase_method_id', 'bp.id')
       .whereIn('pc_purchasing_order.purchase_order_status', status)
       .whereIn('pc_purchasing_order.generic_type_id', genericTypeIds)
-      // .orderBy('pc_purchasing_order.order_date', 'DESC')
-      // .orderBy('pc_purchasing_order.purchase_order_number', 'DESC');
+    // .orderBy('pc_purchasing_order.order_date', 'DESC')
+    // .orderBy('pc_purchasing_order.purchase_order_number', 'DESC');
 
     if (contract === 'Y') {
       con.where('pc_purchasing_order.is_contract', 'Y');

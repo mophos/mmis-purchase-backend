@@ -50,13 +50,15 @@ router.get('/report/purchasingorder', wrap(async (req, res, next) => {
   //   chief = 3
   // }
   results.forEach(value => {
+    value.qty = model.commaQty(value.qty);
+    value.small_qty = model.commaQty(value.small_qty);
     sum += value.total;
     value.unit = model.comma(value.unit);
     value.total = model.comma(value.total);
   });
   let sumtext = model.bahtText(sum);
   sum = model.comma(sum);
-  if (chief == null || sumtext == null || pid == null || hospname == null || results == null || lname == null || date == null || sum == null || getchief == null)
+  if (sumtext == null || pid == null || hospname == null || results == null || lname == null || date == null || sum == null)
     res.render('error404')
 
   let cposition = await model.getPosition(db, results[0].chief_id);
@@ -840,7 +842,7 @@ router.get('/report/purchasing/10/', wrap(async (req, res, next) => {
   let hosdetail = await model.hospital(db);
   let hospitalName = hosdetail[0].hospname;
   let poraor = hosdetail[0].managerName
-  let purchasing = await model.purchasing10(db, purchaOrderId,warehouseId);
+  let purchasing = await model.purchasing10(db, purchaOrderId, warehouseId);
   purchasing = purchasing[0];
   let committeesVerify = await model.purchasingCommittee2(db, purchaOrderId);
   committeesVerify = committeesVerify[0];
@@ -945,6 +947,10 @@ router.get('/report/purchasing/11', wrap(async (req, res, next) => {
   let purchasingOfficer = await model.getPurchasingOfficer(db);
   let purchasingChief = await model.purchasing2Chief(db, purchaOrderId)
   let hosdetail = await model.hospital(db);
+  let province = hosdetail[0].province;
+  let address = hosdetail[0].address;
+  let tel = hosdetail[0].telephone;
+  let fax = hosdetail[0].fax;
   let hospitalName = hosdetail[0].hospname;
   let poraor = hosdetail[0].managerName;
   let purchasing = await model.purchasing10(db, purchaOrderId, warehouseId);
@@ -989,8 +995,11 @@ router.get('/report/purchasing/11', wrap(async (req, res, next) => {
     totalprice += value.total_price
     if (value.qty == null) value.qty = 0;
     value.qty = model.commaQty(value.qty);
+    value.conversion = model.commaQty(value.conversion);
     value.qtyPoi = model.commaQty(value.qtyPoi);
     value.total_price = model.comma(value.total_price);
+    value.cost = model.comma(value.cost);
+    value.standard_cost = model.comma(value.standard_cost);
     value.unit_price = model.comma(value.unit_price);
     value.total = model.commaQty(value.total)
   })
@@ -1010,6 +1019,10 @@ router.get('/report/purchasing/11', wrap(async (req, res, next) => {
   allAmount = model.comma(allAmount);
 
   res.render('purchasing11', {
+    province: province,
+    tel: tel,
+    fax: fax,
+    address: address,
     allAmount: allAmount,
     pcb: pcb[0],
     poNumber: poNumber,
@@ -1047,7 +1060,7 @@ router.get('/report/purchasing/12', wrap(async (req, res, next) => {
   let hosdetail = await model.hospital(db);
   let hospitalName = hosdetail[0].hospname;
   let poraor = hosdetail[0].managerName
-  let purchasing = await model.purchasing10(db, purchaOrderId,warehouseId);
+  let purchasing = await model.purchasing10(db, purchaOrderId, warehouseId);
   purchasing = purchasing[0];
   let delivery = purchasing[0].delivery
   let committeesVerify = await model.getCommitteeVerify(db, purchasing[0].verify_committee_id);
@@ -1122,7 +1135,7 @@ router.get('/report/purchasing/13', wrap(async (req, res, next) => {
   let hosdetail = await model.hospital(db);
   let hospitalName = hosdetail[0].hospname;
   let poraor = hosdetail[0].managerName
-  let purchasing = await model.purchasing10(db, purchaOrderId,warehouseId);
+  let purchasing = await model.purchasing10(db, purchaOrderId, warehouseId);
   purchasing = purchasing[0];
   let committeesVerify = await model.getCommitteeVerify(db, purchasing[0].verify_committee_id);
   let count = await model.purchasingCountItem(db, purchaOrderId);
@@ -1194,7 +1207,7 @@ router.get('/report/purchasing/14', wrap(async (req, res, next) => {
   let hosdetail = await model.hospital(db);
   let hospitalName = hosdetail[0].hospname;
   let poraor = hosdetail[0].managerName
-  let purchasing = await model.purchasing10(db, purchaOrderId,warehouseId);
+  let purchasing = await model.purchasing10(db, purchaOrderId, warehouseId);
   purchasing = purchasing[0];
   let committeesVerify = await model.getCommitteeVerify(db, purchasing[0].verify_committee_id);
   let count = await model.purchasingCountItem(db, purchaOrderId);
@@ -1267,7 +1280,7 @@ router.get('/report/purchasing/15', wrap(async (req, res, next) => {
   let hosdetail = await model.hospital(db);
   let hospitalName = hosdetail[0].hospname;
   let poraor = hosdetail[0].managerName
-  let purchasing = await model.purchasing10(db, purchaOrderId,warehouseId);
+  let purchasing = await model.purchasing10(db, purchaOrderId, warehouseId);
   purchasing = purchasing[0];
   let committeesVerify = await model.getCommitteeVerify(db, purchasing[0].verify_committee_id);
   let count = await model.purchasingCountItem(db, purchaOrderId);
@@ -1341,7 +1354,7 @@ router.get('/report/purchasing/16', wrap(async (req, res, next) => {
   let hosdetail = await model.hospital(db);
   let hospitalName = hosdetail[0].hospname;
   let poraor = hosdetail[0].managerName
-  let purchasing = await model.purchasing10(db, purchaOrderId,warehouseId);
+  let purchasing = await model.purchasing10(db, purchaOrderId, warehouseId);
   purchasing = purchasing[0];
   let committeesVerify = await model.getCommitteeVerify(db, purchasing[0].verify_committee_id);
   let count = await model.purchasingCountItem(db, purchaOrderId);
@@ -1581,7 +1594,7 @@ router.get('/report/po/egp', wrap(async (req, res, next) => {
   /////หัวหน้า/เจ้าหนาที่/////////////////
   let purchasingChief = await model.purchasing2Chief(db, purchaOrderId)
   ////query////////////////
-  let purchasing = await model.purchasing10(db, purchaOrderId,warehouseId);
+  let purchasing = await model.purchasing10(db, purchaOrderId, warehouseId);
   purchasing = purchasing[0];
   ////////คณะกรรมการ////////////
   let committeesVerify = await model.purchasingCommittee2(db, purchaOrderId);
@@ -1662,7 +1675,7 @@ router.get('/report/po/egp/singburi', wrap(async (req, res, next) => {
   /////หัวหน้า/เจ้าหนาที่/////////////////
   let purchasingChief = await model.purchasing2Chief(db, purchaOrderId)
   ////query////////////////
-  let purchasing = await model.purchasing10(db, purchaOrderId,warehouseId);
+  let purchasing = await model.purchasing10(db, purchaOrderId, warehouseId);
   purchasing = purchasing[0];
   ////////คณะกรรมการ////////////
   let committeesVerify = await model.purchasingCommittee2(db, purchaOrderId);

@@ -86,21 +86,20 @@ export class PurchasingOrderReportModel {
         lb.bid_name
     FROM
         pc_purchasing_order pcpo
-    JOIN pc_purchasing_order_item pci ON pci.purchase_order_id = pcpo.purchase_order_id
-    JOIN mm_generics vg ON pci.generic_id = vg.generic_id
-    JOIN mm_labelers ml ON ml.labeler_id = pcpo.labeler_id
-    JOIN mm_products vp ON vp.product_id = pci.product_id
-    LEFT JOIN mm_unit_generics mup ON pci.unit_generic_id = mup.unit_generic_id
-    LEFT JOIN mm_units mu ON mu.unit_id = mup.to_unit_id
-    JOIN l_bid_type lb ON lb.bid_id = pcpo.purchase_type_id
-    join um_people p on pcpo.buyer_id = p.people_id
-    join um_titles t on p.title_id = t.title_id
-    join um_positions po on po.position_id = p.position_id
-    
-    join um_people p2 on pcpo.chief_id = p2.people_id
-    join um_titles t2 on p2.title_id = t2.title_id
-    join um_positions po2 on po2.position_id = p2.position_id
-    WHERE
+        LEFT JOIN pc_purchasing_order_item pci ON pci.purchase_order_id = pcpo.purchase_order_id
+        LEFT JOIN mm_generics vg ON pci.generic_id = vg.generic_id
+        LEFT JOIN mm_labelers ml ON ml.labeler_id = pcpo.labeler_id
+        LEFT JOIN mm_products vp ON vp.product_id = pci.product_id
+        LEFT JOIN mm_unit_generics mup ON pci.unit_generic_id = mup.unit_generic_id
+        LEFT JOIN mm_units mu ON mu.unit_id = mup.to_unit_id
+        LEFT JOIN l_bid_type lb ON lb.bid_id = pcpo.purchase_type_id
+        LEFT JOIN um_people p ON pcpo.buyer_id = p.people_id
+        LEFT JOIN um_titles t ON p.title_id = t.title_id
+        LEFT JOIN um_positions po ON po.position_id = p.position_id
+        LEFT JOIN um_people p2 ON pcpo.chief_id = p2.people_id
+        LEFT JOIN um_titles t2 ON p2.title_id = t2.title_id
+        LEFT JOIN um_positions po2 ON po2.position_id = p2.position_id 
+        WHERE
         pcpo.purchase_order_id = '${purchaOrderId}'`);
     }
     tPurchase(knex: Knex, createDate) {

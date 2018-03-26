@@ -40,15 +40,7 @@ router.get('/report/purchasingorder', wrap(async (req, res, next) => {
   let chief = 0;
   let pid = results[0].purchase_order_number
   let poraor = hospname[0].managerName
-  // if (results[0].bid_name.substring(0, 11) == 'จัดซื้อร่วม' || results[0].bid_name.substring(0, 7) == 'สอบราคา') {
-  //   getchief = poraor.title + poraor.fname + "  " + poraor.lname
-  //   chief = 1
-  // } else {
-  //   chief = 2
-  // }
-  // if (getchief == "") {
-  //   chief = 3
-  // }
+
   results.forEach(value => {
     value.qty = model.commaQty(value.qty);
     value.small_qty = model.commaQty(value.small_qty);
@@ -320,11 +312,12 @@ router.get('/report/purchasing/:startdate/:enddate', wrap(async (req, res, next)
   })
 }));
 
-router.get('/report/purchasing-list/:startdate/:enddate', wrap(async (req, res, next) => {
+router.get('/report/purchasing-list/:startdate/:enddate/:genericTypeId', wrap(async (req, res, next) => {
   let startdate = req.params.startdate;
   let enddate = req.params.enddate;
+  let generic_type_id = req.params.genericTypeId;
   let db = req.db;
-  let results = await model.PurchasingList(db, startdate, enddate);
+  let results = await model.PurchasingList(db, startdate, enddate, generic_type_id);
   // console.log(results)
   let hospname = await model.hospital(db);
   results = results[0]

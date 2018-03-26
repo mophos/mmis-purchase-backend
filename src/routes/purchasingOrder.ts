@@ -135,12 +135,12 @@ router.get('/', async (req, res, next) => {
   }
 });
 
-router.get('/get-list-po/:generic_type_id', async (req, res, next) => {
-  let generic_type_id = req.params.generic_type_id;
+router.get('/get-list-po/:bgSubType', async (req, res, next) => {
+  let bgSubType = req.params.bgSubType;
   let db = req.db;
 
   try {
-    let rs: any = await model.getOrderList(db, generic_type_id);
+    let rs: any = await model.getOrderList(db, bgSubType);
     res.send({ ok: true, rows: rs });
   } catch (error) {
     res.send({ ok: false, error: error.error });

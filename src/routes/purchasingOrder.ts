@@ -136,12 +136,11 @@ router.get('/', async (req, res, next) => {
 });
 
 router.get('/get-list-po/:generic_type_id', async (req, res, next) => {
-  
   let generic_type_id = req.params.generic_type_id;
   let db = req.db;
 
   try {
-    let rs: any = await model.getOrderList(db,generic_type_id);
+    let rs: any = await model.getOrderList(db, generic_type_id);
     res.send({ ok: true, rows: rs });
   } catch (error) {
     res.send({ ok: false, error: error.error });
@@ -577,8 +576,8 @@ router.post('/checkApprove', async (req, res, next) => {
   let username = req.body.username;
   let password = req.body.password;
   let action = req.body.action;
-  console.log(action,password,username);
-  
+  console.log(action, password, username);
+
   const isCheck = await model.checkApprove(db, username, password, action);
   if (isCheck[0]) {
     res.send({ ok: true })

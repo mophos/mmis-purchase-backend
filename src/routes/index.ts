@@ -41,15 +41,7 @@ router.get('/report/purchasingorder', wrap(async (req, res, next) => {
   let chief = 0;
   let pid = results[0].purchase_order_number
   let poraor = hospname[0].managerName
-  // if (results[0].bid_name.substring(0, 11) == 'จัดซื้อร่วม' || results[0].bid_name.substring(0, 7) == 'สอบราคา') {
-  //   getchief = poraor.title + poraor.fname + "  " + poraor.lname
-  //   chief = 1
-  // } else {
-  //   chief = 2
-  // }
-  // if (getchief == "") {
-  //   chief = 3
-  // }
+
   results.forEach(value => {
     value.qty = model.commaQty(value.qty);
     value.small_qty = model.commaQty(value.small_qty);
@@ -309,7 +301,56 @@ router.get('/report/purchasing/:startdate/:enddate', wrap(async (req, res, next)
   });
   sum = model.comma(sum)
 
-  res.render('pPurchasing', { results: results, hospname: hospname, daten: daten, dates: dates, sum: sum, nDate: nDate, sdate: sdate, edate: edate })
+  res.render('pPurchasing', {
+    results: results,
+    hospname: hospname,
+    daten: daten,
+    dates: dates,
+    sum: sum,
+    nDate: nDate,
+    sdate: sdate,
+    edate: edate
+  })
+}));
+
+router.get('/report/purchasing-list/:startdate/:enddate/:genericTypeId', wrap(async (req, res, next) => {
+  let startdate = req.params.startdate;
+  let enddate = req.params.enddate;
+  let generic_type_id = req.params.genericTypeId;
+  let db = req.db;
+  let results = await model.PurchasingList(db, startdate, enddate, generic_type_id);
+  // console.log(results)
+  let hospname = await model.hospital(db);
+  results = results[0]
+  hospname = hospname[0].hospname
+  moment.locale('th');
+  let sdate = moment(startdate).format('D MMMM ') + (moment(startdate).get('year') + 543);
+  let edate = moment(enddate).format('D MMMM ') + (moment(enddate).get('year') + 543);
+  let nDate = moment(new Date()).format('DD MMMM YYYY');
+  let dates = moment(startdate).format('MMMM');
+  let daten = moment(enddate).format('MMMM');
+  let sum: any = 0;
+
+  results.forEach(value => {
+    sum += value.total_price
+    value.order_date = moment(value.order_date).format('DD/MM/YYYY')
+    value.unit_price = model.comma(value.unit_price)
+    value.conversion = model.commaQty(value.conversion)
+    value.qty = model.commaQty(value.qty)
+    value.total_price = model.comma(value.total_price)
+  });
+  sum = model.comma(sum)
+
+  res.render('pPurchasing', {
+    results: results,
+    hospname: hospname,
+    daten: daten,
+    dates: dates,
+    sum: sum,
+    nDate: nDate,
+    sdate: sdate,
+    edate: edate
+  })
 }));
 
 router.get('/report/purchasing/:startdate/:enddate/:bgtypeId/:status', wrap(async (req, res, next) => {

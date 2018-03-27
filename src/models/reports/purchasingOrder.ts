@@ -3,6 +3,7 @@ import Knex = require('knex');
 import * as moment from 'moment';
 import * as express from 'express';
 import { log } from 'util';
+import { start } from 'repl';
 
 export class PurchasingOrderReportModel {
 
@@ -339,6 +340,42 @@ export class PurchasingOrderReportModel {
         poi.product_id,purchase_order_id 
     ORDER BY
         po.purchase_order_number`, [_query]);
+    }
+
+    PurchasingList(knex: Knex, startdate, enddate, generic_type_id) {
+        return knex.raw(`SELECT
+        mp.product_name,
+        uc.qty AS conversion,
+        u.unit_name AS primary_unit,
+        poi.purchase_order_id,
+        po.purchase_order_number,
+        po.purchase_order_book_number,
+        po.order_date,
+        g.generic_name,
+        poi.qty,
+        uu.unit_name,
+        ROUND( poi.unit_price, 2 ) AS unit_price,
+        ROUND( SUM(poi.total_price), 2 ) AS total_price,
+        l.labeler_name 
+    FROM
+        pc_purchasing_order po
+        JOIN pc_purchasing_order_item poi ON poi.purchase_order_id = po.purchase_order_id
+        JOIN mm_products mp ON mp.product_id = poi.product_id
+        JOIN mm_labelers l ON po.labeler_id = l.labeler_id
+        JOIN mm_generics g ON poi.generic_id = g.generic_id
+        LEFT JOIN bm_bgtype b ON b.bgtype_id = po.budgettype_id
+        LEFT JOIN mm_unit_generics uc ON uc.unit_generic_id = poi.unit_generic_id
+        LEFT JOIN mm_units u ON u.unit_id = uc.to_unit_id
+        LEFT JOIN mm_units uu ON uu.unit_id = uc.from_unit_id 
+    WHERE
+        po.order_date BETWEEN '${startdate}' 
+        AND '${enddate}' 
+        AND po.is_cancel = 'N' 
+        AND po.generic_type_id = ${generic_type_id}
+    GROUP BY
+        purchase_order_id 
+    ORDER BY
+        po.purchase_order_number`);
     }
 
     Purchasing(knex: Knex, startdate: any, enddate: any, type: any, status: any) {

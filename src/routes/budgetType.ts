@@ -25,6 +25,22 @@ router.get('/', (req, res, next) => {
     });
 });
 
+router.get('/list', (req, res, next) => {
+
+  let db = req.db;
+
+  model.listType(db)
+    .then((results: any) => {
+      res.send({ ok: true, rows: results });
+    })
+    .catch(error => {
+      res.send({ ok: false, error: error })
+    })
+    .finally(() => {
+      db.destroy();
+    });
+});
+
 router.get('/allactive', (req, res, next) => {
 
   let db = req.db;

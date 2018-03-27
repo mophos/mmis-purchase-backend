@@ -96,8 +96,14 @@ export class PurchasingOrderModel {
       .orderBy('pc_purchasing_order.order_date', 'DESC');
   }
 
-  getOrderList(knex: Knex, limit: number = 100, offset: number = 0) {
-
+  getOrderList(knex: Knex, bgSubType: any) {
+    return knex('pc_purchasing_order as po')
+      .select('*',knex.raw('ROUND( SUM(poi.total_price), 2 ) as total_price'))
+      .join('pc_purchasing_order_item as poi', 'po.purchase_order_id', 'poi.purchase_order_id')
+      .where('is_cancel', 'N')
+      .andWhere('po.budget_detail_id', bgSubType)
+      .groupBy('po.purchase_order_id')
+      .orderBy('po.purchase_order_number')
   }
 
   listByStatus(

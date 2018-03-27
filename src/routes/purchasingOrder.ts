@@ -135,6 +135,20 @@ router.get('/', async (req, res, next) => {
   }
 });
 
+router.get('/get-list-po/:bgSubType', async (req, res, next) => {
+  let bgSubType = req.params.bgSubType;
+  let db = req.db;
+
+  try {
+    let rs: any = await model.getOrderList(db, bgSubType);
+    res.send({ ok: true, rows: rs });
+  } catch (error) {
+    res.send({ ok: false, error: error.error });
+  } finally {
+    db.destroy();
+  }
+});
+
 router.post('/by-status', async (req, res, next) => {
   let db = req.db;
   let status = req.body.status;
@@ -562,8 +576,8 @@ router.post('/checkApprove', async (req, res, next) => {
   let username = req.body.username;
   let password = req.body.password;
   let action = req.body.action;
-  console.log(action,password,username);
-  
+  console.log(action, password, username);
+
   const isCheck = await model.checkApprove(db, username, password, action);
   if (isCheck[0]) {
     res.send({ ok: true })

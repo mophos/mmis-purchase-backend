@@ -46,6 +46,32 @@ router.post('/reorderpoint/trade', async (req, res, next) => {
 
 });
 
+router.post('/save-reserved', async (req, res, next) => {
+  let db = req.db;
+  let items = req.body.items;
+
+  let _items: any = [];
+  items.forEach(v => {
+    let obj: any = {};
+    obj.product_id = v.product_id;
+    obj.generic_id = v.generic_id;
+    obj.people_user_id = req.decoded.people_user_id;
+    obj.created_at = moment().format('YYYY-MM-DD HH:mm:ss');
+    _items.push(obj);
+  });
+
+  // save items
+  try {
+    await model.saveReservedProducts(db, _items);
+    res.send({ ok: true });
+  } catch (error) {
+    console.log(error);
+    res.send({ ok: false, error: error.message });
+  } finally {
+    db.destroy();
+  }
+});
+
 router.post('/orderspoint', async (req, res, next) => {
   let db = req.db;
   let q = req.body.q;

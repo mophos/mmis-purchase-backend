@@ -120,13 +120,18 @@ export class ProductsModel {
       .groupBy('wp.product_id')
       .as('remain_qty');
 
+    let subProducts = knex('pc_product_reserved')
+      .select('product_id')
+      .where('is_ordered', 'N');
+    
     let sql = knex('mm_products as mp')
       .select(subQuery, 'mp.product_id', 'mp.generic_id', 'mp.product_name', 'mg.generic_name', 'gt.generic_type_name', 'ml.labeler_name',
         'mg.min_qty', 'mg.max_qty', 'mg.working_code')
       .innerJoin('mm_generics as mg', 'mg.generic_id', 'mp.generic_id')
       .innerJoin('mm_generic_types as gt', 'gt.generic_type_id', 'mg.generic_type_id')
-      .innerJoin('mm_labelers as ml', 'ml.labeler_id', 'mp.v_labeler_id');
-
+      .innerJoin('mm_labelers as ml', 'ml.labeler_id', 'mp.v_labeler_id')
+      .whereNotIn('mp.product_id', subProducts);
+    
     if (genericTypeIds.length) {
       sql.whereIn('mg.generic_type_id', genericTypeIds);
     }
@@ -158,13 +163,18 @@ export class ProductsModel {
       .whereRaw('wp.product_id=mp.product_id')
       .groupBy('wp.product_id')
       .as('remain_qty');
+    
+    let subProducts = knex('pc_product_reserved')
+      .select('product_id')
+      .where('is_ordered', 'N');
 
     let sql = knex('mm_products as mp')
       .select(subQuery, 'mg.min_qty')
       .innerJoin('mm_generics as mg', 'mg.generic_id', 'mp.generic_id')
       .innerJoin('mm_generic_types as gt', 'gt.generic_type_id', 'mg.generic_type_id')
-      .innerJoin('mm_labelers as ml', 'ml.labeler_id', 'mp.v_labeler_id');
-
+      .innerJoin('mm_labelers as ml', 'ml.labeler_id', 'mp.v_labeler_id')
+      .whereNotIn('mp.product_id', subProducts);
+    
     if (genericTypeIds.length) {
       sql.whereIn('mg.generic_type_id', genericTypeIds);
     }
@@ -194,7 +204,7 @@ export class ProductsModel {
       .whereRaw('mp.generic_id=mg.generic_id')
       .where('wp.warehouse_id', warehouseId)
       .as('remain_qty');
-
+    
     const con = knex('mm_generics as mg')
       .select(
         subQuery, 'mg.working_code', 'mg.generic_id', 'mg.generic_name', 'mg.min_qty', 'mg.max_qty')
@@ -207,6 +217,11 @@ export class ProductsModel {
       .orderBy('mg.generic_name');
 
     return con;
+  }
+
+  saveReservedProducts(db: Knex, items: any[]) {
+    return db('pc_product_reserved')
+      .insert(items);
   }
 
   orderspoint(knex: Knex, query: string = '', contract: string = 'all', minmaxFilter: string = 'min', generictype: string = null, count: boolean = false, limit: number = 100, offset: number = 0) {

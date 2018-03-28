@@ -1587,6 +1587,10 @@ router.get('/report/getporder/singburi', wrap(async (req, res, next) => {
     array.push(results);
     results.forEach(value => {
       sum += value.total;
+      value.total = model.comma(value.total);
+      value.unit = model.comma(value.unit);
+      value.small_qty = model.commaQty(value.small_qty);
+      value.qty = model.commaQty(value.qty);
     });
 
     sumtext = model.bahtText(sum)
@@ -1596,15 +1600,9 @@ router.get('/report/getporder/singburi', wrap(async (req, res, next) => {
 
     let getchief = await model.purchasing2Chief(db, porder[i]);
     getchief = getchief[0].chief_fullname;
-    // if (results[0].bid_name.substring(0, 11) == 'จัดซื้อร่วม' || results[0].bid_name.substring(0, 7) == 'สอบราคา') {
-    //   getchief = poraor.title + poraor.fname + "  " + poraor.lname
-    //   chief[i] = 1
-    // }
     array1.push(getchief);
   }
-  // console.log(arraySum);
-  // console.log(arraySumText);
-
+ 
   res.render('purchase_order', {
     chief: chief,
     arraySum: arraySum,

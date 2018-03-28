@@ -111,7 +111,7 @@ export class ProductsModel {
     return con;
   }
 
-  getReOrderPointTrade(knex: Knex, warehouseId: any, genericTypeIds: string[]) {
+  getReOrderPointTrade(knex: Knex, warehouseId: any, genericTypeIds: string[], limit: number = 20, offset: number = 0, query: any = '') {
 
     let subQuery = knex('wm_products as wp')
       .select(knex.raw('sum(wp.qty)'))
@@ -119,32 +119,70 @@ export class ProductsModel {
       .whereRaw('wp.product_id=mp.product_id')
       .groupBy('wp.product_id')
       .as('remain_qty');
-    
-    let query = knex('mm_products as mp')
-      .select(subQuery, 'mp.product_id', 'mp.generic_id', 'mp.product_name','mg.generic_name', 'gt.generic_type_name','ml.labeler_name',
-        'mg.min_qty', 'mg.max_qty')
+
+    let sql = knex('mm_products as mp')
+      .select(subQuery, 'mp.product_id', 'mp.generic_id', 'mp.product_name', 'mg.generic_name', 'gt.generic_type_name', 'ml.labeler_name',
+        'mg.min_qty', 'mg.max_qty', 'mg.working_code')
       .innerJoin('mm_generics as mg', 'mg.generic_id', 'mp.generic_id')
       .innerJoin('mm_generic_types as gt', 'gt.generic_type_id', 'mg.generic_type_id')
       .innerJoin('mm_labelers as ml', 'ml.labeler_id', 'mp.v_labeler_id');
-    
+
     if (genericTypeIds.length) {
-      query.whereIn('mg.generic_type_id', genericTypeIds);
+      sql.whereIn('mg.generic_type_id', genericTypeIds);
     }
 
-    return query.havingRaw('remain_qty<mg.min_qty')
-      .orderBy('mp.product_name');
-    /*
-    select mp.product_id, mp.generic_id, mp.product_name, 
-    mg.min_qty, mg.max_qty, sum(wp.qty) as remain_qty
-    from wm_products as wp
-    inner join mm_products as mp on mp.product_id=wp.product_id
-    inner join mm_generics as mg on mg.generic_id=mp.generic_id
-    where wp.warehouse_id=505
-    group by wp.product_id
-    having remain_qty<mg.min_qty
-    order by mp.product_name
-    */
+    if (query) {
+      let _query = `${query}%`;
+      let _queryAll = `%${query}%`;
+      sql.where(w => {
+        w.where('mg.generic_name', 'like', _query)
+          .orWhere('mg.generic_name', 'like', _queryAll)
+          .orWhere('mp.product_name', 'like', _query)
+          .orWhere('mp.product_name', 'like', _queryAll)
+          .orWhere('mg.working_code', 'like', _query)
+          .orWhere('mg.keywords', 'like', _queryAll)
+      })
+    }
 
+    return sql.havingRaw('remain_qty<mg.min_qty')
+      .limit(limit)
+      .offset(offset)
+      .orderBy('mg.generic_name');
+  }
+
+  getReOrderPointTradeTotal(knex: Knex, warehouseId: any, genericTypeIds: string[], query: any = '') {
+
+    let subQuery = knex('wm_products as wp')
+      .select(knex.raw('sum(wp.qty)'))
+      .where('wp.warehouse_id', warehouseId)
+      .whereRaw('wp.product_id=mp.product_id')
+      .groupBy('wp.product_id')
+      .as('remain_qty');
+
+    let sql = knex('mm_products as mp')
+      .select(subQuery, 'mg.min_qty')
+      .innerJoin('mm_generics as mg', 'mg.generic_id', 'mp.generic_id')
+      .innerJoin('mm_generic_types as gt', 'gt.generic_type_id', 'mg.generic_type_id')
+      .innerJoin('mm_labelers as ml', 'ml.labeler_id', 'mp.v_labeler_id');
+
+    if (genericTypeIds.length) {
+      sql.whereIn('mg.generic_type_id', genericTypeIds);
+    }
+
+    if (query) {
+      let _query = `${query}%`;
+      let _queryAll = `%${query}%`;
+      sql.where(w => {
+        w.where('mg.generic_name', 'like', _query)
+          .orWhere('mg.generic_name', 'like', _queryAll)
+          .orWhere('mp.product_name', 'like', _query)
+          .orWhere('mp.product_name', 'like', _queryAll)
+          .orWhere('mg.working_code', 'like', _query)
+          .orWhere('mg.keywords', 'like', _queryAll)
+      })
+    }
+
+    return sql.havingRaw('remain_qty<mg.min_qty');
   }
 
   getTotalOrderPoint(knex: Knex, warehouseId: any, query: string = '', genericTypeIds: string[]) {

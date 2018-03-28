@@ -30,10 +30,14 @@ router.post('/reorderpoint/trade', async (req, res, next) => {
   let db = req.db;
   let warehouseId = req.decoded.warehouseId;
   let genericTypeId = req.body.genericTypeId;
+  let limit = +req.body.limit || 20;  
+  let offset = +req.body.offset || 0;  
+  let query = req.body.query || '';
 
   try {
-    let rs: any = await model.getReOrderPointTrade(db, warehouseId, genericTypeId);
-    res.send({ ok: true, rows: rs });
+    let rs: any = await model.getReOrderPointTrade(db, warehouseId, genericTypeId, limit, offset, query);
+    let rsTotal: any = await model.getReOrderPointTradeTotal(db, warehouseId, genericTypeId, query);
+    res.send({ ok: true, rows: rs, total: rsTotal.length });
   } catch (error) {
     res.send({ ok: false, error: error.message });
   } finally {

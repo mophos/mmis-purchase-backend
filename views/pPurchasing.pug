@@ -23,7 +23,7 @@ html
         for b in results
           - y++
             tr
-              td.center
+              td.center(style="padding-left: 5px;")
                 if(b.purchase_order_book_number)
                   | #{b.purchase_order_book_number}
                 else

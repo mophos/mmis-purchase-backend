@@ -937,4 +937,16 @@ router.post('/change-purchase-date', async (req, res, next) => {
   }
 });
 
+router.get('/sys-report', async (req, res, next) => {
+  let db = req.db;
+  try {
+    let rs: any = await model.getSysReport(db);
+    res.send({ ok: true, rows: rs[0] });
+  } catch (error) {
+    res.send({ ok: false, error: error.message });
+  } finally {
+    db.destroy();
+  }
+});
+
 export default router;

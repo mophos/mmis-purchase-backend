@@ -98,7 +98,7 @@ export class PurchasingOrderModel {
 
   getOrderList(knex: Knex, bgSubType: any) {
     return knex('pc_purchasing_order as po')
-      .select('*',knex.raw('ROUND( SUM(poi.total_price), 2 ) as total_price'))
+      .select('*', knex.raw('ROUND( SUM(poi.total_price), 2 ) as total_price'))
       .join('pc_purchasing_order_item as poi', 'po.purchase_order_id', 'poi.purchase_order_id')
       .where('is_cancel', 'N')
       .andWhere('po.budget_detail_id', bgSubType)
@@ -479,6 +479,12 @@ export class PurchasingOrderModel {
     return db('pc_purchasing_order')
       .update('order_date', purchaseDate)
       .whereIn('purchase_order_id', purchaseIds);
+  }
+
+  getSysReport(db: Knex) {
+    return db('um_report')
+      .where('report_type', 'PO')
+      .andWhere('is_active', 'Y')
   }
 
 }

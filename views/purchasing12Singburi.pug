@@ -14,10 +14,10 @@ html
     p.h2(style='width:50%;float: left;')
       | ที่
     label.h3(style='margin-top: 5px;')
-      if(array[a][0].purchase_order_book_number)
-        | &nbsp;#{array[a][0].purchase_order_book_number}
+      if(purchasing[0].purchase_order_book_number)
+        | &nbsp;#{purchasing[0].purchase_order_book_number}
       else
-        | &nbsp;#{array[a][0].purchase_order_number}
+        | &nbsp;#{purchasing[0].purchase_order_number}
     b.h2(style='width:50%;float: left;')
       | วันที่ 
       label.h3(style="font-size: 16pt;") &nbsp;#{nDate}

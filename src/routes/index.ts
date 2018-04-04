@@ -1714,7 +1714,7 @@ router.get('/report/po/egp/singburi', wrap(async (req, res, next) => {
   /////หัวหน้า/เจ้าหนาที่/////////////////
   let purchasingChief = await model.purchasing2Chief(db, purchaOrderId)
   ////query////////////////
-  let purchasing = await model.purchasingEgp(db, purchaOrderId, warehouseId);
+  let purchasing = await model.purchasing10(db, purchaOrderId, warehouseId);
   purchasing = purchasing[0];
   ////////คณะกรรมการ////////////
   let committeesVerify = await model.purchasingCommittee2(db, purchaOrderId);

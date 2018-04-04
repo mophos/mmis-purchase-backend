@@ -796,14 +796,14 @@ export class PurchasingOrderReportModel {
         FROM
             pc_purchasing_order po
             LEFT JOIN pc_purchasing_order_item poi ON poi.purchase_order_id = po.purchase_order_id
-            LEFT JOIN mm_generics mg ON poi.generic_id = mg.generic_id
+            LEFT JOIN mm_products mp ON mp.product_id = poi.product_id
+            LEFT JOIN mm_generics mg ON mp.generic_id = mg.generic_id
             LEFT JOIN mm_unit_generics mup ON mup.unit_generic_id = poi.unit_generic_id
             LEFT JOIN mm_units muu ON muu.unit_id = mg.primary_unit_id
             LEFT JOIN mm_units mu ON mu.unit_id = mup.from_unit_id
             LEFT JOIN mm_labelers ml ON ml.labeler_id = po.labeler_id
             LEFT JOIN l_bid_process cbp ON cbp.id = po.purchase_method_id
-            LEFT JOIN l_bid_type cbt ON cbt.bid_id = po.purchase_type_id
-            LEFT JOIN mm_products mp ON mp.generic_id = mg.generic_id 
+            LEFT JOIN l_bid_type cbt ON cbt.bid_id = po.purchase_type_id 
         WHERE
         po.purchase_order_id = ? 
         AND mg.generic_id IS NOT NULL`

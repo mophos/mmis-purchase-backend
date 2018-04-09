@@ -121,8 +121,7 @@ export class ProductsModel {
       .as('remain_qty');
 
     let subProducts = knex('pc_product_reserved')
-      .select('product_id')
-      .where('is_ordered', 'N');
+      .select('product_id');
     
     let sql = knex('mm_products as mp')
       .select(subQuery, 'mp.product_id', 'mp.generic_id', 'mp.product_name', 'mg.generic_name', 'gt.generic_type_name', 'ml.labeler_name',
@@ -177,8 +176,7 @@ export class ProductsModel {
       .innerJoin('mm_generic_types as gt', 'gt.generic_type_id', 'mg.generic_type_id')
       .innerJoin('mm_labelers as ml', 'ml.labeler_id', 'mp.v_labeler_id')
       .innerJoin('pc_product_reserved as pcr', 'pcr.product_id', 'mp.product_id')
-      // .whereIn('mp.product_id', subProducts);
-      .where('pcr.is_ordered', 'N');
+      .where('pcr.reserved_status', 'SELECTED');
     
     if (genericTypeIds.length) {
       sql.whereIn('mg.generic_type_id', genericTypeIds);
@@ -212,8 +210,7 @@ export class ProductsModel {
       .as('remain_qty');
     
     let subProducts = knex('pc_product_reserved')
-      .select('product_id')
-      .where('is_ordered', 'N');
+      .select('product_id');
 
     let sql = knex('mm_products as mp')
       .select(subQuery, 'mg.min_qty')
@@ -245,17 +242,14 @@ export class ProductsModel {
   }
 
   getReOrderPointTradeReservedTotal(knex: Knex, warehouseId: any, genericTypeIds: string[], query: any = '') {
-    
-    let subProducts = knex('pc_product_reserved')
-      .select('product_id')
-      .where('is_ordered', 'N');
 
     let sql = knex('mm_products as mp')
       .select(knex.raw('count(*) as total'))
       .innerJoin('mm_generics as mg', 'mg.generic_id', 'mp.generic_id')
       .innerJoin('mm_generic_types as gt', 'gt.generic_type_id', 'mg.generic_type_id')
       .innerJoin('mm_labelers as ml', 'ml.labeler_id', 'mp.v_labeler_id')
-      .whereIn('mp.product_id', subProducts);
+      .innerJoin('pc_product_reserved as pcr', 'pcr.product_id', 'mp.product_id')
+      .where('pcr.reserved_status', 'SELECTED');
     
     if (genericTypeIds.length) {
       sql.whereIn('mg.generic_type_id', genericTypeIds);
@@ -312,6 +306,12 @@ export class ProductsModel {
     return db('pc_product_reserved')
       .where('reserve_id', reserveId)
       .del();
+  }
+
+  updateReservedPurchaseQty(db: Knex, reserveId: any, data: any) {
+    return db('pc_product_reserved')
+      .update(data)
+      .where('reserve_id', reserveId);
   }
 
   orderspoint(knex: Knex, query: string = '', contract: string = 'all', minmaxFilter: string = 'min', generictype: string = null, count: boolean = false, limit: number = 100, offset: number = 0) {

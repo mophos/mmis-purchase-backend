@@ -66,6 +66,38 @@ router.post('/reorderpoint/trade/reserved', async (req, res, next) => {
 
 });
 
+router.put('/reorderpoint/trade/reserved-update', async (req, res, next) => {
+  let db = req.db;
+  let items = req.body.items;
+
+  try {
+    if (items.length) {
+      for (let v of items) {
+        let obj: any = {};
+        obj.unit_generic_id = v.unit_generic_id;
+        obj.purchase_qty = +v.purchase_qty;
+        obj.cost = +v.cost;
+        obj.contract_id = v.contract_id;
+        obj.reserved_status = 'CONFIRMED';
+
+        console.log(obj);
+        await model.updateReservedPurchaseQty(db, v.reserve_id, obj);
+      }
+
+      res.send({ ok: true });
+
+    } else {
+      res.send({ ok: false, error: 'ไม่พบรายการที่ต้องการบันทึก' });
+    }
+   
+  } catch (error) {
+    res.send({ ok: false, error: error.message });
+  } finally {
+    db.destroy();
+  }
+
+});
+
 router.post('/save-reserved', async (req, res, next) => {
   let db = req.db;
   let items = req.body.items;

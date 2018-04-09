@@ -92,10 +92,17 @@ html
         br 
         | #{bposition.position_name}
       div(style="width:50%;float:left;text-align:center") ลงชื่อ.................................................หัวหน้าเจ้าหน้าที่
-        br
-        | 
-        br
-        | 
+        if(cposition=='')
+          |
+          br
+          |
+          br
+          | 
+        else
+          br 
+          | ( #{purchasingChief.chief_fullname} )
+          br
+          | #{cposition.position_name}  
     div(style="width:100%;float:left;text-align:center")
       br
       br

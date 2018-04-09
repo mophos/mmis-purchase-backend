@@ -98,7 +98,7 @@ export class PurchasingOrderModel {
 
   getOrderList(knex: Knex, bgSubType: any) {
     return knex('pc_purchasing_order as po')
-      .select('*',knex.raw('ROUND( SUM(poi.total_price), 2 ) as total_price'))
+      .select('*', knex.raw('ROUND( SUM(poi.total_price), 2 ) as total_price'))
       .join('pc_purchasing_order_item as poi', 'po.purchase_order_id', 'poi.purchase_order_id')
       .where('is_cancel', 'N')
       .andWhere('po.budget_detail_id', bgSubType)
@@ -425,6 +425,7 @@ export class PurchasingOrderModel {
     po.purchase_order_number,
     mp.working_code AS trading_code,
     mp.product_name,
+		ml.labeler_name,
     pp.qty,
     mu.unit_name AS large_unit_name,
     mug.qty AS conversion_qty,
@@ -437,6 +438,7 @@ export class PurchasingOrderModel {
   JOIN pc_purchasing_order_item AS pp ON mg.generic_id = pp.generic_id
   JOIN pc_purchasing_order AS po ON pp.purchase_order_id = po.purchase_order_id
   JOIN mm_products AS mp ON pp.product_id = mp.product_id
+	LEFT JOIN mm_labelers as ml on ml.labeler_id = mp.v_labeler_id 
   JOIN mm_unit_generics AS mug ON pp.unit_generic_id = mug.unit_generic_id
   JOIN mm_units AS mu ON mug.from_unit_id = mu.unit_id
   JOIN mm_units AS mmu ON mug.to_unit_id = mmu.unit_id
@@ -477,6 +479,12 @@ export class PurchasingOrderModel {
     return db('pc_purchasing_order')
       .update('order_date', purchaseDate)
       .whereIn('purchase_order_id', purchaseIds);
+  }
+
+  getSysReport(db: Knex) {
+    return db('um_report')
+      .where('report_type', 'PO')
+      .andWhere('is_active', 'Y')
   }
 
 }

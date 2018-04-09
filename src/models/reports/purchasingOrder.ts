@@ -371,7 +371,7 @@ export class PurchasingOrderReportModel {
         po.order_date BETWEEN '${startdate}' 
         AND '${enddate}' 
         AND po.is_cancel = 'N' 
-        AND po.generic_type_id = ${generic_type_id}
+        AND po.budget_detail_id = ${generic_type_id}
     GROUP BY
         purchase_order_id 
     ORDER BY
@@ -403,7 +403,7 @@ export class PurchasingOrderReportModel {
         LEFT JOIN mm_units u ON u.unit_id = uc.to_unit_id
         LEFT JOIN mm_units muu ON u.unit_id = uc.from_unit_id	
     WHERE
-        po.order_date BETWEEN ? and ? and budget_detail_id = ? and purchase_order_status LIKE ?
+        po.order_date BETWEEN ? and ? and po.budget_detail_id = ? and purchase_order_status LIKE ?
         AND po.is_cancel = 'N'
     GROUP BY
         poi.product_id,purchase_order_id 

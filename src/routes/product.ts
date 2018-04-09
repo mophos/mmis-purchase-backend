@@ -46,6 +46,26 @@ router.post('/reorderpoint/trade', async (req, res, next) => {
 
 });
 
+router.post('/reorderpoint/trade/reserved', async (req, res, next) => {
+  let db = req.db;
+  let warehouseId = req.decoded.warehouseId;
+  let genericTypeId = req.body.genericTypeId;
+  let limit = +req.body.limit || 20;  
+  let offset = +req.body.offset || 0;  
+  let query = req.body.query || '';
+
+  try {
+    let rs: any = await model.getReOrderPointTradeReserved(db, warehouseId, genericTypeId, limit, offset, query);
+    let rsTotal: any = await model.getReOrderPointTradeReservedTotal(db, warehouseId, genericTypeId, query);
+    res.send({ ok: true, rows: rs, total: rsTotal[0].total });
+  } catch (error) {
+    res.send({ ok: false, error: error.message });
+  } finally {
+    db.destroy();
+  }
+
+});
+
 router.post('/save-reserved', async (req, res, next) => {
   let db = req.db;
   let items = req.body.items;
@@ -63,6 +83,21 @@ router.post('/save-reserved', async (req, res, next) => {
   // save items
   try {
     await model.saveReservedProducts(db, _items);
+    res.send({ ok: true });
+  } catch (error) {
+    console.log(error);
+    res.send({ ok: false, error: error.message });
+  } finally {
+    db.destroy();
+  }
+});
+
+router.delete('/remove-reserved/:reserveId', async (req, res, next) => {
+  let db = req.db;
+  let reserveId = req.params.reserveId;
+  // save items
+  try {
+    await model.removeReservedProducts(db, reserveId);
     res.send({ ok: true });
   } catch (error) {
     console.log(error);

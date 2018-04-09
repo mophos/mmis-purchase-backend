@@ -149,10 +149,57 @@ export class ProductsModel {
       })
     }
 
+    // sql.groupBy('mp.product_id');
+
     return sql.havingRaw('remain_qty<mg.min_qty')
       .limit(limit)
       .offset(offset)
       .orderBy('mg.generic_name');
+  }
+
+  getReOrderPointTradeReserved(knex: Knex, warehouseId: any, genericTypeIds: string[], limit: number = 20, offset: number = 0, query: any = '') {
+
+    let subQuery = knex('wm_products as wp')
+      .select(knex.raw('sum(wp.qty)'))
+      .where('wp.warehouse_id', warehouseId)
+      .whereRaw('wp.product_id=mp.product_id')
+      .groupBy('wp.product_id')
+      .as('remain_qty');
+
+    // let subProducts = knex('pc_product_reserved')
+    //   .select('product_id')
+    //   .where('is_ordered', 'N');
+    
+    let sql = knex('mm_products as mp')
+      .select(subQuery, 'mp.product_id', 'mp.generic_id', 'mp.product_name', 'mg.generic_name', 'gt.generic_type_name', 'ml.labeler_name',
+        'mg.min_qty', 'mg.max_qty', 'mg.working_code', 'pcr.reserve_id')
+      .innerJoin('mm_generics as mg', 'mg.generic_id', 'mp.generic_id')
+      .innerJoin('mm_generic_types as gt', 'gt.generic_type_id', 'mg.generic_type_id')
+      .innerJoin('mm_labelers as ml', 'ml.labeler_id', 'mp.v_labeler_id')
+      .innerJoin('pc_product_reserved as pcr', 'pcr.product_id', 'mp.product_id')
+      // .whereIn('mp.product_id', subProducts);
+      .where('pcr.is_ordered', 'N');
+    
+    if (genericTypeIds.length) {
+      sql.whereIn('mg.generic_type_id', genericTypeIds);
+    }
+
+    if (query) {
+      let _query = `${query}%`;
+      let _queryAll = `%${query}%`;
+      sql.where(w => {
+        w.where('mg.generic_name', 'like', _query)
+          .orWhere('mg.generic_name', 'like', _queryAll)
+          .orWhere('mp.product_name', 'like', _query)
+          .orWhere('mp.product_name', 'like', _queryAll)
+          .orWhere('mg.working_code', 'like', _query)
+          .orWhere('mg.keywords', 'like', _queryAll)
+      })
+    }
+
+    // sql.groupBy('mp.product_id');
+
+    return sql.limit(limit).offset(offset).orderBy('mg.generic_name');
   }
 
   getReOrderPointTradeTotal(knex: Knex, warehouseId: any, genericTypeIds: string[], query: any = '') {
@@ -192,7 +239,44 @@ export class ProductsModel {
       })
     }
 
+    // sql.groupBy('mp.product_id');
+
     return sql.havingRaw('remain_qty<mg.min_qty');
+  }
+
+  getReOrderPointTradeReservedTotal(knex: Knex, warehouseId: any, genericTypeIds: string[], query: any = '') {
+    
+    let subProducts = knex('pc_product_reserved')
+      .select('product_id')
+      .where('is_ordered', 'N');
+
+    let sql = knex('mm_products as mp')
+      .select(knex.raw('count(*) as total'))
+      .innerJoin('mm_generics as mg', 'mg.generic_id', 'mp.generic_id')
+      .innerJoin('mm_generic_types as gt', 'gt.generic_type_id', 'mg.generic_type_id')
+      .innerJoin('mm_labelers as ml', 'ml.labeler_id', 'mp.v_labeler_id')
+      .whereIn('mp.product_id', subProducts);
+    
+    if (genericTypeIds.length) {
+      sql.whereIn('mg.generic_type_id', genericTypeIds);
+    }
+
+    if (query) {
+      let _query = `${query}%`;
+      let _queryAll = `%${query}%`;
+      sql.where(w => {
+        w.where('mg.generic_name', 'like', _query)
+          .orWhere('mg.generic_name', 'like', _queryAll)
+          .orWhere('mp.product_name', 'like', _query)
+          .orWhere('mp.product_name', 'like', _queryAll)
+          .orWhere('mg.working_code', 'like', _query)
+          .orWhere('mg.keywords', 'like', _queryAll)
+      })
+    }
+
+    // sql.groupBy('mp.product_id');
+
+    return sql;
   }
 
   getTotalOrderPoint(knex: Knex, warehouseId: any, query: string = '', genericTypeIds: string[]) {
@@ -222,6 +306,12 @@ export class ProductsModel {
   saveReservedProducts(db: Knex, items: any[]) {
     return db('pc_product_reserved')
       .insert(items);
+  }
+
+  removeReservedProducts(db: Knex, reserveId: any) {
+    return db('pc_product_reserved')
+      .where('reserve_id', reserveId)
+      .del();
   }
 
   orderspoint(knex: Knex, query: string = '', contract: string = 'all', minmaxFilter: string = 'min', generictype: string = null, count: boolean = false, limit: number = 100, offset: number = 0) {

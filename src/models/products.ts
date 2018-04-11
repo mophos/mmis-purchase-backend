@@ -120,7 +120,7 @@ export class ProductsModel {
       .groupBy('wp.product_id')
       .as('remain_qty');
 
-    let subProducts = knex('pc_product_reserved')
+    let subProducts = knex('pc_product_reserve')
       .select('product_id')
       .whereIn('reserved_status', ['SELECTED', 'CONFIRMED']);
     
@@ -181,7 +181,7 @@ export class ProductsModel {
       .groupBy('wp.product_id')
       .as('remain_qty');
 
-    // let subProducts = knex('pc_product_reserved')
+    // let subProducts = knex('pc_product_reserve')
     //   .select('product_id')
     //   .where('is_ordered', 'N');
     
@@ -191,7 +191,7 @@ export class ProductsModel {
       .innerJoin('mm_generics as mg', 'mg.generic_id', 'mp.generic_id')
       .innerJoin('mm_generic_types as gt', 'gt.generic_type_id', 'mg.generic_type_id')
       .innerJoin('mm_labelers as ml', 'ml.labeler_id', 'mp.v_labeler_id')
-      .innerJoin('pc_product_reserved as pcr', 'pcr.product_id', 'mp.product_id')
+      .innerJoin('pc_product_reserve as pcr', 'pcr.product_id', 'mp.product_id')
       .where('pcr.reserved_status', 'SELECTED');
     
     if (genericTypeIds.length) {
@@ -225,7 +225,7 @@ export class ProductsModel {
       .groupBy('wp.product_id')
       .as('remain_qty');
     
-    let subProducts = knex('pc_product_reserved')
+    let subProducts = knex('pc_product_reserve')
       .select('product_id');
 
     let sql = knex('mm_products as mp')
@@ -264,7 +264,7 @@ export class ProductsModel {
       .innerJoin('mm_generics as mg', 'mg.generic_id', 'mp.generic_id')
       .innerJoin('mm_generic_types as gt', 'gt.generic_type_id', 'mg.generic_type_id')
       .innerJoin('mm_labelers as ml', 'ml.labeler_id', 'mp.v_labeler_id')
-      .innerJoin('pc_product_reserved as pcr', 'pcr.product_id', 'mp.product_id')
+      .innerJoin('pc_product_reserve as pcr', 'pcr.product_id', 'mp.product_id')
       .where('pcr.reserved_status', 'SELECTED');
     
     if (genericTypeIds.length) {
@@ -314,30 +314,30 @@ export class ProductsModel {
   }
 
   saveReservedProducts(db: Knex, items: any[]) {
-    return db('pc_product_reserved')
+    return db('pc_product_reserve')
       .insert(items);
   }
 
   removeReservedProducts(db: Knex, reserveId: any) {
-    return db('pc_product_reserved')
+    return db('pc_product_reserve')
       .where('reserve_id', reserveId)
       .del();
   }
 
   updateReservedPurchaseQty(db: Knex, reserveId: any, data: any) {
-    return db('pc_product_reserved')
+    return db('pc_product_reserve')
       .update(data)
       .where('reserve_id', reserveId);
   }
 
   saveReservedOrdered(db: Knex, reserveIds: any[], data: any) {
-    return db('pc_product_reserved')
+    return db('pc_product_reserve')
       .update(data)
       .whereIn('reserve_id', reserveIds);
   }
 
   getReservedOrdered(db: Knex) {
-    return db('pc_product_reserved as rv')
+    return db('pc_product_reserve as rv')
       .select('mg.working_code', 'mp.product_name', 'mg.generic_id', 'rv.contract_id',
       'mg.generic_name', 'rv.cost as purchase_cost', 'rv.purchase_qty as order_qty',
       'rv.unit_generic_id', 'gt.generic_type_id', 'rv.product_id', 'rv.reserve_id',

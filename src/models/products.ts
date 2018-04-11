@@ -121,11 +121,27 @@ export class ProductsModel {
       .as('remain_qty');
 
     let subProducts = knex('pc_product_reserved')
-      .select('product_id');
+      .select('product_id')
+      .whereIn('reserved_status', ['SELECTED', 'CONFIRMED']);
+    
+    let subQueryPurchased = knex('pc_purchasing_order_item as pci')
+      .select(knex.raw('sum(pci.qty*ug.qty) as total_qty'))
+      .innerJoin('pc_purchasing_order as pco', 'pco.purchase_order_id', 'pci.purchase_order_id')
+      .innerJoin('mm_unit_generics as ug', 'ug.unit_generic_id', 'pci.unit_generic_id')
+      // .innerJoin('mm_products as mp', 'mp.product_id', 'pci.product_id')
+      .whereRaw('pco.purchase_order_status in ("ORDERPOINT", "PREPARED", "CONFIRM", "CONFIRMED")')
+      .whereRaw('pco.is_cancel="N"')
+      .whereRaw('pci.product_id=mp.product_id')
+      .whereRaw(`pco.purchase_order_id not in (
+        select purchase_order_id from wm_receives as rp
+        inner join wm_receive_approve as ra on ra.receive_id = rp.receive_id
+      )`)
+      .as('total_purchased');
+    
     
     let sql = knex('mm_products as mp')
       .select(subQuery, 'mp.product_id', 'mp.generic_id', 'mp.product_name', 'mg.generic_name', 'gt.generic_type_name', 'ml.labeler_name',
-        'mg.min_qty', 'mg.max_qty', 'mg.working_code')
+        'mg.min_qty', 'mg.max_qty', 'mg.working_code', subQueryPurchased)
       .innerJoin('mm_generics as mg', 'mg.generic_id', 'mp.generic_id')
       .innerJoin('mm_generic_types as gt', 'gt.generic_type_id', 'mg.generic_type_id')
       .innerJoin('mm_labelers as ml', 'ml.labeler_id', 'mp.v_labeler_id')
@@ -153,7 +169,7 @@ export class ProductsModel {
     return sql.havingRaw('remain_qty<mg.min_qty')
       .limit(limit)
       .offset(offset)
-      .orderBy('mg.generic_name');
+      .orderByRaw('mg.generic_name, ml.labeler_name');
   }
 
   getReOrderPointTradeReserved(knex: Knex, warehouseId: any, genericTypeIds: string[], limit: number = 20, offset: number = 0, query: any = '') {

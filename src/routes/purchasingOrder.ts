@@ -10,6 +10,7 @@ import { SerialModel } from '../models/serial';
 import * as _ from 'lodash';
 import { PeriodModel } from '../models/period';
 import { BudgetTransectionModel } from '../models/budgetTransection';
+import { ProductsModel } from '../models/products';
 
 const serialModel = new SerialModel();
 const router = express.Router();
@@ -17,6 +18,7 @@ const model = new PurchasingOrderModel();
 const modelItems = new PurchasingOrderItemModel();
 const periodModel = new PeriodModel();
 const bgModel = new BudgetTransectionModel();
+const productModel = new ProductsModel();
 
 router.get('/budgetyear/:year/:budget_type_id', (req, res, next) => {
 
@@ -296,6 +298,7 @@ router.post('/purchase-reorder', async (req, res, next) => {
   if (isClose) {
     res.send({ ok: false, error: 'รอบบัญชีถูกปิดแล้ว' })
   } else {
+
     if (poItems.length && productItems.length) {
 
       try {
@@ -323,8 +326,34 @@ router.post('/purchase-reorder', async (req, res, next) => {
           _poItems.push(obj);
         }
 
-        await modelItems.save(db, productItems);
+        let reserveIds: any = [];
+        let _productItems: any = [];
+
+        productItems.forEach((v: any) => {
+          let obj: any = {
+            generic_id: v.generic_id,
+            product_id: v.product_id,
+            purchase_order_id: v.purchase_order_id,
+            qty: v.qty,
+            total_small_qty: v.total_small_qty,
+            unit_generic_id: v.unit_generic_id,
+            unit_price: v.unit_price
+          }
+          _productItems.push(obj);
+
+          reserveIds.push(v.reserve_id);
+        });
+
+        await modelItems.save(db, _productItems);
         await model.save(db, _poItems);
+
+        // save reserved
+
+        let data: any = {};
+        data.reserved_status = 'PURCHASED';
+        data.purchase_people_user_id = req.decoded.people_user_id;
+
+        await productModel.saveReservedOrdered(req.db, reserveIds, data);
 
         res.send({ ok: true });
 

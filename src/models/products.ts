@@ -314,6 +314,30 @@ export class ProductsModel {
       .where('reserve_id', reserveId);
   }
 
+  saveReservedOrdered(db: Knex, reserveIds: any[], data: any) {
+    return db('pc_product_reserved')
+      .update(data)
+      .whereIn('reserve_id', reserveIds);
+  }
+
+  getReservedOrdered(db: Knex) {
+    return db('pc_product_reserved as rv')
+      .select('mg.working_code', 'mp.product_name', 'mg.generic_id', 'rv.contract_id',
+      'mg.generic_name', 'rv.cost as purchase_cost', 'rv.purchase_qty as order_qty',
+      'rv.unit_generic_id', 'gt.generic_type_id', 'rv.product_id', 'rv.reserve_id',
+      'ut.unit_name as to_unit_name', 'uf.unit_name as from_unit_name', 'mp.v_labeler_id', 'mp.m_labeler_id',
+      'ug.qty as conversion_qty', 'ml.labeler_name', 'gt.generic_type_name')  
+      .innerJoin('mm_products as mp', 'mp.product_id', 'rv.product_id')
+      .innerJoin('mm_generics as mg', 'mg.generic_id', 'mp.generic_id')
+      .innerJoin('mm_generic_types as gt', 'gt.generic_type_id', 'mg.generic_type_id')
+      .innerJoin('mm_labelers as ml', 'ml.labeler_id', 'mp.v_labeler_id')
+      .leftJoin('mm_unit_generics as ug', 'ug.unit_generic_id', 'rv.unit_generic_id')
+      .leftJoin('mm_units as uf', 'uf.unit_id', 'ug.from_unit_id')
+      .leftJoin('mm_units as ut', 'ut.unit_id', 'ug.to_unit_id')
+      .where('rv.reserved_status', 'CONFIRMED')
+      .orderBy('ml.labeler_name');
+  }
+
   orderspoint(knex: Knex, query: string = '', contract: string = 'all', minmaxFilter: string = 'min', generictype: string = null, count: boolean = false, limit: number = 100, offset: number = 0) {
     let _query = `%${query}%`;
     const con = knex('wm_products as p')

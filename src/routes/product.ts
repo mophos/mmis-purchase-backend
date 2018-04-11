@@ -98,6 +98,22 @@ router.put('/reorderpoint/trade/reserved-update', async (req, res, next) => {
 
 });
 
+router.get('/reorderpoint/trade/reserved/confirmed', async (req, res, next) => {
+  let db = req.db;
+  let reserveId = req.params.reserveId;
+
+  try {
+    let rs: any = await model.getReservedOrdered(db);
+    res.send({ ok: true, rows: rs });
+  } catch (error) {
+    console.log(error);
+    res.send({ ok: false, error: error.message });
+  } finally {
+    db.destroy();
+  }
+  
+});
+
 router.post('/save-reserved', async (req, res, next) => {
   let db = req.db;
   let items = req.body.items;

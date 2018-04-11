@@ -166,7 +166,7 @@ export class ProductsModel {
 
     // sql.groupBy('mp.product_id');
 
-    return sql.havingRaw('remain_qty<mg.min_qty')
+    return sql.havingRaw('remain_qty<=mg.min_qty')
       .limit(limit)
       .offset(offset)
       .orderByRaw('mg.generic_name, ml.labeler_name');
@@ -254,7 +254,7 @@ export class ProductsModel {
 
     // sql.groupBy('mp.product_id');
 
-    return sql.havingRaw('remain_qty<mg.min_qty');
+    return sql.havingRaw('remain_qty<=mg.min_qty');
   }
 
   getReOrderPointTradeReservedTotal(knex: Knex, warehouseId: any, genericTypeIds: string[], query: any = '') {

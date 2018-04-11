@@ -135,6 +135,20 @@ router.get('/', async (req, res, next) => {
   }
 });
 
+router.get('/get-list-po/:bgSubType', async (req, res, next) => {
+  let bgSubType = req.params.bgSubType;
+  let db = req.db;
+
+  try {
+    let rs: any = await model.getOrderList(db, bgSubType);
+    res.send({ ok: true, rows: rs });
+  } catch (error) {
+    res.send({ ok: false, error: error.error });
+  } finally {
+    db.destroy();
+  }
+});
+
 router.post('/by-status', async (req, res, next) => {
   let db = req.db;
   let status = req.body.status;
@@ -527,10 +541,22 @@ router.put('/:purchaseOrderId', async (req, res, next) => {
         await model.update(db, purchaseOrderId, purchase);
         await modelItems.removePurchaseItem(db, purchaseOrderId);
         await modelItems.save(db, products);
-        // revoke transaction
-        await bgModel.cancelTransaction(db, purchaseOrderId);
-        // save transaction
-        await bgModel.save(db, transactionData);
+
+        // check 
+        let rsAmount = await bgModel.getCurrentAmount(db, purchaseOrderId, transaction.budgetDetailId);
+        if (rsAmount.length) {
+          if (rsAmount[0].amount !== transaction.totalPurchase) {
+            // revoke transaction
+            await bgModel.cancelTransaction(db, purchaseOrderId);
+            // save transaction
+            await bgModel.save(db, transactionData);
+          }
+        } else {
+          await bgModel.cancelTransaction(db, purchaseOrderId);
+          // save transaction
+          await bgModel.save(db, transactionData);
+        }
+
         res.send({ ok: true });
       }
 
@@ -550,8 +576,8 @@ router.post('/checkApprove', async (req, res, next) => {
   let username = req.body.username;
   let password = req.body.password;
   let action = req.body.action;
-  console.log(action,password,username);
-  
+  console.log(action, password, username);
+
   const isCheck = await model.checkApprove(db, username, password, action);
   if (isCheck[0]) {
     res.send({ ok: true })
@@ -904,6 +930,18 @@ router.post('/change-purchase-date', async (req, res, next) => {
   try {
     let rs: any = await model.changePurchaseDate(db, purchaseOrderIds, purchaseDate);
     res.send({ ok: true });
+  } catch (error) {
+    res.send({ ok: false, error: error.message });
+  } finally {
+    db.destroy();
+  }
+});
+
+router.get('/sys-report', async (req, res, next) => {
+  let db = req.db;
+  try {
+    let rs: any = await model.getSysReport(db);
+    res.send({ ok: true, rows: rs[0] });
   } catch (error) {
     res.send({ ok: false, error: error.message });
   } finally {

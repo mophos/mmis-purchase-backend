@@ -13,7 +13,7 @@ html
       label.h3(style='margin-top: 5px; font-size: 16pt;')  &nbsp;#{hospitalName}
     p.h2(style='width:50%;float: left;')
       | ที่
-      label.h3(style='margin-top: 5px;')  
+      label.h3(style='margin-top: 5px;')
         if(purchasing[0].purchase_order_book_number)
           | &nbsp;#{purchasing[0].purchase_order_book_number}
         else
@@ -92,10 +92,17 @@ html
         br 
         | #{bposition.position_name}
       div(style="width:50%;float:left;text-align:center") ลงชื่อ.................................................หัวหน้าเจ้าหน้าที่
-        br
-        | 
-        br
-        | 
+        if(cposition=='')
+          |
+          br
+          |
+          br
+          | 
+        else
+          br 
+          | ( #{purchasingChief.chief_fullname} )
+          br
+          | #{cposition.position_name}  
     div(style="width:100%;float:left;text-align:center")
       br
       br

@@ -114,8 +114,18 @@ html
   table.table( style='float:right; width:50%; font-size: 15pt;')
       tr
         td.center  ลงชื่อ......................................................ผู้สั่งซื้อ
+      if(cposition=='')
+        tr
+          td(height='15px')
+        tr
+          td(height='15px')
+      else
+        tr
+          td.center ( #{purchasingChief.chief_fullname} )
+        tr
+          td.center #{cposition.position_name}  
       tr
-        td(height='140px')
+        td(height='50px')
       tr
         td.center  ลงชื่อ......................................................ผู้ขาย
       tr

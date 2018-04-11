@@ -9,14 +9,13 @@ html
     .center(style='font-weight: bold; font-size: 12pt;') #{hospname}
     .center(style='font-weight: bold; font-size: 12pt;') รายงานสรุปรายการเวชภัณฑ์ที่สั่งซื้อ
     .center(style='padding-bottom: 7pt; font-size: 12pt;') ณ วันที่ #{sdate}
-    table(style='font-size: 12pt;')
+    table(style='font-size: 10pt;')
       thead
         tr
-          th(style='font-size: 13pt; width: 100px;') เลขที่สั่งซื้อ
+          th(style='font-size: 13pt;') เลขที่สั่งซื้อ
           th(style='font-size: 13pt;') วันที่สั่งซื้อ
           th(style='font-size: 13pt;') รายการเวชภัณฑ์
-          //- th(style='font-size: 13pt;') ราคาต่อแพ็ค
-          th(style='font-size: 13pt; width:10px;').right จำนวน
+          th(style='font-size: 13pt;').right จำนวน
           th(style='font-size: 13pt;').right ราคารวม
           th(style='font-size: 13pt;').center ชื่อบริษัท
       tbody
@@ -24,22 +23,20 @@ html
         for b in results
           - y++
             tr
-              td.center
+              td.center(style="padding-left: 5px;")
                 if(b.purchase_order_book_number)
                   | #{b.purchase_order_book_number}
                 else
                   | #{b.purchase_order_number}
               td.center #{b.order_date}
-              td(style='width:280px; font-size:13pt;') #{b.product_name}
-              //- td.center #{b.unit_price}
-              td.right(style='font-size:11pt;') #{b.qty} x #{b.conversion} #{b.primary_unit}  
-              //- td.center(style='padding-left: 5pt;') #{b.bgtype_name}
+              td(style='width:280px; font-size:11pt; padding-left: 5px;') #{b.product_name}
+              td.right(style='font-size:10pt;') #{b.qty} x #{b.conversion} #{b.primary_unit}  
               td.right #{b.total_price}
-              td(style='padding-left:10px; font-size:10pt;') #{b.labeler_name}
+              td(style='padding-left:5px; font-size:12pt;') &nbsp;&nbsp;#{b.labeler_name}
       tfooter          
         tr
           td.tbfooter(colspan='6' height='10')
         tr
           td.left
           td.right(colspan='2') รวมทั้งสิ้น #{y} รายการ
-          td.right(colspan='2') ยอดรวม #{sum} &nbspบาท
+          td.right(colspan='2') ยอดรวม #{sum} &nbsp;บาท

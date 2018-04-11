@@ -33,7 +33,7 @@ export class PurchasingOrderModel {
 
   checkApprove(knex: Knex, username: any, password: any, action: any) {
     return knex('sys_approve as sa')
-      .leftJoin('um_users as uu','uu.user_id','sa.user_id')
+      .leftJoin('um_users as uu', 'uu.user_id', 'sa.user_id')
       .where('sa.action_name', action)
       .andWhere('uu.username', username)
       .andWhere('sa.password', password)
@@ -96,6 +96,16 @@ export class PurchasingOrderModel {
       .orderBy('pc_purchasing_order.order_date', 'DESC');
   }
 
+  getOrderList(knex: Knex, bgSubType: any) {
+    return knex('pc_purchasing_order as po')
+      .select('*', knex.raw('ROUND( SUM(poi.total_price), 2 ) as total_price'))
+      .join('pc_purchasing_order_item as poi', 'po.purchase_order_id', 'poi.purchase_order_id')
+      .where('po.is_cancel', 'N')
+      .andWhere('po.budget_detail_id', bgSubType)
+      .groupBy('po.purchase_order_id')
+      .orderBy('po.purchase_order_number')
+  }
+
   listByStatus(
     knex: Knex, status: Array<any>,
     contract: string = 'ALL', query: string = '',
@@ -117,7 +127,7 @@ export class PurchasingOrderModel {
 
     let con = knex(this.tableName)
       .select(sumItems, sumReceive, 'pc_purchasing_order.*', 'l.labeler_name',
-      'bp.name as bid_process_name', 'bgs.bgtypesub_name', 'cm.contract_no')
+        'bp.name as bid_process_name', 'bgs.bgtypesub_name', 'cm.contract_no')
       .leftJoin('mm_labelers as l', 'pc_purchasing_order.labeler_id', 'l.labeler_id')
       .leftJoin('l_bid_process as bp', 'pc_purchasing_order.purchase_method_id', 'bp.id')
       .leftJoin('bm_budget_detail as bgd', 'bgd.bgdetail_id', 'pc_purchasing_order.budget_detail_id')
@@ -163,8 +173,8 @@ export class PurchasingOrderModel {
       // .leftJoin('l_bid_process as bp', 'pc_purchasing_order.purchase_method_id', 'bp.id')
       .whereIn('pc_purchasing_order.purchase_order_status', status)
       .whereIn('pc_purchasing_order.generic_type_id', genericTypeIds)
-      // .orderBy('pc_purchasing_order.order_date', 'DESC')
-      // .orderBy('pc_purchasing_order.purchase_order_number', 'DESC');
+    // .orderBy('pc_purchasing_order.order_date', 'DESC')
+    // .orderBy('pc_purchasing_order.purchase_order_number', 'DESC');
 
     if (contract === 'Y') {
       con.where('pc_purchasing_order.is_contract', 'Y');
@@ -415,6 +425,7 @@ export class PurchasingOrderModel {
     po.purchase_order_number,
     mp.working_code AS trading_code,
     mp.product_name,
+		ml.labeler_name,
     pp.qty,
     mu.unit_name AS large_unit_name,
     mug.qty AS conversion_qty,
@@ -427,6 +438,7 @@ export class PurchasingOrderModel {
   JOIN pc_purchasing_order_item AS pp ON mg.generic_id = pp.generic_id
   JOIN pc_purchasing_order AS po ON pp.purchase_order_id = po.purchase_order_id
   JOIN mm_products AS mp ON pp.product_id = mp.product_id
+	LEFT JOIN mm_labelers as ml on ml.labeler_id = mp.v_labeler_id 
   JOIN mm_unit_generics AS mug ON pp.unit_generic_id = mug.unit_generic_id
   JOIN mm_units AS mu ON mug.from_unit_id = mu.unit_id
   JOIN mm_units AS mmu ON mug.to_unit_id = mmu.unit_id
@@ -467,6 +479,12 @@ export class PurchasingOrderModel {
     return db('pc_purchasing_order')
       .update('order_date', purchaseDate)
       .whereIn('purchase_order_id', purchaseIds);
+  }
+
+  getSysReport(db: Knex) {
+    return db('um_report')
+      .where('report_type', 'PO')
+      .andWhere('is_active', 'Y')
   }
 
 }

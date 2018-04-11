@@ -73,14 +73,24 @@ html
     table.table( style='float:right;width:50%')
       tr
         td.center  ลงชื่อ......................................................ผู้สั่งซื้อ
-      tr
-        td.center
-           |(#{cposition.title_name}#{cposition.fname} #{cposition.lname})
-      tr
-        td.center   
-      tr
-        td.center  
-          | #{cposition.position_name} 
+      if(cposition)
+        tr
+          td.center
+            |(#{cposition.title_name}#{cposition.fname} #{cposition.lname})
+        tr
+          td.center   
+        tr
+          td.center  
+            | #{cposition.position_name}
+      if(!cposition) 
+        tr
+          td.center(height='80px')
+            |
+        tr
+          td.center   
+        tr
+          td.center  
+            |
       tr
         td(height='40px')
       tr
@@ -88,6 +98,6 @@ html
       tr
         td.center  (......................................................)
       tr
-        td.center  วันที่รับใบสั่งซื้อ_____/_________/_____
+        td.center  วันที่รับใบสั่งซื้อ............/.........................../.............
       tr
         td.center 

@@ -505,7 +505,8 @@ export class PurchasingOrderModel {
   WHERE
     pp.generic_id = '${generic_id}'
   AND
-    pp.giveaway = 'N'
+    pp.giveaway = 'N' 
+  and po.is_cancle = 'N'
     `
     return (knex.raw(sql))
   }

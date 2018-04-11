@@ -66,12 +66,12 @@ html
     .fontspace
     | ระเบียบกระทรวงการคลังและกฎกรระทรวงว่าด้วยการจัดซื้อจัดจ้างภาครัฐจาก#{purchasing[0].labeler_name} อนึ่งในการจัดซื้อในครั้งนี้ใคร่ขอเสนอแต่งตั้งให้ผู้มีรายนามต่อไปนี้ เป็นกรรมการตรวจรับของ คือ
     br
-    -var b=0
+    - var b=0
     for c in committeesVerify
+      - b++
       .fontspace
       | #{b+1}. #{c.fullname}  #{c.position_name}  #{c.position}
       br
-      -b++
     br
     .fontspace
     | จึงเรียนมาเพื่อโปรดพิจารณาอนุมัติ โดยใช้เงิน #{budget[0].bgtype_name} ประเภท#{budget[0].bgtypesub_name} ปี #{budget[0].bg_year} 

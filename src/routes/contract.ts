@@ -77,11 +77,11 @@ router.put('/:id', (req, res, next) => {
   }
 });
 
-router.get('/detail/:id', (req, res, next) => {
-  let id = req.params.id;
+router.get('/remain-detail', (req, res, next) => {
+  let contractId = req.query.contractId;
   let db = req.db;
 
-  model.detail(db, id)
+  model.detail(db, contractId)
     .then((results: any) => {
       res.send({ ok: true, detail: results[0] })
     })

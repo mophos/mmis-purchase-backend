@@ -15,7 +15,11 @@ html
     - for(var a=0;a<num;a++)
         |
         br
-        div(style='float: left;') เลขที่ #{array[a][0].purchase_order_number}
+        div(style='float: left;') เลขที่&nbsp;
+        if(array[a][0].purchase_order_book_number)
+          | #{array[a][0].purchase_order_book_number}
+        else
+          | #{array[a][0].purchase_order_number}
         br
         .center
           .bold #{hospname}
@@ -70,73 +74,30 @@ html
         br
         table.table( style='float:left;width:50%;')
           tr
-            td.center  
-              | &nbsp;
-          tr
-            td.center   
-              | &nbsp;
-          tr
-            td.center   
-          tr
-            td.center  
-              if(chief[a]==1)
-                | &nbsp;
-              else 
-                | &nbsp;
-          tr
-            td(height='40px')
-          tr
-            td.center  
-              | &nbsp;
-          tr
-            td.center  
-              | &nbsp;
-          tr
-            td.center  
-              | &nbsp;
-          tr
-            td.center 
-          tr.hideprint
-            td 
-              br
-              br
-          tr.hideprint(style="border:1px solid;")
-            td 
-          tr.hideprint
-            td 
-              br
-              br
+            td(height='200px')
         table.table( style='float:right;width:50%;')
           tr
             td.center  ลงชื่อ......................................................ผู้สั่งซื้อ
           tr
-            td.center   (#{getchief[a]})
+            td.center
+              if(getchief[a])   
+                | (#{getchief[a]})
+              if(!getchief[a])   
+                |
           tr
             td.center   
           tr
-            td.center  
-              if(chief[a]==1)
-                | ผู้อำนวยการ#{hospname}
-              else 
+            td.center
+              if(getchief[a])   
                 | หัวหน้าเจ้าหน้าที่
+              if(!getchief[a])   
+                |  
           tr
-            td(height='40px')
+            td(height='90px')
           tr
             td.center  ลงชื่อ......................................................ผู้ขาย
           tr
             td.center  (......................................................)
           tr
             td.center  วันที่รับใบสั่งซื้อ_____/_________/_____
-          tr
-            td.center 
-          tr.hideprint
-            td 
-              br
-              br
-          tr.hideprint(style="border:1px solid;")
-            td 
-          tr.hideprint
-            td 
-              br
-              br
         .pagebreak

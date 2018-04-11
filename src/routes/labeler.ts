@@ -25,11 +25,14 @@ router.get('/', async (req, res, next) => {
 
 router.get('/autocomplete', async (req, res, next) => {
   let db = req.db;
-  let q = req.query.query;  
+  let q = req.query.q;  
   try {
     let rs: any = await model.autoComplete(db, q);
-    if(!rs[0].fullname) rs[0].fullname = rs[0].labeler_name
-    res.send(rs);
+    if (rs.length) {
+      res.send(rs);
+    } else {
+      res.send([]);
+    }
   } catch (error) {
     res.send({ ok: false, error: error.message });
   } finally {

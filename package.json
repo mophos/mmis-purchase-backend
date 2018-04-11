@@ -3,7 +3,9 @@
     "version": "0.0.1",
     "private": true,
     "scripts": {
-        "start": "nodemon app/bin/www.js"
+        "start": "npx nodemon app/bin/www.js",
+        "build:watch": "npx tsc -w",
+        "build": "npx tsc"
     },
     "dependencies": {
         "@risingstack/protect": "^1.2.0",
@@ -41,6 +43,8 @@
         "@types/mysql": "2.15.2",
         "@types/node": "^9.4.6",
         "@types/random-js": "^1.0.30",
-        "@types/serve-favicon": "^2.2.30"
+        "@types/serve-favicon": "^2.2.30",
+        "nodemon": "^1.17.2",
+        "typescript": "^2.7.2"
     }
 }

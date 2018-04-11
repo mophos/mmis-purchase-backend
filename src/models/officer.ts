@@ -40,38 +40,31 @@ export class OfficerModel {
     return knex('settings')
       .del();
   }
-  selectSql(knex: Knex, tableName: string, selectText: string, whereText: string, groupBy: string, orderBy: string) {
-    let sql = 'select ' + selectText + ' from ' + tableName;
-    if (whereText != '') {
-        sql = sql + ' where ' + whereText;
-    }
-    if (groupBy != '') {
-        sql = sql + ' group by ' + groupBy;
-    }
-    if (orderBy != '') {
-        sql = sql + ' order by ' + orderBy;
-    }
-    sql = sql + ' limit 0,5000';
-    return knex.raw(sql);
+
+savePurchasingOfficer(knex: Knex,data) {
+  return knex('um_purchasing_officer').insert(data);
 }
-savePurchasingOfficer(knex: Knex, ref: number, arrData) {
-  if (ref > 0) {
-      return knex('um_purchasing_officer').update(arrData)
-          .where('p_id', '=', ref)
-          .returning(['p_id']);
-  } else {
-      return knex('um_purchasing_officer').insert(arrData, 'p_id')
-          .returning(['p_id']);
-  }
+updatePurchasingOfficer(knex: Knex, officerId: number, data) {
+  return knex('um_purchasing_officer').update(data)
+      .where('p_id',officerId)
+
 }
 
-getPurchasingOfficer(knex: Knex, ref: number) {
-  if (ref > 0) {
-      return knex('view_um_purchasing_officer').select('*')
-          .where('p_id', '=', ref);
-  } else {
-      return knex('view_um_purchasing_officer').select('*');
-  }
+getPurchasingOfficer(knex: Knex) {
+  return knex('um_purchasing_officer as pu')
+  .select('pu.p_id','pu.people_id','pu.type_id','type.type_name','type.type_code','pu.isactive',knex.raw('concat(t.title_name,p.fname," ",p.lname) AS fullname'))
+  .innerJoin('um_people as p','pu.people_id','p.people_id')
+  .innerJoin('um_titles as t','t.title_id','p.title_id')
+  .innerJoin('um_purchasing_officer_type as type','pu.type_id','type.type_id')
+  .where('pu.isactive',1);
+}
+
+getPurchasingOfficerType(knex: Knex) {
+  return knex('um_purchasing_officer_type');
+}
+
+getPeoples(knex: Knex) {
+  return knex('um_people');
 }
 
 deletePurchasingOfficer(knex: Knex, ref: number) {

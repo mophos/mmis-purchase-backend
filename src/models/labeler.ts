@@ -5,19 +5,19 @@ export class LabelerModel {
 
   public tableName = 'mm_labelers';
   public primaryKey = 'labeler_id';
-  
-  autoComplete(knex: Knex, q: string='', limit: number = 100, offset: number = 0) {
+
+  autoComplete(knex: Knex, q: string = '', limit: number = 100, offset: number = 0) {
     return knex(this.tableName)
-    .select('mm_labelers.*',knex.raw('concat(labeler_name," ( ",short_code," )") as fullname'))
+      .select('mm_labelers.*', knex.raw('concat(labeler_name," ( ",short_code," )") as fullname'))
       .where('labeler_name', 'like', `%${q}%`)
-      .orWhere('short_code', q)
+      .orWhere('short_code', 'like', `%${q}%`)
       .limit(limit)
       .offset(offset);
   }
 
   list(knex: Knex, limit: number = 100, offset: number = 0) {
     return knex(this.tableName)
-  
+
   }
 
   save(knex: Knex, datas: any) {

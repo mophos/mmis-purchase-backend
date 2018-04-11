@@ -3,5 +3,3 @@
 link(rel='stylesheet', type='text/css', href=APIURL+'reset.css')
 link(rel='stylesheet', type='text/css', href=APIURL+'mystyle.css')
 link(rel='stylesheet', type='text/css', href=APIURL+'print.css' media='print')
-
-

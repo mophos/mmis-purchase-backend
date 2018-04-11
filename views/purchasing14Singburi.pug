@@ -14,7 +14,9 @@ html
       - var y=0
             for b in purchasing
               - y++
-              | &nbsp;#{b.generic_name}&nbsp; 
+              | &nbsp;#{b.generic_name}
+              if(y<countp)
+                | , 
       | ) โดย#{bidname}
 
     br
@@ -23,12 +25,16 @@ html
     - var y=0
           for b in purchasing
             - y++
-             | &nbsp;#{b.generic_name}&nbsp; 
+             | &nbsp;#{b.generic_name}
+             if(y<countp)
+              | , 
     | ) โดย#{bidname} และเพื่อให้เป็นไปตามระเบียบกระทรวงการคลังว่าด้วยการจัดซื้อจัดจ้างและบริหารพัสดุภาครัฐ พ.ศ. 2560 จึงขอแต่งตั้งรายชื่อต่อไปนี้เป็น คณะกรรมการตรวจรับพัสดุ สำหรับการจัดซื้อจำนวน #{countp} รายการ (
     - var y=0
           for b in purchasing
             - y++
-             | &nbsp;#{b.generic_name}&nbsp; 
+             | &nbsp;#{b.generic_name}
+             if(y<countp)
+              | , 
     | ) โดย#{bidname}
     br
     br

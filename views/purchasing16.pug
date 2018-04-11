@@ -19,14 +19,18 @@ html
     table(style='width:100%;')
         tr
           td.center
-            img(src=APIURL+'krut.png', height='130px')
+            img(src=APIURL+'krut.png', height='128px')
     br
     .center ใบสั่งซื้อ/สั่งจ้าง
     br
     table(style='width:100%;')
         tr
             td.left(style='width:50%;') ผู้ขาย/ผู้รับจ้าง #{purchasing[0].labeler_name}
-            td.left(style='width:50%;') ใบสั่งซื้อ/สั่งจ้างเลขที่ #{purchasing[0].purchase_order_number}
+            td.left(style='width:50%;') ใบสั่งซื้อ/สั่งจ้างเลขที่ 
+              if(purchasing[0].purchase_order_book_number)
+                | #{purchasing[0].purchase_order_book_number}
+              else
+                | #{purchasing[0].purchase_order_number}
         tr
             td.left ที่อยู่ #{purchasing[0].address}
             td.left วันที่ #{nDate}

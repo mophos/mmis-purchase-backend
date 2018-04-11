@@ -68,12 +68,12 @@ html
       tbody
         -var b=0
         for c in committeesVerify
+          - b++
           tr
-            td #{b+1}. #{c.fullname}  
+            td #{b}. #{c.fullname}  
             td #{c.position_name}  
             td #{c.position}
       br
-      -b++
     .fontspace
     | จึงเรียนมาเพื่อโปรดพิจารณาอนุมัติ โดยใช้เงิน #{budget[0].bgtype_name} ประเภท#{budget[0].bgtypesub_name} ปี #{budget[0].bg_year} 
     br

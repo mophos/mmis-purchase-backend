@@ -913,10 +913,30 @@ router.get('/period/status', (async (req, res, next) => {
 
 router.get('/getGeneric', async (req, res, next) => {
   let db = req.db;
+  let limit = req.query.limit;
+  let offset = req.query.offset;
   let generic_type_id = req.decoded.generic_type_id
   try {
-    let rs: any = await model.getGeneric(db, generic_type_id);
-    res.send({ ok: true, rows: rs[0] });
+    let rs: any = await model.getGeneric(db, generic_type_id, limit, offset);
+    let rsTotal: any = await model.getGenericTotal(db, generic_type_id);
+    res.send({ ok: true, rows: rs[0], total: rsTotal[0][0].total });
+  } catch (error) {
+    res.send({ ok: false, error: error.message });
+  } finally {
+    db.destroy();
+  }
+});
+
+router.get('/getGeneric/search', async (req, res, next) => {
+  let db = req.db;
+  let limit = req.query.limit;
+  let offset = req.query.offset;
+  let generic_type_id = req.decoded.generic_type_id
+  let query = req.query.query;
+  try {
+    let rs: any = await model.getGenericSearch(db, generic_type_id, limit, offset, query);
+    let rsTotal: any = await model.getGenericTotalSearch(db, generic_type_id, query);
+    res.send({ ok: true, rows: rs[0], total: rsTotal[0][0].total });
   } catch (error) {
     res.send({ ok: false, error: error.message });
   } finally {

@@ -161,6 +161,7 @@ export class ProductsModel {
           .orWhere('mp.product_name', 'like', _queryAll)
           .orWhere('mg.working_code', 'like', _query)
           .orWhere('mg.keywords', 'like', _queryAll)
+          .orWhere('ml.labeler_name', 'like', _queryAll)
       })
     }
 
@@ -208,6 +209,7 @@ export class ProductsModel {
           .orWhere('mp.product_name', 'like', _queryAll)
           .orWhere('mg.working_code', 'like', _query)
           .orWhere('mg.keywords', 'like', _queryAll)
+          .orWhere('ml.labeler_name', 'like', _queryAll)
       })
     }
 
@@ -249,6 +251,7 @@ export class ProductsModel {
           .orWhere('mp.product_name', 'like', _queryAll)
           .orWhere('mg.working_code', 'like', _query)
           .orWhere('mg.keywords', 'like', _queryAll)
+          .orWhere('ml.labeler_name', 'like', _queryAll)
       })
     }
 
@@ -281,6 +284,7 @@ export class ProductsModel {
           .orWhere('mp.product_name', 'like', _queryAll)
           .orWhere('mg.working_code', 'like', _query)
           .orWhere('mg.keywords', 'like', _queryAll)
+          .orWhere('ml.labeler_name', 'like', _queryAll)
       })
     }
 

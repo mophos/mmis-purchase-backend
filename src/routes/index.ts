@@ -993,6 +993,7 @@ router.get('/report/purchasing/11', wrap(async (req, res, next) => {
   let tel = hosdetail[0].telephone;
   let fax = hosdetail[0].fax;
   let hospitalName = hosdetail[0].hospname;
+  let addressCityHall = hosdetail[0].addressCityHall;
   let poraor = hosdetail[0].managerName;
   let purchasing = await model.purchasing10(db, purchaOrderId, warehouseId);
   purchasing = purchasing[0];
@@ -1060,6 +1061,7 @@ router.get('/report/purchasing/11', wrap(async (req, res, next) => {
   allAmount = model.comma(allAmount);
 
   res.render('purchasing11', {
+    addressCityHall: addressCityHall,
     province: province,
     tel: tel,
     fax: fax,

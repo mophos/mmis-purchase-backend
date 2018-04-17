@@ -1695,152 +1695,130 @@ router.get('/report/po/egp', wrap(async (req, res, next) => {
   });
 }));
 
-router.get('/report/po/egp/singburi', wrap(async (req, res, next) => {
-  let db = req.db;
-  let type = req.query.type;
-  let purchaOrderId = req.query.purchaOrderId;
+router.get('/report/allpo/egp/singburi', wrap(async (req, res, next) => {
+  let porder = req.query.porder;
+  porder = Array.isArray(porder) ? porder : [porder];
   let chief = "ปฎิบัติราชการแทนผู้ว่าราชการจังหวัด";
   let warehouseId = req.decoded.warehouseId;
+  let type = req.query.type;
+  let db = req.db;
 
-  ////ชื่อโรงพยาบาล//////////
   let hosdetail = await model.hospital(db);
   let hospitalName = hosdetail[0].hospname;
-  let hostel = hosdetail[0].telephone;
-  let hosaddress = hosdetail[0].address;
-  ////ผอ///////////////////
   let poraor = hosdetail[0].managerName;
-  let pcb = await model.pcBudget(db, purchaOrderId);
-  // console.log('++++++++++++++++++++++++++++',hosdetail[0])
-  /////หัวหน้า/เจ้าหนาที่/////////////////
-  let purchasingChief = await model.purchasing2Chief(db, purchaOrderId)
-  ////query////////////////
-  let purchasing = await model.purchasing10(db, purchaOrderId, warehouseId);
-  purchasing = purchasing[0];
-  ////////คณะกรรมการ////////////
-  let committeesVerify = await model.purchasingCommittee2(db, purchaOrderId);
-  committeesVerify = committeesVerify[0];
-  ///////นับจำนวน//////////////////
-  let count = await model.purchasingCountItem(db, purchaOrderId);
-  count = count[0][0].count || 0;
-  ////////book_prefix///////////////
-  let at = await model.at(db)
-  at = at[0]
-  /////วันที่ปัจจับุัน / ปีงบ/////////////////
-  moment.locale('th');
-  let nDate = moment(new Date()).format('D MMMM ') + (moment(new Date()).get('year') + 543)
-  let year = moment(new Date).get('year') + 544
-  /////งบประมาณ///////////
-  let budget = await model.budgetType(db, purchasing[0].budget_detail_id)
-  budget = budget[0]
-  ////////////////////////
-  let totalprice = 0
-  let textamount = model.bahtText(budget[0].amount)
-  let sum = model.comma(budget[0].amount - budget[0].order_amt)
-  budget.forEach(value => {
-    value.amount = model.comma(value.amount)
-    value.order_amt = model.comma(value.order_amt)
-  });
-  let bidname = await model.bidName(db, purchasing[0].purchase_method_id)
-  purchasing.forEach(value => {
-    totalprice += value.total_price
-    if (value.qty == null) value.qty = 0;
-    value.qty = model.commaQty(value.qty);
-    value.qtyPoi = model.commaQty(value.qtyPoi);
-    value.total_price = model.comma(value.total_price);
-    value.unit_price = model.comma(value.unit_price);
-    value.cost = model.comma(value.cost);
-    value.standard_cost = model.comma(value.standard_cost);
-    value.total = model.commaQty(value.total)
-  })
-
-  pcb.forEach(value => {
-    value.incoming_balance = model.comma(value.incoming_balance)
-    value.amount = model.comma(value.amount)
-    value.balance = model.comma(value.balance)
-  })
-
-  let getAmountTransaction = await model.allAmountTransaction(db, purchasing[0].budget_detail_id, +year - 544, purchasing[0].purchase_order_id);
-  getAmountTransaction = getAmountTransaction[0];
-  let allAmount: any = getAmountTransaction[0].amount;
-  allAmount = model.comma(allAmount);
-
-
-  let ttotalprice = model.comma(totalprice)
-  let bahtText = model.bahtText(totalprice)
+  let hosaddress = hosdetail[0].address;
+  let hostel = hosdetail[0].telephone;
   let province = hosdetail[0].province;
 
-  let cposition
-  if (purchasingChief[0].chief_id) {
-    cposition = await model.getPosition(db, purchasingChief[0].chief_id);
-    cposition = cposition[0]
-  } else cposition = '';
+  moment.locale('th');
+  let nDate = moment(new Date()).format('D MMMM ') + (moment(new Date()).get('year') + 543)
 
-  let bposition
-  if (purchasingChief[0].buyer_id) {
-    bposition = await model.getPosition(db, purchasingChief[0].buyer_id);
-    bposition = bposition[0]
-  } else bposition = '';
+  let pcb;
 
+  let committeesVerify;
+  let arrayItems;
+  let bidname;
+  let bahtText: any = 0;
+  let purchasingChief;
+  let budget;
+
+  let arBudget = [];
+  let arrayChief = [];
+  let arrayTotal = [];
+  let arrayBahtText = [];
+  let arrayBid = [];
+  let purchasing = [];
+  let arPcb = [];
+
+  let arCommittee = [];
+  let arCposition = [];
+  let arBposition = [];
+  let arAllamount = [];
+  let arAtransection = [];
+
+  let getAmountTransaction;
+  let allAmount;
+
+  for (let i in porder) {
+    arrayItems = await model.purchasingEgp(db, porder[i], warehouseId);
+    purchasing.push(arrayItems);
+
+    purchasingChief = await model.purchasing2Chief(db, porder[i]);
+    arrayChief.push(purchasingChief);
+
+    let cposition = '';
+    let bposition = '';
+    if (arrayChief[i][0].chief_id) {
+      cposition = await model.getPosition(db, arrayChief[i][0].chief_id);
+      arCposition.push(cposition);
+    } else arCposition[i] = '';
+
+    if (arrayChief[i][0].buyer_id) {
+      bposition = await model.getPosition(db, arrayChief[i][0].buyer_id);
+      arBposition.push(bposition)
+    } else arBposition[i] = '';
+
+    committeesVerify = await model.purchasingCommittee2(db, porder[i]);
+    committeesVerify = committeesVerify[0];
+    arCommittee.push(committeesVerify);
+
+    budget = await model.budgetType(db, purchasing[i][0].budget_detail_id);
+    budget = budget[0];
+    arBudget.push(budget);
+    arBudget[i][0].amount = model.comma(arBudget[i][0].amount);
+
+    getAmountTransaction = await model.allAmountTransaction(db, purchasing[i][0].budget_detail_id, +arBudget[i][0].bg_year - 543, purchasing[i][0].purchase_order_id);
+    getAmountTransaction = getAmountTransaction[0];
+    arAtransection.push(getAmountTransaction);
+
+    pcb = await model.pcBudget(db, porder[i]);
+    arPcb.push(pcb);
+    arPcb[i][0].balance = model.comma(arPcb[i][0].balance);
+
+    allAmount = model.comma(arAtransection[i][0].amount);
+    arAllamount.push(allAmount);
+
+    let total: any = 0;
+    arrayItems.forEach(v => {
+      total += v.total_price;
+      v.total_price = model.comma(v.total_price);
+      v.qty = model.commaQty(v.qty);
+      v.unit_price = model.comma(v.unit_price);
+      v.qtyPoi = model.commaQty(v.qtyPoi);
+      v.standard_cost = model.comma(v.standard_cost);
+      v.cost = model.comma(v.cost);
+    });
+
+    bahtText = model.bahtText(total);
+    total = model.comma(total);
+    arrayTotal.push(total);
+    arrayBahtText.push(bahtText);
+
+    bidname = await model.bidName(db, purchasing[i][0].purchase_method_id);
+    arrayBid.push(bidname);
+  }
+
+  // res.send(arPcb);
   res.render('egpSingburi', {
-    ttotalprice: ttotalprice,
-    bahtText: bahtText,
-    chief: chief,
-    pcb: pcb[0],
-    allAmount: allAmount,
-    cposition: cposition,
-    bposition: bposition,
-    textamount: textamount,
-    type: type,
-    purchasing: purchasing,
-    sum: sum,
-    hosaddress: hosaddress,
+    arAllamount: arAllamount,
+    arPcb: arPcb,
+    arBudget: arBudget,
+    arCommittee: arCommittee,
     province: province,
-    hostel: hostel,
-    countp: count,
-    total: ttotalprice,
-    hospitalName: hospitalName,
-    at_name: at[0].value,
-    nDate: nDate,
-    committeesVerify: committeesVerify,
-    bidname: bidname[0].name,
-    budget: budget,
+    chief: chief,
     poraor: poraor,
-    purchasingChief: purchasingChief[0]
+    arrayChief: arrayChief,
+    arCposition: arCposition,
+    arBposition: arBposition,
+    arrayBahtText: arrayBahtText,
+    arrayTotal: arrayTotal,
+    nDate: nDate,
+    arrayBid: arrayBid,
+    purchasing: purchasing,
+    porder: porder,
+    hospitalName: hospitalName,
+    pcb: pcb
   });
-}));
-
-router.get('/report/allpo/egp/singburi', wrap(async (req, res, next) => {
-  let purchaOrderId = req.query.purchaOrderId;
-  let chief = "ปฎิบัติราชการแทนผู้ว่าราชการจังหวัด";
-  let warehouseId = req.decoded.warehouseId;
-  let type = req.query.type;
-  let db = req.db;
-
-  let hosdetail = await model.hospital(db);
-  let hospitalName = hosdetail[0].hospname;
-  let poraor = hosdetail[0].managerName;
-  let hosaddress = hosdetail[0].address;
-  let hostel = hosdetail[0].telephone;
-
-  let porder = [];
-  purchaOrderId === 'string' ? porder.push(purchaOrderId) : porder = purchaOrderId;
-
-  let array = [];
-  let arObj = [];
-  porder.forEach(async (e) => {
-    let results = await model.purchasing10(db, e, warehouseId);
-    console.log(results[0], '================')
-    // arObj = _.clone(results[0]);
-    // array.push(arObj);
-  });
-
-  res.send(array)
-
-  console.log('iiiiiiiiiiiiiiiiiii', array)
-  // res.render('egpSingburi', {
-  //   purchaOrderId: purchaOrderId,
-  //   array: array
-  // });
 }));
 
 router.get('/report/getProductHistory/:generic_code', wrap(async (req, res, next) => {

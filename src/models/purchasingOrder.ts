@@ -350,6 +350,7 @@ export class PurchasingOrderModel {
     if (orderStatus !== 'ALL') {
       sql += ` AND pp.purchase_order_status = ${orderStatus}`
     }
+    console.log('000000000000000', sql);
     return (knex.raw(sql))
   }
 

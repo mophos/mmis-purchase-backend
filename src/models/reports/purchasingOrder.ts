@@ -855,7 +855,7 @@ export class PurchasingOrderReportModel {
             .leftJoin('mm_labelers as ml', 'ml.labeler_id', 'po.labeler_id')
             .leftJoin('l_bid_process as cbp', 'cbp.id', 'po.purchase_method_id')
             .leftJoin('l_bid_type as cbt', 'cbt.bid_id', 'po.purchase_type_id')
-            .whereIn('po.purchase_order_id', porder)
+            .where('po.purchase_order_id', porder)
             .andWhereRaw('mg.generic_id IS NOT NULL')
     }
 

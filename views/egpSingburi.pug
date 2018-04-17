@@ -5,13 +5,12 @@ style.
             margin: -20px;
         }
     }
-include purchasing12Singburi.pug
-hr.hideprint
-.break
-include purchasing13Singburi.pug
-hr.hideprint
-.break
-//- include purchasing14Singburi.pug
-//- hr.hideprint
-//- .break
-include purchasing16Singburi.pug
+- for(var i = 0 ; i < porder.length ; i++)
+    include purchasing12Singburi.pug
+    hr.hideprint
+    .break
+    include purchasing13Singburi.pug
+    hr.hideprint
+    .break
+    include purchasing16Singburi.pug
+    .break

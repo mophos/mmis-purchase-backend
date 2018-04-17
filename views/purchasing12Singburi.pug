@@ -14,10 +14,10 @@ html
     p.h2(style='width:50%;float: left;')
       | ที่
       label.h3(style='margin-top: 5px;')
-        if(purchasing[0].purchase_order_book_number)
-          | &nbsp;#{purchasing[0].purchase_order_book_number}
+        if(purchasing[i][0].purchase_order_book_number)
+          | &nbsp;#{purchasing[i][0].purchase_order_book_number}
         else
-          | &nbsp;#{purchasing[0].purchase_order_number}
+          | &nbsp;#{purchasing[i][0].purchase_order_number}
     b.h2(style='width:50%;float: left;')
       | วันที่ 
       label.h3(style="font-size: 16pt;") &nbsp;#{nDate}
@@ -28,18 +28,18 @@ html
     hr
     .enter เรียน ผู้ว่าราชการจังหวัด#{province}
     .fontspace
-    | ด้วย#{hospitalName}มีความประสงค์จะ ซื้อยา/เวชภัณฑ์มิใช่ยา จำนวน #{countp} รายการ 
+    | ด้วย#{hospitalName}มีความประสงค์จะ ซื้อยา/เวชภัณฑ์มิใช่ยา จำนวน #{purchasing[i].length} รายการ 
     br
     - var y=0
-          for b in purchasing
+          for b in purchasing[i]
             - y++
-             .fontspace
-             .fontspace
-             label(style="font-size: 15pt;") &nbsp;- #{b.generic_name}
-             if(y<countp) 
-              br 
+            .fontspace
+            .fontspace
+            label(style="font-size: 15pt;") &nbsp;- #{b.generic_name}
+            if(y<countp) 
+            br 
     br
-    | โดย#{bidname} ซึ่งมีรายละเอียดดังต่อไปนี้
+    | โดย #{arrayBid[i][0].name} ซึ่งมีรายละเอียดดังต่อไปนี้
     br
     .fontspace
     | 1.  เหตุผลและความจำเป็นที่ต้องซื้อ
@@ -54,16 +54,16 @@ html
     | 3.	วงเงินที่จะซื้อ
     br
     .fontspace 
-    | &nbsp;&nbsp; เงินนอกงบประมาณ จำนวน #{total} บาท (#{bahtText})
+    | &nbsp;&nbsp; เงินนอกงบประมาณ จำนวน #{arrayTotal[i]} บาท (#{arrayBahtText[i]})
     br
     .fontspace 
     | 4.	กำหนดเวลาที่ต้องการใช้พัสดุนั้น หรือให้งานแล้วเสร็จ
     br
     .fontspace 
-    | &nbsp;&nbsp; กำหนดเวลาส่งมอบงานหรือให้งานแล้วเสร็จภายใน #{purchasing[0].delivery} วัน 
+    | &nbsp;&nbsp; กำหนดเวลาส่งมอบงานหรือให้งานแล้วเสร็จภายใน #{purchasing[i][0].delivery} วัน 
     br
     .fontspace
-    | 5.	วิธีที่จะซื้อ #{bidname}
+    | 5.	วิธีที่จะซื้อ #{arrayBid[i][0].name}
     br
     .fontspace
     | 6.	หลักเกณฑ์การพิจารณาคัดเลือกข้อเสนอ
@@ -88,9 +88,9 @@ html
     div(style="width:100%;float:left;")
       div(style="width:50%;float:left;text-align:center") ลงชื่อ.................................................เจ้าหน้าที่
         br
-        | ( #{purchasingChief.buyer_fullname} )
+        | ( #{arrayChief[i][0].buyer_fullname} )
         br 
-        | #{bposition.position_name}
+        | #{arBposition[i][0].position_name}
       div(style="width:50%;float:left;text-align:center") ลงชื่อ.................................................หัวหน้าเจ้าหน้าที่
         if(cposition=='')
           |
@@ -100,9 +100,9 @@ html
           | 
         else
           br 
-          | ( #{purchasingChief.chief_fullname} )
+          | ( #{arrayChief[i][0].chief_fullname} )
           br
-          | #{cposition.position_name}  
+          | #{arCposition[i][0].position_name}  
     div(style="width:100%;float:left;text-align:center")
       br
       br
@@ -116,7 +116,7 @@ html
       br
       | ผู้อำนวยการ#{hospitalName}
       br
-      if(purchasing[0].purchase_method_id==2) 
+      if(purchasing[i][0].purchase_method_id==2) 
         | ปฏิบัติราชการแทนผู้ตรวจกระทรวงเขต 4
-      if(purchasing[0].purchase_method_id!=2) 
+      if(purchasing[i][0].purchase_method_id!=2) 
         | #{chief}#{province}

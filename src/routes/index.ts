@@ -1021,6 +1021,7 @@ router.get('/report/purchasing/11', wrap(async (req, res, next) => {
   let dDate = moment(new Date()).format(' MMMM ') + (moment(new Date()).get('year') + 543)
   let year = moment(new Date).get('year') + 544
 
+  let bidname = purchasing[0].name;
   let budget = await model.budgetType(db, purchasing[0].budget_detail_id)
   budget = budget[0]
   let totalprice = 0
@@ -1063,6 +1064,7 @@ router.get('/report/purchasing/11', wrap(async (req, res, next) => {
   res.render('purchasing11', {
     addressCityHall: addressCityHall,
     province: province,
+    bidname: bidname,
     tel: tel,
     fax: fax,
     address: address,
@@ -1733,8 +1735,6 @@ router.get('/report/allpo/egp/singburi', wrap(async (req, res, next) => {
   let arPcb = [];
 
   let arCommittee = [];
-  let arCposition = [];
-  let arBposition = [];
   let arAllamount = [];
   let arAtransection = [];
 
@@ -1747,18 +1747,6 @@ router.get('/report/allpo/egp/singburi', wrap(async (req, res, next) => {
 
     purchasingChief = await model.purchasing2Chief(db, porder[i]);
     arrayChief.push(purchasingChief);
-
-    let cposition = '';
-    let bposition = '';
-    if (arrayChief[i][0].chief_id) {
-      cposition = await model.getPosition(db, arrayChief[i][0].chief_id);
-      arCposition.push(cposition);
-    } else arCposition[i] = '';
-
-    if (arrayChief[i][0].buyer_id) {
-      bposition = await model.getPosition(db, arrayChief[i][0].buyer_id);
-      arBposition.push(bposition)
-    } else arBposition[i] = '';
 
     committeesVerify = await model.purchasingCommittee2(db, porder[i]);
     committeesVerify = committeesVerify[0];
@@ -1800,7 +1788,7 @@ router.get('/report/allpo/egp/singburi', wrap(async (req, res, next) => {
     arrayBid.push(bidname);
   }
 
-  // res.send(arPcb);
+  // res.send(arrayChief);
   res.render('egpSingburi', {
     arAllamount: arAllamount,
     arPcb: arPcb,
@@ -1810,8 +1798,6 @@ router.get('/report/allpo/egp/singburi', wrap(async (req, res, next) => {
     chief: chief,
     poraor: poraor,
     arrayChief: arrayChief,
-    arCposition: arCposition,
-    arBposition: arBposition,
     arrayBahtText: arrayBahtText,
     arrayTotal: arrayTotal,
     nDate: nDate,

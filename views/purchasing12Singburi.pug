@@ -90,9 +90,9 @@ html
         br
         | ( #{arrayChief[i][0].buyer_fullname} )
         br 
-        | #{arBposition[i][0].position_name}
+        | #{arrayChief[i][0].buyer_position}
       div(style="width:50%;float:left;text-align:center") ลงชื่อ.................................................หัวหน้าเจ้าหน้าที่
-        if(cposition=='')
+        if(purchasing[i][0].chief_id===null)
           |
           br
           |
@@ -102,7 +102,7 @@ html
           br 
           | ( #{arrayChief[i][0].chief_fullname} )
           br
-          | #{arCposition[i][0].position_name}  
+          | #{arrayChief[i][0].chief_position}  
     div(style="width:100%;float:left;text-align:center")
       br
       br

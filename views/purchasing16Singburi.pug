@@ -114,7 +114,7 @@ html
   table.table( style='float:right; width:50%; font-size: 15pt;')
       tr
         td.center  ลงชื่อ......................................................ผู้สั่งซื้อ
-      if(cposition=='')
+      if(purchasing[i][0].chief_id===null)
         tr
           td(height='15px')
         tr
@@ -123,9 +123,11 @@ html
         tr
           td.center ( #{arrayChief[i][0].chief_fullname} )
         tr
-          td.center #{arCposition[i][0].position_name}  
+          td.center #{arrayChief[i][0].chief_position} 
+        tr
+          td.center หัวหน้าเจ้าหน้าที่ 
       tr
-        td(height='50px')
+        td(height='40px')
       tr
         td.center  ลงชื่อ......................................................ผู้ขาย
       tr

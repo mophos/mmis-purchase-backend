@@ -1791,8 +1791,10 @@ router.get('/report/allpo/egp/singburi', wrap(async (req, res, next) => {
 
   // res.send(arrayChief);
   res.render('egpSingburi', {
+    hosaddress: hosaddress,
     arAllamount: arAllamount,
     arPcb: arPcb,
+    hostel: hostel,
     arBudget: arBudget,
     arCommittee: arCommittee,
     province: province,

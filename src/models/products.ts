@@ -123,7 +123,7 @@ export class ProductsModel {
     let subProducts = knex('pc_product_reserved')
       .select('product_id')
       .whereIn('reserved_status', ['SELECTED', 'CONFIRMED']);
-    
+
     let subQueryPurchased = knex('pc_purchasing_order_item as pci')
       .select(knex.raw('sum(pci.qty*ug.qty) as total_qty'))
       .innerJoin('pc_purchasing_order as pco', 'pco.purchase_order_id', 'pci.purchase_order_id')
@@ -137,16 +137,17 @@ export class ProductsModel {
         inner join wm_receive_approve as ra on ra.receive_id = rp.receive_id
       )`)
       .as('total_purchased');
-    
-    
+
+
     let sql = knex('mm_products as mp')
       .select(subQuery, 'mp.product_id', 'mp.generic_id', 'mp.product_name', 'mg.generic_name', 'gt.generic_type_name', 'ml.labeler_name',
-        'mg.min_qty', 'mg.max_qty', 'mg.working_code', subQueryPurchased)
+        'mg.min_qty', 'mg.max_qty', 'mg.working_code', 'vcpa.contract_id', 'vcpa.contract_no', subQueryPurchased)
       .innerJoin('mm_generics as mg', 'mg.generic_id', 'mp.generic_id')
       .innerJoin('mm_generic_types as gt', 'gt.generic_type_id', 'mg.generic_type_id')
       .innerJoin('mm_labelers as ml', 'ml.labeler_id', 'mp.v_labeler_id')
+      .leftJoin('view_cm_products_active as vcpa', 'vcpa.product_id', 'mp.product_id')
       .whereNotIn('mp.product_id', subProducts);
-    
+
     if (genericTypeIds.length) {
       sql.whereIn('mg.generic_type_id', genericTypeIds);
     }
@@ -185,16 +186,17 @@ export class ProductsModel {
     // let subProducts = knex('pc_product_reserved')
     //   .select('product_id')
     //   .where('is_ordered', 'N');
-    
+
     let sql = knex('mm_products as mp')
       .select(subQuery, 'mp.product_id', 'mp.generic_id', 'mp.product_name', 'mg.generic_name', 'gt.generic_type_name', 'ml.labeler_name',
-        'mg.min_qty', 'mg.max_qty', 'mg.working_code', 'pcr.reserve_id')
+        'mg.min_qty', 'mg.max_qty', 'mg.working_code', 'pcr.reserve_id', 'vcpa.contract_id', 'vcpa.contract_no')
       .innerJoin('mm_generics as mg', 'mg.generic_id', 'mp.generic_id')
       .innerJoin('mm_generic_types as gt', 'gt.generic_type_id', 'mg.generic_type_id')
       .innerJoin('mm_labelers as ml', 'ml.labeler_id', 'mp.v_labeler_id')
       .innerJoin('pc_product_reserved as pcr', 'pcr.product_id', 'mp.product_id')
+      .leftJoin('view_cm_products_active as vcpa', 'vcpa.product_id', 'mp.product_id')
       .where('pcr.reserved_status', 'SELECTED');
-    
+
     if (genericTypeIds.length) {
       sql.whereIn('mg.generic_type_id', genericTypeIds);
     }
@@ -226,7 +228,7 @@ export class ProductsModel {
       .whereRaw('wp.product_id=mp.product_id')
       .groupBy('wp.product_id')
       .as('remain_qty');
-    
+
     let subProducts = knex('pc_product_reserved')
       .select('product_id');
 
@@ -236,7 +238,7 @@ export class ProductsModel {
       .innerJoin('mm_generic_types as gt', 'gt.generic_type_id', 'mg.generic_type_id')
       .innerJoin('mm_labelers as ml', 'ml.labeler_id', 'mp.v_labeler_id')
       .whereNotIn('mp.product_id', subProducts);
-    
+
     if (genericTypeIds.length) {
       sql.whereIn('mg.generic_type_id', genericTypeIds);
     }
@@ -269,7 +271,7 @@ export class ProductsModel {
       .innerJoin('mm_labelers as ml', 'ml.labeler_id', 'mp.v_labeler_id')
       .innerJoin('pc_product_reserved as pcr', 'pcr.product_id', 'mp.product_id')
       .where('pcr.reserved_status', 'SELECTED');
-    
+
     if (genericTypeIds.length) {
       sql.whereIn('mg.generic_type_id', genericTypeIds);
     }
@@ -302,7 +304,7 @@ export class ProductsModel {
       .whereRaw('mp.generic_id=mg.generic_id')
       .where('wp.warehouse_id', warehouseId)
       .as('remain_qty');
-    
+
     const con = knex('mm_generics as mg')
       .select(
         subQuery, 'mg.working_code', 'mg.generic_id', 'mg.generic_name', 'mg.min_qty', 'mg.max_qty')
@@ -343,10 +345,10 @@ export class ProductsModel {
   getReservedOrdered(db: Knex) {
     return db('pc_product_reserved as rv')
       .select('mg.working_code', 'mp.product_name', 'mg.generic_id', 'rv.contract_id',
-      'mg.generic_name', 'rv.cost as purchase_cost', 'rv.purchase_qty as order_qty',
-      'rv.unit_generic_id', 'gt.generic_type_id', 'rv.product_id', 'rv.reserve_id',
-      'ut.unit_name as to_unit_name', 'uf.unit_name as from_unit_name', 'mp.v_labeler_id', 'mp.m_labeler_id',
-      'ug.qty as conversion_qty', 'ml.labeler_name', 'gt.generic_type_name')  
+        'mg.generic_name', 'rv.cost as purchase_cost', 'rv.purchase_qty as order_qty',
+        'rv.unit_generic_id', 'gt.generic_type_id', 'rv.product_id', 'rv.reserve_id',
+        'ut.unit_name as to_unit_name', 'uf.unit_name as from_unit_name', 'mp.v_labeler_id', 'mp.m_labeler_id',
+        'ug.qty as conversion_qty', 'ml.labeler_name', 'gt.generic_type_name','vcpa.contract_id','vcpa.contract_no')
       .innerJoin('mm_products as mp', 'mp.product_id', 'rv.product_id')
       .innerJoin('mm_generics as mg', 'mg.generic_id', 'mp.generic_id')
       .innerJoin('mm_generic_types as gt', 'gt.generic_type_id', 'mg.generic_type_id')
@@ -354,6 +356,7 @@ export class ProductsModel {
       .leftJoin('mm_unit_generics as ug', 'ug.unit_generic_id', 'rv.unit_generic_id')
       .leftJoin('mm_units as uf', 'uf.unit_id', 'ug.from_unit_id')
       .leftJoin('mm_units as ut', 'ut.unit_id', 'ug.to_unit_id')
+      .leftJoin('view_cm_products_active as vcpa', 'vcpa.product_id', 'mp.product_id')
       .where('rv.reserved_status', 'CONFIRMED')
       .orderBy('ml.labeler_name');
   }

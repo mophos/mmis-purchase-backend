@@ -1787,8 +1787,6 @@ router.get('/report/allpo/egp/singburi', wrap(async (req, res, next) => {
 
     bidname = await model.bidName(db, purchasing[i][0].purchase_method_id);
     arrayBid.push(bidname);
-
-    console.log('++++++++++++++++++++++++', arrayChief[i][0]);
   }
 
   // res.send(arrayChief);

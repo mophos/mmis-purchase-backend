@@ -87,12 +87,19 @@ html
     br
     div(style="width:100%;float:left;")
       div(style="width:50%;float:left;text-align:center") ลงชื่อ.................................................เจ้าหน้าที่
-        br
-        | ( #{arrayChief[i][0].buyer_fullname} )
-        br 
-        | #{arrayChief[i][0].buyer_position}
+        if(arrayChief[i][0].buyer_id===null)
+          |
+          br
+          |
+          br
+          | 
+        else
+          br
+          | ( #{arrayChief[i][0].buyer_fullname} )
+          br 
+          | #{arrayChief[i][0].buyer_position}
       div(style="width:50%;float:left;text-align:center") ลงชื่อ.................................................หัวหน้าเจ้าหน้าที่
-        if(purchasing[i][0].chief_id===null)
+        if(arrayChief[i][0].chief_id===null)
           |
           br
           |

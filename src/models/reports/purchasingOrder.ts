@@ -953,6 +953,8 @@ export class PurchasingOrderReportModel {
 
     getProductHistory(knex: Knex, generic_id: string) {
         let sql = `SELECT
+        mg.working_code AS generic_code,
+	    mg.generic_name,
         po.purchase_order_number,
         mp.working_code AS trading_code,
         mp.product_name,

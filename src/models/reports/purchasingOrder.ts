@@ -373,7 +373,7 @@ export class PurchasingOrderReportModel {
         AND po.is_cancel = 'N' 
         AND po.budget_detail_id = ${generic_type_id}
     GROUP BY
-        purchase_order_id 
+        purchase_order_id,poi.product_id
     ORDER BY
         po.purchase_order_number`);
     }
@@ -444,6 +444,13 @@ export class PurchasingOrderReportModel {
         let sql = `select count(poi.purchase_order_item_id) as count from pc_purchasing_order po
     join pc_purchasing_order_item poi on po.purchase_order_id=poi.purchase_order_id where po.purchase_order_id= ? `;
         return knex.raw(sql, purchaOrderId);
+    }
+
+    CountItem(knex: Knex, purchaOrderId) {
+        return knex('pc_purchasing_order as po')
+            .select(knex.raw('count(poi.purchase_order_item_id) as count'))
+            .join('pc_purchasing_order_item as poi', 'po.purchase_order_id', 'poi.purchase_order_id')
+            .where('po.purchase_order_id', purchaOrderId);
     }
 
     comma(num) {
@@ -809,6 +816,49 @@ export class PurchasingOrderReportModel {
         AND mg.generic_id IS NOT NULL`
         return knex.raw(sql, purchaOrderId)
     }
+
+    purchasingEgp(knex: Knex, porder: any, warehouseId: any) {
+        return knex('pc_purchasing_order as po')
+            .select('mg.standard_cost',
+                'mup.cost',
+                'mp.product_name',
+                'mup.qty AS conversion',
+                'muu.unit_name AS primary_unit',
+                'po.delivery',
+                'ml.address',
+                'ml.phone',
+                'ml.nin',
+                'po.purchase_order_id',
+                'po.purchase_order_number',
+                'po.purchase_method_id',
+                'po.purchase_order_book_number',
+                'cbp.NAME AS bname',
+                'cbt.bid_name',
+                'cbt.bid_id',
+                'ml.labeler_name',
+                'mg.generic_id',
+                'mg.generic_name',
+                knex.raw(`IFNULL((SELECT FLOOR(( IF ( SUM( wp.qty ) IS NULL, 0,SUM( wp.qty ) ) ) / mup.qty) FROM wm_products wp WHERE wp.product_id = poi.product_id AND wp.warehouse_id = ${warehouseId}),0) AS qty`),
+                'poi.qty AS qtyPoi',
+                'poi.unit_price',
+                'poi.total_price',
+                'mu.unit_name',
+                'po.verify_committee_id',
+                'po.check_price_committee_id',
+                'po.budget_detail_id')
+            .leftJoin(' pc_purchasing_order_item as poi', 'poi.purchase_order_id', 'po.purchase_order_id')
+            .leftJoin('mm_products as mp', 'mp.product_id', 'poi.product_id')
+            .leftJoin('mm_generics as mg', 'mp.generic_id', 'mg.generic_id')
+            .leftJoin('mm_unit_generics as mup', 'mup.unit_generic_id', 'poi.unit_generic_id')
+            .leftJoin('mm_units as muu', 'muu.unit_id', 'mg.primary_unit_id')
+            .leftJoin('mm_units as mu', 'mu.unit_id', 'mup.from_unit_id')
+            .leftJoin('mm_labelers as ml', 'ml.labeler_id', 'po.labeler_id')
+            .leftJoin('l_bid_process as cbp', 'cbp.id', 'po.purchase_method_id')
+            .leftJoin('l_bid_type as cbt', 'cbt.bid_id', 'po.purchase_type_id')
+            .where('po.purchase_order_id', porder)
+            .andWhereRaw('mg.generic_id IS NOT NULL')
+    }
+
     p10Committeeleader(knex: Knex) {
         let sql = `SELECT
             pc.committee_id,
@@ -897,7 +947,7 @@ export class PurchasingOrderReportModel {
 
     pcBudget(knex: Knex, purchaOrderId) {
         return knex('pc_budget_transection')
-            .where('purchase_order_id', [purchaOrderId])
+            .whereIn('purchase_order_id', [purchaOrderId])
             .andWhere('transaction_status', 'spend')
     }
 

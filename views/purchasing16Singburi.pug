@@ -25,26 +25,26 @@ html
     br
     table(style='width:100%; font-size: 15pt')
         tr
-            td.left(style='width:50%;') ผู้ขาย #{purchasing[0].labeler_name}
+            td.left(style='width:50%;') ผู้ขาย #{purchasing[i][0].labeler_name}
             td.left(style='width:50%;') เลขที่
-              if(purchasing[0].purchase_order_book_number)
-                | &nbsp;#{purchasing[0].purchase_order_book_number}
+              if(purchasing[i][0].purchase_order_book_number)
+                | &nbsp;#{purchasing[i][0].purchase_order_book_number}
               else
-                | &nbsp;#{purchasing[0].purchase_order_number}
+                | &nbsp;#{purchasing[i][0].purchase_order_number}
         tr
             td.left
-            //- td.left ที่อยู่ #{purchasing[0].address}
+            //- td.left ที่อยู่ #{purchasing[i][0].address}
             td.left วันที่ 
         tr
             td.left 
             td.left ส่วนราชการ#{hospitalName}
         tr
             td.left
-            //- td.left โทรศัพท์ #{purchasing[0].phone}
+            //- td.left โทรศัพท์ #{purchasing[i][0].phone}
             td.left ที่อยู่ #{hosaddress}
         tr
             td.left 
-            //- td.left เลขประจำตัวผู้เสียภาษี #{purchasing[0].nin}
+            //- td.left เลขประจำตัวผู้เสียภาษี #{purchasing[i][0].nin}
             //- td.left จังหวัด#{province}
             td.left
         tr
@@ -72,7 +72,7 @@ html
             th.right(width='15%')(style="font-size: 15pt;") จำนวนเงิน
         tbody
           - var y=0
-            for b in purchasing
+            for b in purchasing[i]
               - y++
                 tr
                   td.center #{y}
@@ -84,19 +84,19 @@ html
                   td.right #{b.unit_price}
                   td.right #{b.total_price}
           -var count=10-y
-          - for (var i = y; i < count; ++i) {
+          - for (var k = y; k < count; ++k) {
             tr
               td(colspan='5') &nbsp;
           - }
         tfooter
           tr
-            td.right(colspan='5' style='border-top: 1px dashed black;') รวมเป็นเงิน #{ttotalprice} บาท
+            td.right(colspan='5' style='border-top: 1px dashed black;') รวมเป็นเงิน #{arrayTotal[i]} บาท
           tr
-            td.right(colspan='5')  (#{bahtText})
+            td.right(colspan='5')  (#{arrayBahtText[i]})
     .left(style='font-size: 12pt;')
       | การซื้อ/สั่งจ้าง อยู่ภายใต้เงื่อนไขต่อไปนี้
       br
-      | 1.กำหนดส่งมอบภายใน #{purchasing[0].delivery} วัน นับถัดจากวันที่ผู้รับจ้างได้รับใบสั่งซื้อ
+      | 1.กำหนดส่งมอบภายใน #{purchasing[i][0].delivery} วัน นับถัดจากวันที่ผู้รับจ้างได้รับใบสั่งซื้อ
       br
       | 2.ครบกำหนดส่งมอบวันที่
       br
@@ -114,18 +114,20 @@ html
   table.table( style='float:right; width:50%; font-size: 15pt;')
       tr
         td.center  ลงชื่อ......................................................ผู้สั่งซื้อ
-      if(cposition=='')
+      if(purchasing[i][0].chief_id===null)
         tr
           td(height='15px')
         tr
           td(height='15px')
       else
         tr
-          td.center ( #{purchasingChief.chief_fullname} )
+          td.center ( #{arrayChief[i][0].chief_fullname} )
         tr
-          td.center #{cposition.position_name}  
+          td.center #{arrayChief[i][0].chief_position} 
+        tr
+          td.center หัวหน้าเจ้าหน้าที่ 
       tr
-        td(height='50px')
+        td(height='40px')
       tr
         td.center  ลงชื่อ......................................................ผู้ขาย
       tr

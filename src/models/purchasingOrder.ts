@@ -350,6 +350,7 @@ export class PurchasingOrderModel {
     if (orderStatus !== 'ALL') {
       sql += ` AND pp.purchase_order_status = ${orderStatus}`
     }
+    console.log('000000000000000', sql);
     return (knex.raw(sql))
   }
 
@@ -404,7 +405,7 @@ export class PurchasingOrderModel {
     return knex.select('*').from('wm_period').where('budget_year', year).where('period_month', month)
   }
 
-  getGeneric(knex: Knex, generic_type_id: any) {
+  getGeneric(knex: Knex, generic_type_id: any, limit: any, offset: any) {
     let sql = `SELECT
     po.purchase_order_number,
     mg.generic_id,
@@ -416,7 +417,67 @@ export class PurchasingOrderModel {
   JOIN pc_purchasing_order AS po ON pp.purchase_order_id = po.purchase_order_id
   WHERE
     mg.generic_type_id IN (${generic_type_id})
-  GROUP BY mg.generic_id`
+  GROUP BY mg.generic_id
+  limit ${limit}
+  offset ${offset}`
+    return (knex.raw(sql))
+  }
+
+  getGenericSearch(knex: Knex, generic_type_id: any, limit: any, offset: any, query) {
+    let _query = `%${query}%`;
+    let sql = `SELECT
+    po.purchase_order_number,
+    mg.generic_id,
+    mg.generic_name,
+    mg.working_code AS generic_code
+  FROM
+    mm_generics AS mg
+  JOIN pc_purchasing_order_item AS pp ON mg.generic_id = pp.generic_id
+  JOIN pc_purchasing_order AS po ON pp.purchase_order_id = po.purchase_order_id
+  WHERE
+    mg.generic_type_id IN (${generic_type_id}) and
+    (
+      mg.generic_id = '${query}' or
+      mg.generic_name like '${_query}'
+    )
+  GROUP BY mg.generic_id
+  limit ${limit}
+  offset ${offset}`
+    return (knex.raw(sql))
+  }
+
+  getGenericTotal(knex: Knex, generic_type_id: any) {
+    let sql = `
+    select count(a.generic_id) as total from (
+      select mg.generic_id
+        FROM
+          mm_generics AS mg
+        JOIN pc_purchasing_order_item AS pp ON mg.generic_id = pp.generic_id
+        JOIN pc_purchasing_order AS po ON pp.purchase_order_id = po.purchase_order_id
+        WHERE
+          mg.generic_type_id IN (${generic_type_id})
+        GROUP BY mg.generic_id
+      ) as a`
+    return (knex.raw(sql))
+  }
+
+  getGenericTotalSearch(knex: Knex, generic_type_id: any, query) {
+    let _query = `%${query}%`;
+    let sql = `
+    select count(a.generic_id) as total from (
+      select mg.generic_id
+        FROM
+          mm_generics AS mg
+        JOIN pc_purchasing_order_item AS pp ON mg.generic_id = pp.generic_id
+        JOIN pc_purchasing_order AS po ON pp.purchase_order_id = po.purchase_order_id
+        WHERE
+          mg.generic_type_id IN (${generic_type_id}) and
+          (
+            mg.generic_id = '${query}' or
+            mg.generic_name like '${_query}'
+          )
+        GROUP BY mg.generic_id
+      ) as a`
     return (knex.raw(sql))
   }
 

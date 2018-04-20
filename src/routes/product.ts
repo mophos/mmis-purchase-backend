@@ -30,16 +30,129 @@ router.post('/reorderpoint/trade', async (req, res, next) => {
   let db = req.db;
   let warehouseId = req.decoded.warehouseId;
   let genericTypeId = req.body.genericTypeId;
+  let limit = +req.body.limit || 20;  
+  let offset = +req.body.offset || 0;  
+  let query = req.body.query || '';
 
   try {
-    let rs: any = await model.getReOrderPointTrade(db, warehouseId, genericTypeId);
-    res.send({ ok: true, rows: rs });
+    let rs: any = await model.getReOrderPointTrade(db, warehouseId, genericTypeId, limit, offset, query);
+    let rsTotal: any = await model.getReOrderPointTradeTotal(db, warehouseId, genericTypeId, query);
+    res.send({ ok: true, rows: rs, total: rsTotal.length });
   } catch (error) {
     res.send({ ok: false, error: error.message });
   } finally {
     db.destroy();
   }
 
+});
+
+router.post('/reorderpoint/trade/reserved', async (req, res, next) => {
+  let db = req.db;
+  let warehouseId = req.decoded.warehouseId;
+  let genericTypeId = req.body.genericTypeId;
+  let limit = +req.body.limit || 20;  
+  let offset = +req.body.offset || 0;  
+  let query = req.body.query || '';
+
+  try {
+    let rs: any = await model.getReOrderPointTradeReserved(db, warehouseId, genericTypeId, limit, offset, query);
+    let rsTotal: any = await model.getReOrderPointTradeReservedTotal(db, warehouseId, genericTypeId, query);
+    res.send({ ok: true, rows: rs, total: rsTotal[0].total });
+  } catch (error) {
+    res.send({ ok: false, error: error.message });
+  } finally {
+    db.destroy();
+  }
+
+});
+
+router.put('/reorderpoint/trade/reserved-update', async (req, res, next) => {
+  let db = req.db;
+  let items = req.body.items;
+
+  try {
+    if (items.length) {
+      for (let v of items) {
+        let obj: any = {};
+        obj.unit_generic_id = v.unit_generic_id;
+        obj.purchase_qty = +v.purchase_qty;
+        obj.cost = +v.cost;
+        obj.contract_id = v.contract_id;
+        obj.reserved_status = 'CONFIRMED';
+
+        console.log(obj);
+        await model.updateReservedPurchaseQty(db, v.reserve_id, obj);
+      }
+
+      res.send({ ok: true });
+
+    } else {
+      res.send({ ok: false, error: 'ไม่พบรายการที่ต้องการบันทึก' });
+    }
+   
+  } catch (error) {
+    res.send({ ok: false, error: error.message });
+  } finally {
+    db.destroy();
+  }
+
+});
+
+router.get('/reorderpoint/trade/reserved/confirmed', async (req, res, next) => {
+  let db = req.db;
+  let reserveId = req.params.reserveId;
+
+  try {
+    let rs: any = await model.getReservedOrdered(db);
+    res.send({ ok: true, rows: rs });
+  } catch (error) {
+    console.log(error);
+    res.send({ ok: false, error: error.message });
+  } finally {
+    db.destroy();
+  }
+  
+});
+
+router.post('/save-reserved', async (req, res, next) => {
+  let db = req.db;
+  let items = req.body.items;
+
+  let _items: any = [];
+  items.forEach(v => {
+    let obj: any = {};
+    obj.product_id = v.product_id;
+    obj.generic_id = v.generic_id;
+    obj.people_user_id = req.decoded.people_user_id;
+    obj.created_at = moment().format('YYYY-MM-DD HH:mm:ss');
+    _items.push(obj);
+  });
+
+  // save items
+  try {
+    await model.saveReservedProducts(db, _items);
+    res.send({ ok: true });
+  } catch (error) {
+    console.log(error);
+    res.send({ ok: false, error: error.message });
+  } finally {
+    db.destroy();
+  }
+});
+
+router.delete('/remove-reserved/:reserveId', async (req, res, next) => {
+  let db = req.db;
+  let reserveId = req.params.reserveId;
+  // save items
+  try {
+    await model.removeReservedProducts(db, reserveId);
+    res.send({ ok: true });
+  } catch (error) {
+    console.log(error);
+    res.send({ ok: false, error: error.message });
+  } finally {
+    db.destroy();
+  }
 });
 
 router.post('/orderspoint', async (req, res, next) => {

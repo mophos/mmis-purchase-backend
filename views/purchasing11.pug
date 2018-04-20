@@ -22,7 +22,10 @@ html
           td(width='180') ที่ #{poNumber}
           td.center(colspan='3')
             img(src=APIURL+'krut.png', height='130px')
-          td(width='200') ศาลากลางจังหวัด#{province}
+          td(width='200') 
+            | ศาลากลางจังหวัด#{province}
+            br
+            | #{addressCityHall}
         tr
           td(colspan='4')
           td 
@@ -183,7 +186,7 @@ html
       br
       | ผู้อำนวยการ#{hospitalName}
       br
-      |
+      | 
     hr.hideprint
     div(style='page-break-after: always;')
-  include purchasing13Singburi.pug
+  include puchasing11con.pug

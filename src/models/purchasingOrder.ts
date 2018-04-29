@@ -116,6 +116,7 @@ export class PurchasingOrderModel {
       .select(knex.raw('sum(po.unit_price*po.qty)'))
       .from('pc_purchasing_order_item as po')
       .whereRaw('po.purchase_order_id = pc_purchasing_order.purchase_order_id')
+      .where('po.giveaway','N')
       .groupBy('po.purchase_order_id').as('puchase_money_total');
 
     let sumReceive = knex

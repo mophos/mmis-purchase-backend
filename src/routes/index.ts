@@ -8,7 +8,7 @@ import * as _ from 'lodash';
 import { PurchasingOrderReportModel } from '../models/reports/purchasingOrder';
 import { RequisitionOrderReportModel } from '../models/reports/requisitionOrder';
 import { log } from 'util';
-import { PurchasingOrderModel} from '../models/purchasingOrder'
+import { PurchasingOrderModel } from '../models/purchasingOrder'
 import { each } from 'bluebird';
 // import { load } from 'mime';
 
@@ -35,7 +35,7 @@ router.get('/report/purchasingorder', wrap(async (req, res, next) => {
   getchief = getchief[0].chief_fullname;
   let hospname = await model.hospital(db)
   hospname = hospname[0].hospname
-  let date = model.prettyDate(results[0].created_date)
+  let date = model.prettyDate(results[0].order_date)
   let lname = results[0].labeler_name
   let sum: any = 0;
   let chief = 0;
@@ -1409,6 +1409,7 @@ router.get('/report/purchasing/16', wrap(async (req, res, next) => {
   at = at[0]
   moment.locale('th');
   let nDate = moment(new Date()).format('DD MMMM ') + (moment(new Date()).get('year') + 543)
+  let orderDate = moment(purchasing[0].order_date).format('DD MMMM ') + (moment(purchasing[0].order_date).get('year') + 543)
   let year = moment(new Date).get('year') + 544
   let bgtypesub = req.query.bgtypesub;
   let budget = await model.budgetType(db, purchasing[0].budget_detail_id)
@@ -1440,6 +1441,7 @@ router.get('/report/purchasing/16', wrap(async (req, res, next) => {
   let lname = purchasing[0].labeler_name
 
   res.render('purchasing16', {
+    order_date: orderDate,
     lname: lname,
     textamount: textamount,
     type: type,
@@ -1478,11 +1480,14 @@ router.post('/report/purchasingorder', wrap(async (req, res, next) => {
   // let year = moment(new Date).get('year') + 544
   let array = [];
   let array1 = [];
+  let arrayDate = [];
   for (let i = 0; i < num; i++) {
     // console.log('++++' + purchasOrderId[i]);
 
     let results = await model.purchasingOrder(db, purchasOrderId[i])
     results = results[0];
+    let order_date = moment(results.order_date).format('DD MMMM ') + (moment(results.order_date).get('year') + 543)
+    arrayDate.push(order_date);
     array.push(results);
     // console.log('++++++++++++++++++++' + array[i][0]);
 
@@ -1494,6 +1499,7 @@ router.post('/report/purchasingorder', wrap(async (req, res, next) => {
 
   }
   res.render('porders', {
+    arrayDate: arrayDate,
     array: array,
     num: num,
     hospname: hospname,

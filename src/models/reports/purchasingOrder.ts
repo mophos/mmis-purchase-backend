@@ -846,7 +846,8 @@ export class PurchasingOrderReportModel {
                 'mu.unit_name',
                 'po.verify_committee_id',
                 'po.check_price_committee_id',
-                'po.budget_detail_id')
+                'po.budget_detail_id',
+                'po.order_date')
             .leftJoin(' pc_purchasing_order_item as poi', 'poi.purchase_order_id', 'po.purchase_order_id')
             .leftJoin('mm_products as mp', 'mp.product_id', 'poi.product_id')
             .leftJoin('mm_generics as mg', 'mp.generic_id', 'mg.generic_id')

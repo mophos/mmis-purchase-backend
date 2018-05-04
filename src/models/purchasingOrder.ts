@@ -545,8 +545,7 @@ export class PurchasingOrderModel {
 
   getSysReport(db: Knex) {
     return db('um_report')
-      .where('report_type', 'PO')
-      .andWhere('is_active', 'Y')
+      .where('is_active', 'Y')
   }
 
 }

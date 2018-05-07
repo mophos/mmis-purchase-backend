@@ -29,6 +29,7 @@
         "random-js": "^1.0.8",
         "rimraf": "^2.6.2",
         "serve-favicon": "^2.4.5",
+        "ts-node": "^6.0.3",
         "update": "^0.7.4"
     },
     "devDependencies": {
@@ -46,6 +47,6 @@
         "@types/random-js": "^1.0.30",
         "@types/serve-favicon": "^2.2.30",
         "nodemon": "^1.17.2",
-        "typescript": "^2.7.2"
+        "typescript": "^2.8.3"
     }
 }

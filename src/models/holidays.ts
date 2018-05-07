@@ -19,10 +19,10 @@ export class HolidaysModel {
       .offset(offset);
   }
 
-  list(knex: Knex, limit: number = 100, offset: number = 0) {
+  list(knex: Knex) {
     return knex(this.tableName)
-      .limit(limit)
-      .offset(offset);
+      .where('is_delete',0)
+      .where('is_active',1);
   }
 
   save(knex: Knex, datas: any) {

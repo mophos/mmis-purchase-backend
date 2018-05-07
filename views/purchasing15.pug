@@ -9,29 +9,29 @@ html
     .center.bold ประกาศ#{hospitalName}
     .center.bold เรื่อง ประกาศผู้ชนะการเสนอราคา 
     .center.bold 
-      | ซื้อจำนวน #{countp} รายการ ( 
+      | ซื้อจำนวน #{purchasing[i].length} รายการ ( 
       - var y=0
-            for b in purchasing
+            for b in purchasing[i]
               - y++
               | &nbsp;#{b.generic_name}&nbsp; 
-      | ) โดย#{bidname}
+      | ) โดย#{arrayBid[i][0].name}
     br
     .center
       | ---------------------------------------------------------
     br
     .fontspace
-    | ตามที่#{hospitalName} ได้มีโครงการ ซื้อจำนวน #{countp} รายการ ( 
+    | ตามที่#{hospitalName} ได้มีโครงการ ซื้อจำนวน #{purchasing[i].length} รายการ ( 
     - var y=0
-          for b in purchasing
+          for b in purchasing[i]
             - y++
             | &nbsp;#{b.generic_name}&nbsp; 
-    | ) โดย#{bidname} นั้น
+    | ) โดย#{arrayBid[i][0].name} นั้น
     br
     .fontspace
     - var y=0
-          for b in purchasing
+          for b in purchasing[i]
             - y++
-             | #{b.generic_name}&nbsp;#{b.qty} #{unit_name} จำนวน #{b.qtyPoi} #{unit_name} ผู้ได้รับคัดเลือกได้แก่ บริษัท #{lname} (ส่งออก,ขายส่ง,ขายปลีก,ให้บริการ,ผู้ผลิต) โดยเสนอราคา เป็นเงินทั้งสิ้น #{b.total_price} บาท (#{bahtText}) รวมภาษีมูลค่าเพิ่มและภาษีอื่น ค่าขนส่ง ค่าจดทะเบียน และค่าใช้จ่ายอื่นๆทั้งปวง
+             | #{b.generic_name}&nbsp;จำนวน #{b.qtyPoi} #{b.unit_name}(#{b.conversion} #{b.primary_unit}) ผู้ได้รับคัดเลือกได้แก่ บริษัท #{b.labeler_name} (ส่งออก,ขายส่ง,ขายปลีก,ให้บริการ,ผู้ผลิต) โดยเสนอราคา เป็นเงินทั้งสิ้น #{b.total_price} บาท (#{arrayBahtText[i]}) รวมภาษีมูลค่าเพิ่มและภาษีอื่น ค่าขนส่ง ค่าจดทะเบียน และค่าใช้จ่ายอื่นๆทั้งปวง
     br
     br
     .right ประกาศ ณ วันที่ #{nDate}

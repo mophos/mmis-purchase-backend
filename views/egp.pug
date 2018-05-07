@@ -1,14 +1,16 @@
 include css.pug
-include purchasing12.pug
-hr.hideprint
-.break
-include purchasing13.pug
-hr.hideprint
-.break
-include purchasing14.pug
-hr.hideprint
-.break
-include purchasing15.pug
-hr.hideprint
-.break
-include purchasing16.pug
+- for(var i = 0 ; i < porder.length ; i++)
+    include purchasing12.pug
+    hr.hideprint
+    .break
+    include purchasing13.pug
+    hr.hideprint
+    .break
+    include purchasing14.pug
+    hr.hideprint
+    .break
+    include purchasing15.pug
+    hr.hideprint
+    .break
+    include purchasing16.pug
+    .break

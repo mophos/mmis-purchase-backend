@@ -998,4 +998,16 @@ router.get('/sys-report', async (req, res, next) => {
   }
 });
 
+router.get('/book-number', async (req, res, next) => {
+  let db = req.db;
+  try {
+    let rs: any = await model.getBookNumber(db);
+    res.send({ ok: true, rows: rs });
+  } catch (error) {
+    res.send({ ok: false, error: error.message });
+  } finally {
+    db.destroy();
+  }
+});
+
 export default router;

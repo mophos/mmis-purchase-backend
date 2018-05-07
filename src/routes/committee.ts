@@ -123,7 +123,7 @@ router.post('/', (req, res, next) => {
   if (model.validate(req, res)) {
     model.save(db, data)
       .then((results: any) => {
-        res.send({ ok: true, rows: results })
+        res.send({ ok: true })
       })
       .catch(error => {
         res.send({ ok: false, error: error })
@@ -150,6 +150,21 @@ router.put('/:id', (req, res, next) => {
         db.destroy();
       });
   }
+});
+
+router.put('/remove/:id', (req, res, next) => {
+  let id = req.params.id;
+  let db = req.db;
+  model.updateIsdelete(db, id)
+    .then((results: any) => {
+      res.send({ ok: true })
+    })
+    .catch(error => {
+      res.send({ ok: false, error: error })
+    })
+    .finally(() => {
+      db.destroy();
+    });
 });
 
 router.get('/detail/:id', (req, res, next) => {

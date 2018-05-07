@@ -31,13 +31,13 @@ export class CommitteeModel {
   list(knex: Knex, limit: number = 10, offset: number = 0) {
     return knex(this.tableName)
       .orderBy('committee_id', 'desc')
-      .where('is_delete','N')
+      .where('is_delete', 'N')
       .limit(limit)
       .offset(offset);
   }
   getCommittee(knex: Knex, id: any) {
     return knex(this.tableName)
-    .where('bid_id',id)
+      .where('bid_id', id)
   }
   listbid(knex: Knex, limit: number = 10, offset: number = 0) {
     return knex('pc_committee as c')
@@ -67,6 +67,12 @@ export class CommitteeModel {
     return knex(this.tableName)
       .where(this.primaryKey, id)
       .update(datas);
+  }
+
+  updateIsdelete(knex: Knex, id: string) {
+    return knex(this.tableName)
+      .where(this.primaryKey, id)
+      .update('is_delete', 'Y');
   }
 
   detail(knex: Knex, id: string) {

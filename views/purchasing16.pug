@@ -45,13 +45,13 @@ include css.pug
               td.left เลขประจำตัวผู้เสียภาษี #{purchasing[i][0].nin}
               td.left จังหวัด#{province}
           tr
-              td.left เลขที่บัญชีเงินฝากธนาคาร
+              td.left เลขที่บัญชีเงินฝากธนาคาร  ............................................
               td.left โทรศัพท์ #{hostel}
           tr
-              td.left ชื่อบัญชี
+              td.left ชื่อบัญชี  ............................................
               td.left
           tr
-              td.left ธนาคาร
+              td.left ธนาคาร  ............................................
               td.left
       br
       .fontspace
@@ -76,12 +76,23 @@ include css.pug
                     td.center(style='border: 1px solid black;') #{b.unit_name}
                     td.right(style='border: 1px solid black;') #{b.unit_price}
                     td.right(style='border: 1px solid black;') #{b.total_price}
-        tr
-          td
-          td(colspan='7').right รวม #{y} รายการ รวมเป็นเงิน #{arrayTotal[i]} บาท
-        tr
-          td
-          td(colspan='7').right (ตัวอักษร) (#{arrayBahtText[i]})
+          tr
+            td(rowspan='4' colspan='3' style='font-weight: bold; border: 1px solid black; vertical-align: bottom;').center (#{arrayBahtText[i]})
+          tr
+            td(colspan='2' style='border: 1px solid black;').right รวมเป็นเงิน
+            td(style='border: 1px solid black;').right #{arrayTotal[i]}
+          tr
+            td(colspan='2' style='border: 1px solid black;').right ภาษีมูลค่าเพิ่ม
+            td(style='border: 1px solid black;').right #{purchasing[i][0].vat}
+          tr
+            td(colspan='2' style='border: 1px solid black;').right รวมเป็นเงินทั้งสิ้น
+            td(style='border: 1px solid black;').right #{arrayNet[i]}
+        //- tr
+        //-   td
+        //-   td(colspan='7').right รวม #{y} รายการ รวมเป็นเงิน #{arrayTotal[i]} บาท
+        //- tr
+        //-   td
+        //-   td(colspan='7').right (ตัวอักษร) (#{arrayBahtText[i]})
       br
       | การซื้อ/สั่งจ้าง อยู่ภายใต้เงื่อนไขต่อไปนี้
       br

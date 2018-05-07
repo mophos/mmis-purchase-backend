@@ -278,8 +278,8 @@ router.get('/search/autocomplete-labeler', async (req, res, next) => {
 
   try {
     let rs: any = await model.productsByLabeler(db, id, q);
-    if (rs.length) {
-      res.send(rs);
+    if (rs[0].length) {
+      res.send(rs[0]);
     } else {
       res.send([]);
     }

@@ -28,13 +28,15 @@ router.get('/all/:id', async (req, res, next) => {
 
   try {
     let rs: any = await model.listWithPeopleByCommitteeId(db, id);
+    console.log(rs);
+
     res.send({ ok: true, rows: rs });
   } catch (error) {
     res.send({ ok: false, error: error.message });
   } finally {
     db.destroy();
   }
-  
+
 });
 
 router.post('/', (req, res, next) => {
@@ -42,16 +44,16 @@ router.post('/', (req, res, next) => {
 
   let db = req.db;
 
-    model.save(db, datas)
-      .then((results: any) => {
-        res.send({ ok: true })
-      })
-      .catch(error => {
-        res.send({ ok: false, error: error })
-      })
-      .finally(() => {
-        db.destroy();
-      });
+  model.save(db, datas)
+    .then((results: any) => {
+      res.send({ ok: true, rows: results })
+    })
+    .catch(error => {
+      res.send({ ok: false, error: error })
+    })
+    .finally(() => {
+      db.destroy();
+    });
 });
 
 router.put('/:id', (req, res, next) => {

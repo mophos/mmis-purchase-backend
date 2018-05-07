@@ -24,6 +24,24 @@ router.get('/', (req, res, next) => {
     });
 });
 
+router.get('/autocomplete', async (req, res, next) => {
+
+  let db = req.db;
+  let query = req.query.q;
+  try {
+    let rs: any = await model.search(db, query);
+    if (rs.length) {
+      res.send(rs);
+    } else {
+      res.send([]);
+    }
+  } catch (error) {
+    res.send({ ok: false, error: error.message });
+  } finally {
+    db.destroy();
+  }
+});
+
 router.post('/', (req, res, next) => {
   let datas = req.body;
   let db = req.db;

@@ -11,29 +11,30 @@ export class CommitteePeopleModel {
       .limit(limit)
       .offset(offset);
   }
-  
-  listWithPeopleByCommitteeI_(knex: Knex, committee_id:string, limit: number = 100, offset: number = 0) {
+
+  listWithPeopleByCommitteeI_(knex: Knex, committee_id: string, limit: number = 100, offset: number = 0) {
     return knex(this.tableName)
-      .select('view_peoples.*','pc_committee_people.position_name as cp_position_name')
+      .select('view_peoples.*', 'pc_committee_people.position_name as cp_position_name')
       .leftJoin('view_peoples', 'view_peoples.people_id', 'pc_committee_people.people_id')
-      .where({committee_id})
-      .orderBy('pc_committee_people.position_name','DESC')
-      .orderBy('pc_committee_people.position_name','DESC')
+      .where({ committee_id })
+      .orderBy('pc_committee_people.position_name', 'DESC')
+      .orderBy('pc_committee_people.position_name', 'DESC')
       .limit(limit)
       .offset(offset);
   }
 
 
-  listWithPeopleByCommitteeId(knex: Knex, committee_id:string, limit: number = 100, offset: number = 0) {
+  listWithPeopleByCommitteeId(knex: Knex, committee_id: string, limit: number = 100, offset: number = 0) {
     return knex(this.tableName)
-      .select('um_people.people_id','pc_committee_people.position_name as cp_position_name','um_positions.position_name','um_titles.title_name','fname','lname',knex.raw('concat(um_titles.title_name, fname," ",lname) as  fullname'))
+      .select('um_people.people_id', 'pc_committee.committee_type', 'pc_committee_people.position_name as cp_position_name', 'um_positions.position_name', 'um_titles.title_name', 'fname', 'lname', knex.raw('concat(um_titles.title_name, fname," ",lname) as  fullname'))
+      .innerJoin('pc_committee','pc_committee.committee_id','pc_committee_people.committee_id')
       .innerJoin('um_people', 'um_people.people_id', 'pc_committee_people.people_id')
-      .leftJoin('um_titles','um_titles.title_id','um_people.title_id')
-      .leftJoin('um_positions','um_positions.position_id','um_people.position_id')
-      .where('pc_committee_people.committee_id',committee_id)
+      .leftJoin('um_titles', 'um_titles.title_id', 'um_people.title_id')
+      .leftJoin('um_positions', 'um_positions.position_id', 'um_people.position_id')
+      .where('pc_committee_people.committee_id', committee_id)
       .limit(limit)
       .offset(offset)
-      .orderBy('pc_committee_people.position_name','DESC')
+      .orderBy('pc_committee_people.position_name', 'DESC')
   }
 
   save(knex: Knex, datas: any) {
@@ -59,7 +60,7 @@ export class CommitteePeopleModel {
   }
   removeByCommitteeId(knex: Knex, id: string) {
     return knex(this.tableName)
-      .where({committee_id:id})
+      .where({ committee_id: id })
       .del();
   }
 }

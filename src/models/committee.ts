@@ -13,11 +13,10 @@ export class CommitteeModel {
   }
 
   validate(req: express.Request, res: express.Response) {
-    req.check('data.committee_id', 'Invalid committee_id').notEmpty();
     req.check('data.committee_name', 'Invalid committee_name').notEmpty();
     req.check('data.committee_type', 'Invalid committee_type').notEmpty();
     req.check('data.datetime_start', 'Invalid committee_name').notEmpty();
-    req.check('data.datetime_end', 'Invalid datetime_end').notEmpty();
+    // req.check('data.datetime_end', 'Invalid datetime_end').notEmpty();
     let errors = req.validationErrors(true);
     if (errors) {
       res.status(400).send({

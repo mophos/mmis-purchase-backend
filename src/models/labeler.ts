@@ -9,8 +9,11 @@ export class LabelerModel {
   autoComplete(knex: Knex, q: string = '', limit: number = 100, offset: number = 0) {
     return knex(this.tableName)
       .select('mm_labelers.*', knex.raw('concat(labeler_name," ( ",short_code," )") as fullname'))
-      .where('labeler_name', 'like', `%${q}%`)
-      .orWhere('short_code', 'like', `%${q}%`)
+      .where('is_vendor', 'Y')
+      .where(w => {
+        w.where('labeler_name', 'like', `%${q}%`)
+          .orWhere('short_code', 'like', `%${q}%`)
+      })
       .limit(limit)
       .offset(offset);
   }

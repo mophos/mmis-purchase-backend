@@ -833,7 +833,6 @@ router.get('/detail', (req, res, next) => {
     .finally(() => {
       db.destroy();
     });
-
 });
 
 router.get('/lastorder/:id', async (req, res, next) => {
@@ -990,6 +989,19 @@ router.get('/sys-report', async (req, res, next) => {
   let db = req.db;
   try {
     let rs: any = await model.getSysReport(db);
+    res.send({ ok: true, rows: rs[0] });
+  } catch (error) {
+    res.send({ ok: false, error: error.message });
+  } finally {
+    db.destroy();
+  }
+});
+
+router.get('/view-contract', async (req, res, next) => {
+  let db = req.db;
+  let productId = req.query.productId
+  try {
+    let rs: any = await model.getContract(db, productId);
     res.send({ ok: true, rows: rs[0] });
   } catch (error) {
     res.send({ ok: false, error: error.message });

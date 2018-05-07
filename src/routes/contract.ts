@@ -93,6 +93,22 @@ router.get('/remain-detail', (req, res, next) => {
     });
 });
 
+router.get('/detail-contract', (req, res, next) => {
+  let contractId = req.query.contractId;
+  let db = req.db;
+
+  model.detailContract(db, contractId)
+    .then((results: any) => {
+      res.send({ ok: true, detail: results })
+    })
+    .catch(error => {
+      res.send({ ok: false, error: error })
+    })
+    .finally(() => {
+      db.destroy();
+    });
+});
+
 router.delete('/:id', (req, res, next) => {
   let id = req.params.id;
   let db = req.db;

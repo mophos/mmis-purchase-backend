@@ -23,7 +23,7 @@ html
       | วันที่ 
       label.h3(style="font-size: 16pt;") &nbsp;#{purchasing[i][0].order_date}
     b.h2(style='border: 1px solid white; width:75%; float: left;') เรื่อง
-      |  รายงานผลการพิจารณาและขออนุมัติสั่งซื้อยา/เวชภัณฑ์มิใช่ยา
+      |  รายงานผลการพิจารณาและขออนุมัติสั่งซื้อสั่งจ้าง
     br
     br
     hr
@@ -43,7 +43,7 @@ html
           for b in purchasing[i]
             - y++
               tr
-                td(style='border: 1px solid black; font-size: 13pt;') #{b.generic_name} #{b.qty} #{unit_name} จำนวน #{b.qtyPoi} #{unit_name}
+                td(style='border: 1px solid black; font-size: 13pt;') #{y}. #{b.generic_name} #{b.qty} #{unit_name} จำนวน #{b.qtyPoi} #{b.unit_name}
                 td(style='border: 1px solid black; font-size: 13pt;') #{purchasing[i][0].labeler_name} 
                 td(style='border: 1px solid black; font-size: 13pt;').right #{b.total_price}
                 td(style='border: 1px solid black; font-size: 13pt;').right #{b.total_price}  

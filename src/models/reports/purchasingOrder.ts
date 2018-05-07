@@ -821,6 +821,7 @@ export class PurchasingOrderReportModel {
     purchasingEgp(knex: Knex, porder: any, warehouseId: any) {
         return knex('pc_purchasing_order as po')
             .select('mg.standard_cost',
+                'po.vat',
                 'mup.cost',
                 'mp.product_name',
                 'mup.qty AS conversion',

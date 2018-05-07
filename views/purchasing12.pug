@@ -23,24 +23,13 @@ html
       | วันที่ 
       label.h3(style="font-size: 16pt;") &nbsp;#{purchasing[i][0].order_date}
     b.h2(style='border: 1px solid white; width:50%; float: left;') เรื่อง
-      |  รายงานขอซื้อยา/เวชภัณฑ์มิใช่ยา
+      |  รายงานขอซื้อขอจ้าง
     br
     br
     hr
     .enter เรียน ผู้ว่าราชการจังหวัด#{province}
     .fontspace
-    | ด้วย#{hospitalName}มีความประสงค์จะ ซื้อยา/เวชภัณฑ์มิใช่ยา จำนวน #{purchasing[i].length} รายการ 
-    br
-    - var y=0
-          for b in purchasing[i]
-            - y++
-            .fontspace
-            .fontspace
-            label(style="font-size: 15pt;") &nbsp;- #{b.generic_name}
-            if(y<countp) 
-            br 
-    br
-    | โดย #{arrayBid[i][0].name} ซึ่งมีรายละเอียดดังต่อไปนี้
+    | ด้วย#{hospitalName}มีความประสงค์จะ ซื้อยาจำนวน #{purchasing[i].length} รายการ โดย#{arrayBid[i][0].name} ซึ่งมีรายละเอียด ดังต่อไปนี้
     br
     .fontspace
     | 1.  เหตุผลและความจำเป็นที่ต้องซื้อ
@@ -49,37 +38,72 @@ html
     | &nbsp;&nbsp; เพื่อให้บริการผู้ป่วยที่มารับบริการ และให้เพียงพอต่อการให้บริการผู้ป่วย
     br
     .fontspace 
-    | 2.	ราคากลางและรายละเอียดของรายการตามเอกสาร รายงานผลการพิจารณาและรออนุมัติสั่งซื้อ
+    | 2.	รายละเอียดของพัสดุ
     br
     .fontspace 
-    | 3.	วงเงินที่จะซื้อ
-    br
-    .fontspace 
-    | &nbsp;&nbsp; เงินนอกงบประมาณ จำนวน #{arrayTotal[i]} บาท (#{arrayBahtText[i]})
-    br
-    .fontspace 
-    | 4.	กำหนดเวลาที่ต้องการใช้พัสดุนั้น หรือให้งานแล้วเสร็จ
-    br
-    .fontspace 
-    | &nbsp;&nbsp; กำหนดเวลาส่งมอบงานหรือให้งานแล้วเสร็จภายใน #{purchasing[i][0].delivery} วัน 
+    | &nbsp;&nbsp; รายละเอียดตามเอกสารแนบ
     br
     .fontspace
-    | 5.	วิธีที่จะซื้อ #{arrayBid[i][0].name}
+    | 3.  ราคากลางและรายระเอียดของราคากลางจำนวน บาท ()
+    br
+    .fontspace 
+    | 4.  วงเงินที่จะซื้อ
+    br
+    .fontspace 
+    | &nbsp;&nbsp; เงินนอกงบประมาณจาก จำนวน #{arrayTotal[i]} บาท (#{arrayBahtText[i]})
+    br
+    | 5.	กำหนดเวลาที่ต้องการใช้พัสดุนั้น หรือให้งานแล้วเสร็จ
+    - var y=0
+      for b in purchasing[i]
+        - y++
+          .fontspace
+          br
+          | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;5.#{y} รายการพิจารณาที่ #{y} #{b.generic_name}
+          br
+          | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;กำหนดเวลาการส่งมอบพัสดุ หรือให้งานแล้วเสร็จภายใน #{purchasing[i][0].delivery} วัน นับจากวันลงนามในสัญญา
+    .fontspace
     br
     .fontspace
-    | 6.	หลักเกณฑ์การพิจารณาคัดเลือกข้อเสนอ
+    | 6.	วิธีที่จะซื้อ และเหตุผลที่จะซื้อ
+    br
+    .fontspace
+    | &nbsp;&nbsp; ดำเนินการด้วย#{arrayBid[i][0].name} เนื่องจากการจัดซื้อจัดจ้างพัสดุที่มีการผลิต จำหน่าย ก่อสร้าง 
+    br 
+    | หรือให้บริการทั่วไปและมีวงเงินในการจัดซื้อจัดจ้างครั้งหนึ่งไม่เกินวงเงินตามที่กำหนดในกฎกระทรวง
+    br
+    .pagebreak
+    .fontspace
+    | 7.	หลักเกณฑ์การพิจารณาคัดเลือกข้อเสนอ
     br
     .fontspace
     | &nbsp;&nbsp; การพิจารณาคัดเลือกข้อเสนอโดยใช้เกณฑ์ราคา
     br
     .fontspace 
-    | 7.	ข้อเสนออื่นๆ
+    | 8.	การขออนุมัติแต่งตั้งคณะกรรมการต่าง ๆ
     br
+    .fontspace
+    | &nbsp;&nbsp; ผู้ตรวจรับพัสดุ
     br
-    | จึงเรียนมาเพื่อโปรดพิจารณา หากเห็นชอบได้ขอโปรด
+    .fontspace
+    table(style='margin-left: 5.5%; width: 80%;')
+      tbody
+      -var b=0
+          for c in arCommittee[i]
+            - b++
+              tr
+                td &nbsp;&nbsp; #{b}. #{c.fullname}  
+                td #{c.position}
+              tr  
+                td(colspan='2') &nbsp;&nbsp; #{c.position_name}  
+    .fontspace
+    | &nbsp;&nbsp; อำนาจและหน้าที่
     br
     .fontspace 
-    | 1.	อนุมัติให้ดำเนินการ ตามรายละเอียดในรายงานขอซื้อดังกล่าวข้างต้น
+    | &nbsp;&nbsp;&nbsp;&nbsp; ทำการตรวจรับพัสดุให้เป็นไปตามเงื่อนไขของสัญญาหรือข้อตกลงนั้น 
+    br
+    br
+    .fontspace 
+    | จึงเรียนมาเพื่อโปรดพิจารณา หากเห็นชอบขอได้โปรด อนุมัติให้ดำเนินการ ตามรายละเอียดในรายงานขอซื้อดังกล่าวข้างต้น
     br
     .fontspace 
     br

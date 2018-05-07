@@ -111,7 +111,7 @@ export class ProductsModel {
     return con;
   }
 
-  getReOrderPointTrade(knex: Knex, warehouseId: any, genericTypeIds: string[], limit: number = 20, offset: number = 0, query: any = '') {
+  getReOrderPointTrade(knex: Knex, warehouseId: any, genericTypeIds: string[], limit: number = 20, offset: number = 0, query: any = '', showNotPurchased: any = 'N') {
 
     let subQuery = knex('wm_products as wp')
       .select(knex.raw('sum(wp.qty)'))
@@ -167,9 +167,13 @@ export class ProductsModel {
     }
 
     // sql.groupBy('mp.product_id');
+    if (showNotPurchased === 'N') {
+      sql.havingRaw('remain_qty<=mg.min_qty');
+    } else { 
+      sql.havingRaw('remain_qty<=mg.min_qty OR remain_qty is NULL');
+    }
 
-    return sql.havingRaw('remain_qty<=mg.min_qty')
-      .limit(limit)
+    return sql.limit(limit)
       .offset(offset)
       .orderByRaw('mg.generic_name, ml.labeler_name');
   }
@@ -220,7 +224,7 @@ export class ProductsModel {
     return sql.limit(limit).offset(offset).orderBy('mg.generic_name');
   }
 
-  getReOrderPointTradeTotal(knex: Knex, warehouseId: any, genericTypeIds: string[], query: any = '') {
+  getReOrderPointTradeTotal(knex: Knex, warehouseId: any, genericTypeIds: string[], query: any = '', showNotPurchased: any = 'N') {
 
     let subQuery = knex('wm_products as wp')
       .select(knex.raw('sum(wp.qty)'))
@@ -259,7 +263,14 @@ export class ProductsModel {
 
     // sql.groupBy('mp.product_id');
 
-    return sql.havingRaw('remain_qty<=mg.min_qty');
+    // return sql.havingRaw('remain_qty<=mg.min_qty');
+    if (showNotPurchased === 'N') {
+      sql.havingRaw('remain_qty<=mg.min_qty');
+    } else {
+      sql.havingRaw('remain_qty<=mg.min_qty OR remain_qty is NULL');
+    }
+
+    return sql;
   }
 
   getReOrderPointTradeReservedTotal(knex: Knex, warehouseId: any, genericTypeIds: string[], query: any = '') {

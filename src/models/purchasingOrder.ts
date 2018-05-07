@@ -505,7 +505,8 @@ export class PurchasingOrderModel {
     mmu.unit_name AS small_large_unit_name,
     pp.unit_price,
     pp.total_price,
-    po.contract_id
+    po.contract_id,
+    pp.giveaway
   FROM
     mm_generics AS mg
   JOIN pc_purchasing_order_item AS pp ON mg.generic_id = pp.generic_id
@@ -516,10 +517,7 @@ export class PurchasingOrderModel {
   JOIN mm_units AS mu ON mug.from_unit_id = mu.unit_id
   JOIN mm_units AS mmu ON mug.to_unit_id = mmu.unit_id
   WHERE
-    pp.generic_id = '${generic_id}'
-  AND
-    pp.giveaway = 'N'
-    `
+    pp.generic_id = '${generic_id}'`
     return (knex.raw(sql))
   }
 
@@ -556,8 +554,13 @@ export class PurchasingOrderModel {
 
   getSysReport(db: Knex) {
     return db('um_report')
-      .where('report_type', 'PO')
-      .andWhere('is_active', 'Y')
+      .where('is_active', 'Y')
+  }
+
+  getBookNumber(db: Knex) {
+    return db('pc_purchasing_order')
+      .select('purchase_order_book_number')
+      .whereNot('purchase_order_book_number', null)
   }
 
 }

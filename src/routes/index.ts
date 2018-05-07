@@ -1762,6 +1762,9 @@ router.get('/report/allpo/egp/', wrap(async (req, res, next) => {
   let purchasing = [];
   let arPcb = [];
 
+  let arrayVat = [];
+  let arrayNet = [];
+
   let arCommittee = [];
   let arAllamount = [];
   let arAtransection = [];
@@ -1809,8 +1812,16 @@ router.get('/report/allpo/egp/', wrap(async (req, res, next) => {
       v.standard_cost = model.comma(v.standard_cost);
       v.cost = model.comma(v.cost);
     });
+    
+    let net = purchasing[i][0].vat + total;
+    bahtText = model.bahtText(net);
+    net = model.comma(net);
 
-    bahtText = model.bahtText(total);
+    arrayNet.push(net);
+
+    purchasing[i][0].vat = model.comma(purchasing[i][0].vat);
+    arrayVat.push(purchasing[i][0].vat);
+
     total = model.comma(total);
     arrayTotal.push(total);
     arrayBahtText.push(bahtText);
@@ -1820,6 +1831,8 @@ router.get('/report/allpo/egp/', wrap(async (req, res, next) => {
   }
 
   res.render('egp', {
+    arrayNet: arrayNet,
+    arrayVat: arrayVat,
     limitDate: limitDate,
     hosaddress: hosaddress,
     arAllamount: arAllamount,
@@ -1877,6 +1890,9 @@ router.get('/report/getporder/standard/', wrap(async (req, res, next) => {
   let purchasing = [];
   let arPcb = [];
 
+  let arrayVat = [];
+  let arrayNet = [];
+
   let arCommittee = [];
   let arAllamount = [];
   let arAtransection = [];
@@ -1924,8 +1940,16 @@ router.get('/report/getporder/standard/', wrap(async (req, res, next) => {
       v.standard_cost = model.comma(v.standard_cost);
       v.cost = model.comma(v.cost);
     });
+    
+    let net = purchasing[i][0].vat + total;
+    bahtText = model.bahtText(net);
+    net = model.comma(net);
 
-    bahtText = model.bahtText(total);
+    arrayNet.push(net);
+
+    purchasing[i][0].vat = model.comma(purchasing[i][0].vat);
+    arrayVat.push(purchasing[i][0].vat);
+
     total = model.comma(total);
     arrayTotal.push(total);
     arrayBahtText.push(bahtText);
@@ -1935,6 +1959,8 @@ router.get('/report/getporder/standard/', wrap(async (req, res, next) => {
   }
 
   res.render('purchasing16', {
+    arrayNet: arrayNet,
+    arrayVat: arrayVat,
     limitDate: limitDate,
     hosaddress: hosaddress,
     arAllamount: arAllamount,

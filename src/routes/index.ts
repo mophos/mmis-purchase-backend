@@ -8,9 +8,8 @@ import * as _ from 'lodash';
 import { PurchasingOrderReportModel } from '../models/reports/purchasingOrder';
 import { RequisitionOrderReportModel } from '../models/reports/requisitionOrder';
 import { log } from 'util';
-import { PurchasingOrderModel} from '../models/purchasingOrder'
+import { PurchasingOrderModel } from '../models/purchasingOrder'
 import { each } from 'bluebird';
-// import { load } from 'mime';
 
 const model = new PurchasingOrderReportModel();
 const modelPr = new RequisitionOrderReportModel();
@@ -35,7 +34,7 @@ router.get('/report/purchasingorder', wrap(async (req, res, next) => {
   getchief = getchief[0].chief_fullname;
   let hospname = await model.hospital(db)
   hospname = hospname[0].hospname
-  let date = model.prettyDate(results[0].created_date)
+  let date = model.prettyDate(results[0].order_date)
   let lname = results[0].labeler_name
   let sum: any = 0;
   let chief = 0;
@@ -87,7 +86,6 @@ router.get('/report/requisitionorder/:orderId', wrap(async (req, res, next) => {
   let bgname = (detail[0].bgtype_name)
   let requisitionItem = detail;
   let name = detail1;
-  // console.log(name);
 
   res.render('requisition_order', { hospname: hospname, requisitionItem: requisitionItem, date: date, name: name, lname: lname, bgname: bgname });
 }));
@@ -108,7 +106,6 @@ router.get('/report/purchaseRequset', wrap(async (req, res, next) => {
   res.render('purchaseRequset')
 }));
 
-//======================================================================
 router.get('/report/list/purchaseSelec', wrap(async (req, res, next) => {
   let generic_type_id = req.query.generic_type_id;
   let warehouseId = req.decoded.warehouseId;
@@ -128,12 +125,10 @@ router.get('/report/list/purchaseSelec', wrap(async (req, res, next) => {
     fill[i] < 0 ? fill[i] = 1 : fill[i];
     value.remain_qty = (value.remain_qty / value.qty).toFixed(0);
     if (value.qty === null) value.qty = 0
-    // if(value.unit_name===null) value.unit_name=0
     if (value.min_qty === null) value.min_qty = 0
     i++;
   });
 
-  console.log('===========', fill)
   moment.locale('th');
   let sdate = moment(new Date()).format('D MMMM ') + (moment(new Date()).get('year') + 543);
 
@@ -159,12 +154,9 @@ router.get('/report/list/purchase-trade-select', wrap(async (req, res, next) => 
     fill[i] < 0 ? fill[i] = 1 : fill[i];
     value.remain_qty = (value.remain_qty / value.qty).toFixed(0);
     if (value.qty === null) value.qty = 0
-    // if(value.unit_name===null) value.unit_name=0
     if (value.min_qty === null) value.min_qty = 0
     i++;
   });
-
-  console.log('===========', fill)
   moment.locale('th');
   let sdate = moment(new Date()).format('D MMMM ') + (moment(new Date()).get('year') + 543);
 
@@ -183,7 +175,6 @@ router.get('/report/list/purchase/:startdate/:enddate', wrap(async (req, res, ne
   let nDate = model.prettyDate(new Date())
   results.forEach(value => {
     if (value.qty === null) value.qty = 0
-    // if(value.unit_name===null) value.unit_name=0
     if (value.min_qty === null) value.min_qty = 0
   });
   moment.locale('th');
@@ -198,7 +189,6 @@ router.get('/report/total/purchase/:createDate', wrap(async (req, res, next) => 
   let db = req.db;
   let nDate = createDate
   createDate = '%' + createDate + '%'
-  // console.log(createDate);
 
   let results = await model.tPurchase(db, createDate);
   let hospname = await model.hospital(db);
@@ -206,7 +196,6 @@ router.get('/report/total/purchase/:createDate', wrap(async (req, res, next) => 
   hospname = hospname[0].hospname
   moment.locale('th')
   nDate = moment(nDate).format('MMMM ') + (moment(nDate).get('year') + 543);
-  // let date = model.prettyDate(results[0].created_date);
   let sum = 0
   results.forEach(value => {
     value.created_date = model.prettyDate(value.created_date);
@@ -269,9 +258,16 @@ router.get('/report/process/purchase/:startdate/:enddate', wrap(async (req, res,
     sum2 += value.cost
     value.cost = (value.cost).toFixed(2)
   });
-  // console.log(sum + "bb" + sum1 + sum2)
 
-  res.render('processpurchase', { results: results, hospname: hospname, daten: daten, dates: dates, sum: sum, sum1: sum1, sum2: sum2 })
+  res.render('processpurchase', {
+    results: results,
+    hospname: hospname,
+    daten: daten,
+    dates: dates,
+    sum: sum,
+    sum1: sum1,
+    sum2: sum2
+  })
 }));
 
 router.get('/report/purchasing/:startdate/:enddate', wrap(async (req, res, next) => {
@@ -279,7 +275,6 @@ router.get('/report/purchasing/:startdate/:enddate', wrap(async (req, res, next)
   let enddate = req.params.enddate;
   let db = req.db;
   let results = await model.pPurchasing(db, startdate, enddate);
-  // console.log(results)
   let hospname = await model.hospital(db);
   results = results[0]
   hospname = hospname[0].hospname
@@ -319,7 +314,6 @@ router.get('/report/purchasing-list/:startdate/:enddate/:genericTypeId', wrap(as
   let generic_type_id = req.params.genericTypeId;
   let db = req.db;
   let results = await model.PurchasingList(db, startdate, enddate, generic_type_id);
-  // console.log(results)
   let hospname = await model.hospital(db);
   results = results[0]
   hospname = hospname[0].hospname
@@ -399,7 +393,6 @@ router.get('/report/totalcost/purchase/:month', wrap(async (req, res, next) => {
   let type2 = await model.sumType2(db, smonth, emonth)
   type1 = type1[0]
   type2 = type2[0]
-  // console.log(type2)
   let hosdetail = await model.hospital(db);
   let hospitalName = hosdetail[0].hospname;
   moment.locale('th');
@@ -464,7 +457,6 @@ router.get('/test', wrap(async (req, res, next) => {
   });
 }));
 
-
 router.get('/report/purchasing/1/:purchaOrderId/:type', wrap(async (req, res, next) => {
   let db = req.db;
   let type = req.params.type;
@@ -500,15 +492,24 @@ router.get('/report/purchasing/1/:purchaOrderId/:type', wrap(async (req, res, ne
 
   purchasing.forEach(value => {
     value.total_price = model.comma(value.total_price);
-    // value.expired_date = moment(value.expired_date).format('DD/MM/') + (moment(value.expired_date).get('year') + 543);
   })
 
   res.render('purchasing', {
-    hello: 'hello', hospitalName: hospitalName, type: type,
-    purchasing: purchasing, count: count, pricetext: pricetext, nDate: nDate
-    , committee1: committee1, committee2: committee2, committee3: committee3
-    , committeecheck1: committeecheck1, committeecheck2: committeecheck2, committeecheck3: committeecheck3
-    , committeecheckpos1: committeecheckpos1, committeecheckpos2: committeecheckpos2, committeecheckpos3: committeecheckpos3
+    hospitalName: hospitalName,
+    type: type,
+    purchasing: purchasing,
+    count: count,
+    pricetext: pricetext,
+    nDate: nDate,
+    committee1: committee1,
+    committee2: committee2,
+    committee3: committee3,
+    committeecheck1: committeecheck1,
+    committeecheck2: committeecheck2,
+    committeecheck3: committeecheck3,
+    committeecheckpos1: committeecheckpos1,
+    committeecheckpos2: committeecheckpos2,
+    committeecheckpos3: committeecheckpos3
   });
 }));
 
@@ -667,7 +668,6 @@ router.get('/report/purchasing/6', wrap(async (req, res, next) => {
   let results = await model.purchasing3(db, purchaOrderId);
   let committee = await model.purchasingCommittee(db, purchaOrderId);
   let at = await model.at(db)
-  // if(results[0]===undefined||committee[0]===undefined) res.render('error404')
   at = at[0]
   results = results[0]
   let hospitalName = hosdetail[0].hospname;
@@ -739,7 +739,7 @@ router.get('/report/purchasing/7', wrap(async (req, res, next) => {
   let results = await model.purchasing3(db, purchaOrderId);
   let committee = await model.purchasingCommittee(db, purchaOrderId);
   let at = await model.at(db)
-  // if(results[0]===undefined||committee[0]===undefined) res.render('error404')
+
   at = at[0]
   results = results[0]
   let hospitalName = hosdetail[0].hospname
@@ -835,13 +835,11 @@ router.get('/report/purchasing/9/:startdate/:enddate', wrap(async (req, res, nex
   let db = req.db
   let startdate = req.params.startdate
   let enddate = req.params.enddate
-  // console.log(startdate+" : "+enddate);
 
   moment.locale('th');
   let today = moment(new Date()).format('D MMMM ') + (moment(new Date()).get('year') + 543)
   let results = await model.purchasing9(db, startdate, enddate);
   results = results[0]
-  // console.log(results);
   results.forEach(value => {
     value.unit_price = model.comma(value.unit_price)
     value.qty = model.commaQty(value.qty)
@@ -1389,8 +1387,6 @@ router.get('/report/purchasing/15', wrap(async (req, res, next) => {
 
 router.get('/report/purchasing/16', wrap(async (req, res, next) => {
   let db = req.db;
-  let type = req.query.type;
-  let bgtype = req.query.bgtype;
   let purchaOrderId = req.query.purchaOrderId;
   let warehouseId = req.decoded.warehouseId;
 
@@ -1409,12 +1405,15 @@ router.get('/report/purchasing/16', wrap(async (req, res, next) => {
   at = at[0]
   moment.locale('th');
   let nDate = moment(new Date()).format('DD MMMM ') + (moment(new Date()).get('year') + 543)
+  let orderDate = moment(purchasing[0].order_date).format('DD MMMM ') + (moment(purchasing[0].order_date).get('year') + 543)
   let year = moment(new Date).get('year') + 544
   let bgtypesub = req.query.bgtypesub;
   let budget = await model.budgetType(db, purchasing[0].budget_detail_id)
   budget = budget[0]
   let totalprice = 0
   let textamount = model.bahtText(budget[0].amount)
+
+  let limitDate = moment(moment().add(purchasing[0].delivery, 'days').calendar()).format('D MMMM ') + (moment(purchasing[0].order_date).get('year') + 543);
 
   let sum = model.comma(budget[0].amount - budget[0].order_amt)
   budget.forEach(value => {
@@ -1439,10 +1438,11 @@ router.get('/report/purchasing/16', wrap(async (req, res, next) => {
   let province = hosdetail[0].province;
   let lname = purchasing[0].labeler_name
 
-  res.render('purchasing16', {
+  res.render('purchasing16single', {
+    limitDate: limitDate,
+    order_date: orderDate,
     lname: lname,
     textamount: textamount,
-    type: type,
     purchasing: purchasing,
     sum: sum,
     province: province,
@@ -1453,7 +1453,6 @@ router.get('/report/purchasing/16', wrap(async (req, res, next) => {
     nDate: nDate,
     committeesVerify: committeesVerify,
     bidname: bidname,
-    // committeesCheck:committeesCheck,
     bahtText: bahtText,
     budget: budget,
     poraor: poraor,
@@ -1463,7 +1462,6 @@ router.get('/report/purchasing/16', wrap(async (req, res, next) => {
 
 router.post('/report/purchasingorder', wrap(async (req, res, next) => {
   let purchasOrderId = req.body.orderId;
-  // console.log('++++++++++++++++++++++++++++++++++++'+purchasOrderId);
 
   let num = purchasOrderId.length;
   let db = req.db;
@@ -1473,19 +1471,16 @@ router.post('/report/purchasingorder', wrap(async (req, res, next) => {
   let hopsprovince = hospname[0].province
   hospname = hospname[0].hospname
 
-  // console.log('++++++++++++++++++++++++++++++++' + num);
   let nDate = moment(new Date()).format('DD MMMM ') + (moment(new Date()).get('year') + 543)
-  // let year = moment(new Date).get('year') + 544
   let array = [];
   let array1 = [];
+  let arrayDate = [];
   for (let i = 0; i < num; i++) {
-    // console.log('++++' + purchasOrderId[i]);
-
     let results = await model.purchasingOrder(db, purchasOrderId[i])
     results = results[0];
+    let order_date = moment(results.order_date).format('DD MMMM ') + (moment(results.order_date).get('year') + 543)
+    arrayDate.push(order_date);
     array.push(results);
-    // console.log('++++++++++++++++++++' + array[i][0]);
-
 
     let getchief = await model.purchasing2Chief(db, purchasOrderId[i]);
     getchief = getchief[0].chief_fullname;
@@ -1494,6 +1489,7 @@ router.post('/report/purchasingorder', wrap(async (req, res, next) => {
 
   }
   res.render('porders', {
+    arrayDate: arrayDate,
     array: array,
     num: num,
     hospname: hospname,
@@ -1540,9 +1536,6 @@ router.get('/report/getporder', wrap(async (req, res, next) => {
     getchief = getchief[0].chief_fullname;
     array1.push(getchief);
   }
-  // console.log(arraySum);
-  // console.log(arraySumText);
-
   res.render('porders', {
     arraySum: arraySum,
     arraySumText: arraySumText,
@@ -1622,84 +1615,6 @@ router.get('/report/getporder/singburi', wrap(async (req, res, next) => {
   })
 }));
 
-router.get('/report/po/egp', wrap(async (req, res, next) => {
-  let db = req.db;
-  let type = req.query.type;
-  let purchaOrderId = req.query.purchaOrderId;
-  let warehouseId = req.decoded.warehouseId;
-  ////ชื่อโรงพยาบาล//////////
-  let hosdetail = await model.hospital(db);
-  let hospitalName = hosdetail[0].hospname;
-  let hostel = hosdetail[0].telephone;
-  let hosaddress = hosdetail[0].address;
-  ////ผอ///////////////////
-  let poraor = hosdetail[0].managerName;
-  // console.log('++++++++++++++++++++++++++++',hosdetail[0])
-  /////หัวหน้า/เจ้าหนาที่/////////////////
-  let purchasingChief = await model.purchasing2Chief(db, purchaOrderId)
-  ////query////////////////
-  let purchasing = await model.purchasing10(db, purchaOrderId, warehouseId);
-  purchasing = purchasing[0];
-  ////////คณะกรรมการ////////////
-  let committeesVerify = await model.purchasingCommittee2(db, purchaOrderId);
-  committeesVerify = committeesVerify[0];
-  ///////นับจำนวน//////////////////
-  let count = await model.purchasingCountItem(db, purchaOrderId);
-  count = count[0][0].count || 0;
-  ////////book_prefix///////////////
-  let at = await model.at(db)
-  at = at[0]
-  /////วันที่ปัจจับุัน / ปีงบ/////////////////
-  moment.locale('th');
-  let nDate = moment(new Date()).format('D MMMM ') + (moment(new Date()).get('year') + 543)
-  let year = moment(new Date).get('year') + 544
-  /////งบประมาณ///////////
-  let budget = await model.budgetType(db, purchasing[0].budget_detail_id)
-  budget = budget[0]
-  ////////////////////////
-  let totalprice = 0
-  let textamount = model.bahtText(budget[0].amount)
-  let sum = model.comma(budget[0].amount - budget[0].order_amt)
-  budget.forEach(value => {
-    value.amount = model.comma(value.amount)
-    value.order_amt = model.comma(value.order_amt)
-  });
-  let bidname = purchasing[0].name
-  purchasing.forEach(value => {
-    totalprice += value.total_price
-    if (value.qty == null) value.qty = 0;
-    value.qty = model.commaQty(value.qty);
-    value.qtyPoi = model.commaQty(value.qtyPoi);
-    value.total_price = model.comma(value.total_price);
-    value.unit_price = model.comma(value.unit_price);
-    value.total = model.commaQty(value.total)
-  })
-  let ttotalprice = model.comma(totalprice)
-  let bahtText = model.bahtText(totalprice)
-  let province = hosdetail[0].province;
-
-  res.render('egp', {
-    textamount: textamount,
-    type: type,
-    purchasing: purchasing,
-    sum: sum,
-    hosaddress: hosaddress,
-    province: province,
-    hostel: hostel,
-    countp: count,
-    total: ttotalprice,
-    hospitalName: hospitalName,
-    at_name: at[0].value,
-    nDate: nDate,
-    committeesVerify: committeesVerify,
-    bidname: bidname,
-    bahtText: bahtText,
-    budget: budget,
-    poraor: poraor,
-    purchasingChief: purchasingChief[0]
-  });
-}));
-
 router.get('/report/allpo/egp/singburi', wrap(async (req, res, next) => {
   let porder = req.query.porder;
   porder = Array.isArray(porder) ? porder : [porder];
@@ -1771,6 +1686,7 @@ router.get('/report/allpo/egp/singburi', wrap(async (req, res, next) => {
 
     let total: any = 0;
     arrayItems.forEach(v => {
+      v.order_date = moment(v.order_date).format('D MMMM ') + (moment(v.order_date).get('year') + 543);
       total += v.total_price;
       v.total_price = model.comma(v.total_price);
       v.qty = model.commaQty(v.qty);
@@ -1789,8 +1705,237 @@ router.get('/report/allpo/egp/singburi', wrap(async (req, res, next) => {
     arrayBid.push(bidname);
   }
 
-  // res.send(arrayChief);
   res.render('egpSingburi', {
+    hosaddress: hosaddress,
+    arAllamount: arAllamount,
+    arPcb: arPcb,
+    hostel: hostel,
+    arBudget: arBudget,
+    arCommittee: arCommittee,
+    province: province,
+    chief: chief,
+    poraor: poraor,
+    arrayChief: arrayChief,
+    arrayBahtText: arrayBahtText,
+    arrayTotal: arrayTotal,
+    nDate: nDate,
+    arrayBid: arrayBid,
+    purchasing: purchasing,
+    porder: porder,
+    hospitalName: hospitalName,
+    pcb: pcb
+  });
+}));
+
+router.get('/report/allpo/egp/', wrap(async (req, res, next) => {
+  let porder = req.query.porder;
+  porder = Array.isArray(porder) ? porder : [porder];
+  let chief = "ปฎิบัติราชการแทนผู้ว่าราชการจังหวัด";
+  let warehouseId = req.decoded.warehouseId;
+  let type = req.query.type;
+  let db = req.db;
+
+  let hosdetail = await model.hospital(db);
+  let hospitalName = hosdetail[0].hospname;
+  let poraor = hosdetail[0].managerName;
+  let hosaddress = hosdetail[0].address;
+  let hostel = hosdetail[0].telephone;
+  let province = hosdetail[0].province;
+
+  moment.locale('th');
+  let nDate = moment(new Date()).format('D MMMM ') + (moment(new Date()).get('year') + 543)
+
+  let pcb;
+
+  let committeesVerify;
+  let arrayItems;
+  let bidname;
+  let bahtText: any = 0;
+  let purchasingChief;
+  let budget;
+
+  let arBudget = [];
+  let arrayChief = [];
+  let arrayTotal = [];
+  let arrayBahtText = [];
+  let arrayBid = [];
+  let purchasing = [];
+  let arPcb = [];
+
+  let arCommittee = [];
+  let arAllamount = [];
+  let arAtransection = [];
+
+  let getAmountTransaction;
+  let allAmount;
+  let limitDate: any = [];
+
+  for (let i in porder) {
+    arrayItems = await model.purchasingEgp(db, porder[i], warehouseId);
+    purchasing.push(arrayItems);
+
+    purchasingChief = await model.purchasing2Chief(db, porder[i]);
+    arrayChief.push(purchasingChief);
+
+    committeesVerify = await model.purchasingCommittee2(db, porder[i]);
+    committeesVerify = committeesVerify[0];
+    arCommittee.push(committeesVerify);
+
+    budget = await model.budgetType(db, purchasing[i][0].budget_detail_id);
+    budget = budget[0];
+    arBudget.push(budget);
+    arBudget[i][0].amount = model.comma(arBudget[i][0].amount);
+
+    getAmountTransaction = await model.allAmountTransaction(db, purchasing[i][0].budget_detail_id, +arBudget[i][0].bg_year - 543, purchasing[i][0].purchase_order_id);
+    getAmountTransaction = getAmountTransaction[0];
+    arAtransection.push(getAmountTransaction);
+
+    pcb = await model.pcBudget(db, porder[i]);
+    arPcb.push(pcb);
+    arPcb[i][0].balance = model.comma(arPcb[i][0].balance);
+
+    allAmount = model.comma(arAtransection[i][0].amount);
+    arAllamount.push(allAmount);
+    limitDate.push(moment(moment().add(purchasing[i][0].delivery, 'days').calendar()).format('D MMMM ') + (moment(purchasing[i][0].order_date).get('year') + 543));
+
+    let total: any = 0;
+    arrayItems.forEach(v => {
+      v.order_date = moment(v.order_date).format('D MMMM ') + (moment(v.order_date).get('year') + 543);
+      total += v.total_price;
+      v.total_price = model.comma(v.total_price);
+      v.qty = model.commaQty(v.qty);
+      v.unit_price = model.comma(v.unit_price);
+      v.qtyPoi = model.commaQty(v.qtyPoi);
+      v.standard_cost = model.comma(v.standard_cost);
+      v.cost = model.comma(v.cost);
+    });
+
+    bahtText = model.bahtText(total);
+    total = model.comma(total);
+    arrayTotal.push(total);
+    arrayBahtText.push(bahtText);
+
+    bidname = await model.bidName(db, purchasing[i][0].purchase_method_id);
+    arrayBid.push(bidname);
+  }
+
+  res.render('egp', {
+    limitDate: limitDate,
+    hosaddress: hosaddress,
+    arAllamount: arAllamount,
+    arPcb: arPcb,
+    hostel: hostel,
+    arBudget: arBudget,
+    arCommittee: arCommittee,
+    province: province,
+    chief: chief,
+    poraor: poraor,
+    arrayChief: arrayChief,
+    arrayBahtText: arrayBahtText,
+    arrayTotal: arrayTotal,
+    nDate: nDate,
+    arrayBid: arrayBid,
+    purchasing: purchasing,
+    porder: porder,
+    hospitalName: hospitalName,
+    pcb: pcb
+  });
+}));
+
+router.get('/report/getporder/standard/', wrap(async (req, res, next) => {
+  let porder = req.query.porder;
+  porder = Array.isArray(porder) ? porder : [porder];
+  let chief = "ปฎิบัติราชการแทนผู้ว่าราชการจังหวัด";
+  let warehouseId = req.decoded.warehouseId;
+  let type = req.query.type;
+  let db = req.db;
+
+  let hosdetail = await model.hospital(db);
+  let hospitalName = hosdetail[0].hospname;
+  let poraor = hosdetail[0].managerName;
+  let hosaddress = hosdetail[0].address;
+  let hostel = hosdetail[0].telephone;
+  let province = hosdetail[0].province;
+
+  moment.locale('th');
+  let nDate = moment(new Date()).format('D MMMM ') + (moment(new Date()).get('year') + 543)
+
+  let pcb;
+
+  let committeesVerify;
+  let arrayItems;
+  let bidname;
+  let bahtText: any = 0;
+  let purchasingChief;
+  let budget;
+
+  let arBudget = [];
+  let arrayChief = [];
+  let arrayTotal = [];
+  let arrayBahtText = [];
+  let arrayBid = [];
+  let purchasing = [];
+  let arPcb = [];
+
+  let arCommittee = [];
+  let arAllamount = [];
+  let arAtransection = [];
+
+  let getAmountTransaction;
+  let allAmount;
+  let limitDate: any = [];
+
+  for (let i in porder) {
+    arrayItems = await model.purchasingEgp(db, porder[i], warehouseId);
+    purchasing.push(arrayItems);
+
+    purchasingChief = await model.purchasing2Chief(db, porder[i]);
+    arrayChief.push(purchasingChief);
+
+    committeesVerify = await model.purchasingCommittee2(db, porder[i]);
+    committeesVerify = committeesVerify[0];
+    arCommittee.push(committeesVerify);
+
+    budget = await model.budgetType(db, purchasing[i][0].budget_detail_id);
+    budget = budget[0];
+    arBudget.push(budget);
+    arBudget[i][0].amount = model.comma(arBudget[i][0].amount);
+
+    getAmountTransaction = await model.allAmountTransaction(db, purchasing[i][0].budget_detail_id, +arBudget[i][0].bg_year - 543, purchasing[i][0].purchase_order_id);
+    getAmountTransaction = getAmountTransaction[0];
+    arAtransection.push(getAmountTransaction);
+
+    pcb = await model.pcBudget(db, porder[i]);
+    arPcb.push(pcb);
+    arPcb[i][0].balance = model.comma(arPcb[i][0].balance);
+
+    allAmount = model.comma(arAtransection[i][0].amount);
+    arAllamount.push(allAmount);
+    limitDate.push(moment(moment().add(purchasing[i][0].delivery, 'days').calendar()).format('D MMMM ') + (moment(purchasing[i][0].order_date).get('year') + 543));
+
+    let total: any = 0;
+    arrayItems.forEach(v => {
+      v.order_date = moment(v.order_date).format('D MMMM ') + (moment(v.order_date).get('year') + 543);
+      total += v.total_price;
+      v.total_price = model.comma(v.total_price);
+      v.qty = model.commaQty(v.qty);
+      v.unit_price = model.comma(v.unit_price);
+      v.qtyPoi = model.commaQty(v.qtyPoi);
+      v.standard_cost = model.comma(v.standard_cost);
+      v.cost = model.comma(v.cost);
+    });
+
+    bahtText = model.bahtText(total);
+    total = model.comma(total);
+    arrayTotal.push(total);
+    arrayBahtText.push(bahtText);
+
+    bidname = await model.bidName(db, purchasing[i][0].purchase_method_id);
+    arrayBid.push(bidname);
+  }
+
+  res.render('purchasing16', {
+    limitDate: limitDate,
     hosaddress: hosaddress,
     arAllamount: arAllamount,
     arPcb: arPcb,
@@ -1815,15 +1960,12 @@ router.get('/report/allpo/egp/singburi', wrap(async (req, res, next) => {
 router.get('/report/getProductHistory/:generic_code', wrap(async (req, res, next) => {
   let db = req.db;
   let generic_code = req.params.generic_code;
-  ////ชื่อโรงพยาบาล//////////
   let hosdetail = await model.hospital(db);
   let hospitalName = hosdetail[0].hospname;
   let hostel = hosdetail[0].telephone;
   let hosaddress = hosdetail[0].address;
 
   let rs: any = await model.getProductHistory(db, generic_code);
-  // console.log('++++++++++++++++++++++++' + JSON.stringify(rs) + '++++++++++++++++++++++++')
-  // console.log(rs[0])
 
   res.render('purchaseHistory', {
     hospitalName: hospitalName

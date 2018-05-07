@@ -348,7 +348,7 @@ export class ProductsModel {
         'mg.generic_name', 'rv.cost as purchase_cost', 'rv.purchase_qty as order_qty',
         'rv.unit_generic_id', 'gt.generic_type_id', 'rv.product_id', 'rv.reserve_id',
         'ut.unit_name as to_unit_name', 'uf.unit_name as from_unit_name', 'mp.v_labeler_id', 'mp.m_labeler_id',
-        'ug.qty as conversion_qty', 'ml.labeler_name', 'gt.generic_type_name','vcpa.contract_id','vcpa.contract_no')
+        'ug.qty as conversion_qty', 'ml.labeler_name', 'gt.generic_type_name', 'vcpa.contract_id', 'vcpa.contract_no')
       .innerJoin('mm_products as mp', 'mp.product_id', 'rv.product_id')
       .innerJoin('mm_generics as mg', 'mg.generic_id', 'mp.generic_id')
       .innerJoin('mm_generic_types as gt', 'gt.generic_type_id', 'mg.generic_type_id')
@@ -583,21 +583,118 @@ export class ProductsModel {
       .offset(offset);
   }
 
-  productsByLabeler(knex: Knex, lebelerId: string, q: string = "", limit: number = 10, offset: number = 0) {
+  productsByLabeler(knex: Knex, labelerId: string, query: string = "") {
     let concat = knex.raw("concat(p.product_name,' [',gd.generic_name,'] ') as fullname");
-    return knex('mm_products as p')
-      .select('p.product_id', 'p.product_name', 'gd.generic_id', 'gd.generic_name', concat)
-      .innerJoin('mm_generics as gd', 'gd.generic_id', 'p.generic_id')
-      .where('p.mark_deleted', 'N')
-      .where('p.v_labeler_id', lebelerId)
-      .where(w => {
-        w.where('p.product_name', 'like', `%${q}%`)
-          .orWhere('gd.generic_name', 'like', `%${q}%`)
-          .orWhere('p.keywords', 'like', `%${q}%`)
-      })
-      .orderBy('p.product_name')
-      .limit(limit)
-      .offset(offset);
+    let q_ = `${query}%`;
+    let _q_ = `%${query}%`;
+    let sql = `
+    select DISTINCT * from (
+    SELECT
+      concat(
+        mp.product_name,
+        " (",
+        mg.generic_name,
+        ")"
+      ) AS fullname,
+      mp.product_id,
+      mp.product_name,
+      mp.primary_unit_id,
+      mp.working_code,
+      mg.working_code AS generic_workign_code,
+      mp.is_lot_control,
+      mu.unit_name AS primary_unit_name,
+      mg.generic_name,
+      mp.generic_id,
+      ge.num_days AS expire_num_days
+    FROM
+      mm_products AS mp
+    LEFT JOIN mm_generics AS mg ON mg.generic_id = mp.generic_id
+    LEFT JOIN mm_units AS mu ON mu.unit_id = mp.primary_unit_id
+    LEFT JOIN mm_labelers AS l ON l.labeler_id = mp.v_labeler_id
+    LEFT JOIN wm_generic_expired_alert AS ge ON ge.generic_id = mp.generic_id
+    WHERE
+      (
+        mg.working_code = '${query}'
+        OR mp.working_code = '${query}'
+      )
+    AND mp.is_active = 'Y'
+    AND mp.mark_deleted = 'N'
+    AND l.labeler_id = '${labelerId}'
+    UNION ALL
+    SELECT * from (
+    SELECT
+    concat(
+      mp.product_name,
+      " (",
+      mg.generic_name,
+      ")"
+    ) AS fullname,
+    mp.product_id,
+    mp.product_name,
+      mp.primary_unit_id,
+      mp.working_code,
+      mg.working_code AS generic_workign_code,
+      mp.is_lot_control,
+      mu.unit_name AS primary_unit_name,
+      mg.generic_name,
+      mp.generic_id,
+      ge.num_days AS expire_num_days
+    FROM
+      mm_products AS mp
+    LEFT JOIN mm_generics AS mg ON mg.generic_id = mp.generic_id
+    LEFT JOIN mm_units AS mu ON mu.unit_id = mp.primary_unit_id
+    LEFT JOIN mm_labelers AS l ON l.labeler_id = mp.v_labeler_id
+    LEFT JOIN wm_generic_expired_alert AS ge ON ge.generic_id = mp.generic_id
+    WHERE
+      (
+        mp.product_name LIKE '${q_}'
+        OR mg.generic_name LIKE '${q_}'
+      )
+    AND mp.is_active = 'Y'
+    AND mp.mark_deleted = 'N'
+    AND l.labeler_id = '${labelerId}'
+    ORDER BY
+      mp.product_name ASC
+    LIMIT 5) as a
+    UNION ALL
+    SELECT * from (
+    SELECT
+    concat(
+      mp.product_name,
+      " (",
+      mg.generic_name,
+      ")"
+    ) AS fullname,
+    mp.product_id,
+    mp.product_name,
+      mp.primary_unit_id,
+      mp.working_code,
+      mg.working_code AS generic_workign_code,
+      mp.is_lot_control,
+      mu.unit_name AS primary_unit_name,
+      mg.generic_name,
+      mp.generic_id,
+      ge.num_days AS expire_num_days
+    FROM
+      mm_products AS mp
+    LEFT JOIN mm_generics AS mg ON mg.generic_id = mp.generic_id
+    LEFT JOIN mm_units AS mu ON mu.unit_id = mp.primary_unit_id
+    LEFT JOIN mm_labelers AS l ON l.labeler_id = mp.v_labeler_id
+    LEFT JOIN wm_generic_expired_alert AS ge ON ge.generic_id = mp.generic_id
+    WHERE
+      (
+        mp.product_name LIKE '${_q_}'
+        OR mg.generic_name LIKE '${_q_}'
+    or mp.keywords LIKE '${_q_}'
+    or mg.keywords like  '${_q_}'
+      )
+    AND mp.is_active = 'Y'
+    AND mp.mark_deleted = 'N'
+    AND l.labeler_id = '${labelerId}'
+    ORDER BY
+      mp.product_name ASC
+    LIMIT 10) as a) as s`;
+    return knex.raw(sql);
   }
 
   list(knex: Knex) {

@@ -325,7 +325,7 @@ export class PurchasingOrderModel {
   }
 
   detail(knex: Knex, id: string) {
-    console.log('xxxxxxxxxxxx',knex(this.tableName)
+    console.log('xxxxxxxxxxxx', knex(this.tableName)
       .select('pc_purchasing_order.*', 'mm_labelers.labeler_name', 'bgd.bgtypesub_id', 'cm.contract_no')
       .innerJoin('mm_labelers', 'mm_labelers.labeler_id', 'pc_purchasing_order.labeler_id')
       .leftJoin('bm_budget_detail as bgd', 'bgd.bgdetail_id', 'pc_purchasing_order.budget_detail_id')
@@ -357,12 +357,14 @@ export class PurchasingOrderModel {
     pc_purchasing_order AS pp
     JOIN mm_generic_types AS mg ON pp.generic_type_id = mg.generic_type_id 
   WHERE
-    pp.purchase_order_number BETWEEN '${sId}' AND '${eId}' 
+      CAST(
+        RIGHT (pp.purchase_order_number, 6) AS UNSIGNED
+      ) BETWEEN ${sId}
+    AND ${eId}
     AND pp.generic_type_id = ${genericTypeId}`
     if (orderStatus !== 'ALL') {
       sql += ` AND pp.purchase_order_status = ${orderStatus}`
     }
-    console.log('000000000000000', sql);
     return (knex.raw(sql))
   }
 

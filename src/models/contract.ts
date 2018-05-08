@@ -27,14 +27,19 @@ export class ContractModel {
       .update(datas);
   }
 
-  detail(knex: Knex, contractId: string) {
+  detail(knex: Knex, contractId: string, purchaseId: any = '') {
     // total_purchase คือมูลค่าที่จัดซื้อไปทั้งหมดในสัญญานี้ รวมถึงสัญญาปัจจุบันด้วย
     let subQuery = knex('pc_purchasing_order_item as pci')
       .select(knex.raw('ifnull(sum(pci.qty*pci.unit_price), 0)'))
       .innerJoin('pc_purchasing_order as pc', 'pc.purchase_order_id', 'pci.purchase_order_id')
       .where('pci.giveaway', 'N')
-      .whereRaw('pc.contract_id=ct.contract_id')
-      .as('total_purchase');
+      .whereRaw('pc.contract_id=ct.contract_id');
+    
+    if (purchaseId) {
+      subQuery.whereNot('pc.purchase_order_id', purchaseId);
+    }
+    
+    subQuery.as('total_purchase');
     
     return knex('cm_contracts as ct')
       .select('ct.*', subQuery)

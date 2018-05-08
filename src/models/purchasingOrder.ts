@@ -485,6 +485,7 @@ export class PurchasingOrderModel {
   getProductHistory(knex: Knex, generic_id: string) {
     let sql = `SELECT
     po.purchase_order_number,
+    po.purchase_order_book_number,
     mp.working_code AS trading_code,
     mp.product_name,
 		ml.labeler_name,

@@ -1679,7 +1679,9 @@ router.get('/report/allpo/egp/singburi', wrap(async (req, res, next) => {
 
     pcb = await model.pcBudget(db, porder[i]);
     arPcb.push(pcb);
-    arPcb[i][0].balance = model.comma(arPcb[i][0].balance);
+    if (arPcb[i].length) {
+      arPcb[i][0].balance = model.comma(arPcb[i][0].balance);
+    }
 
     allAmount = model.comma(arAtransection[i][0].amount);
     arAllamount.push(allAmount);
@@ -1795,7 +1797,9 @@ router.get('/report/allpo/egp/', wrap(async (req, res, next) => {
 
     pcb = await model.pcBudget(db, porder[i]);
     arPcb.push(pcb);
-    arPcb[i][0].balance = model.comma(arPcb[i][0].balance);
+    if (arPcb[i].length) {
+      arPcb[i][0].balance = model.comma(arPcb[i][0].balance);
+    }
 
     allAmount = model.comma(arAtransection[i][0].amount);
     arAllamount.push(allAmount);
@@ -1923,8 +1927,9 @@ router.get('/report/getporder/standard/', wrap(async (req, res, next) => {
 
     pcb = await model.pcBudget(db, porder[i]);
     arPcb.push(pcb);
-    arPcb[i][0].balance = model.comma(arPcb[i][0].balance);
-
+    if (arPcb[i].length) {
+      arPcb[i][0].balance = model.comma(arPcb[i][0].balance);
+    }
     allAmount = model.comma(arAtransection[i][0].amount);
     arAllamount.push(allAmount);
     limitDate.push(moment(moment().add(purchasing[i][0].delivery, 'days').calendar()).format('D MMMM ') + (moment(purchasing[i][0].order_date).get('year') + 543));

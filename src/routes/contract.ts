@@ -79,9 +79,10 @@ router.put('/:id', (req, res, next) => {
 
 router.get('/remain-detail', (req, res, next) => {
   let contractId = req.query.contractId;
+  let purchaseId = req.query.purchaseId === 'null' ? '' : req.query.purchaseId;
   let db = req.db;
 
-  model.detail(db, contractId)
+  model.detail(db, contractId, purchaseId)
     .then((results: any) => {
       res.send({ ok: true, detail: results[0] })
     })

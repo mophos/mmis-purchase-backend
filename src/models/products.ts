@@ -616,12 +616,14 @@ export class ProductsModel {
       mu.unit_name AS primary_unit_name,
       mg.generic_name,
       mp.generic_id,
-      ge.num_days AS expire_num_days
+      ge.num_days AS expire_num_days,
+      vcm.contract_id, vcm.contract_no
     FROM
       mm_products AS mp
     LEFT JOIN mm_generics AS mg ON mg.generic_id = mp.generic_id
     LEFT JOIN mm_units AS mu ON mu.unit_id = mp.primary_unit_id
     LEFT JOIN mm_labelers AS l ON l.labeler_id = mp.v_labeler_id
+    LEFT JOIN view_cm_products_active as vcm on vcm.product_id=mp.product_id
     LEFT JOIN wm_generic_expired_alert AS ge ON ge.generic_id = mp.generic_id
     WHERE
       (
@@ -649,12 +651,14 @@ export class ProductsModel {
       mu.unit_name AS primary_unit_name,
       mg.generic_name,
       mp.generic_id,
-      ge.num_days AS expire_num_days
+      ge.num_days AS expire_num_days,
+      vcm.contract_id, vcm.contract_no
     FROM
       mm_products AS mp
     LEFT JOIN mm_generics AS mg ON mg.generic_id = mp.generic_id
     LEFT JOIN mm_units AS mu ON mu.unit_id = mp.primary_unit_id
     LEFT JOIN mm_labelers AS l ON l.labeler_id = mp.v_labeler_id
+    LEFT JOIN view_cm_products_active as vcm on vcm.product_id=mp.product_id
     LEFT JOIN wm_generic_expired_alert AS ge ON ge.generic_id = mp.generic_id
     WHERE
       (
@@ -685,13 +689,15 @@ export class ProductsModel {
       mu.unit_name AS primary_unit_name,
       mg.generic_name,
       mp.generic_id,
-      ge.num_days AS expire_num_days
+      ge.num_days AS expire_num_days,
+      vcm.contract_id, vcm.contract_no
     FROM
       mm_products AS mp
     LEFT JOIN mm_generics AS mg ON mg.generic_id = mp.generic_id
     LEFT JOIN mm_units AS mu ON mu.unit_id = mp.primary_unit_id
     LEFT JOIN mm_labelers AS l ON l.labeler_id = mp.v_labeler_id
     LEFT JOIN wm_generic_expired_alert AS ge ON ge.generic_id = mp.generic_id
+    LEFT JOIN view_cm_products_active as vcm on vcm.product_id=mp.product_id
     WHERE
       (
         mp.product_name LIKE '${_q_}'

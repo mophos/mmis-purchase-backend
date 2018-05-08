@@ -123,7 +123,7 @@ router.post('/', (req, res, next) => {
   if (model.validate(req, res)) {
     model.save(db, data)
       .then((results: any) => {
-        res.send({ ok: true })
+        res.send({ ok: true, rows: results })
       })
       .catch(error => {
         res.send({ ok: false, error: error })

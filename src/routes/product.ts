@@ -285,7 +285,8 @@ router.get('/search/autocomplete-labeler', async (req, res, next) => {
       res.send([]);
     }
   } catch (error) {
-    res.send({ ok: false, error: error });
+    console.log(error);
+    res.send([]);
   } finally {
     db.destroy();
   }

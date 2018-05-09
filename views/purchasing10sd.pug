@@ -107,8 +107,11 @@ html
           td ยอดเงินที่ได้รับจัดสรร
           td #{budget[0].amount} บาท
         tr 
-          td ยอดจัดซื้อสะสมจากครั้งก่อน
+          td ยอดเงินคงเหลือหลังจากการซื้อครั้งก่อน
           td #{allAmount} บาท
+        tr 
+          td ยอดการจัดซื้อครั้งนี้
+          td #{total} บาท
         tr 
           td ยอดเงินคงเหลือจากการซื้อครั้งนี้
           td #{pcb.balance} บาท
@@ -162,7 +165,5 @@ html
       br
       | ผู้อำนวยการ#{hospitalName}
       br
-      if(purchasing[0].bid_id==2) 
-        | ปฏิบัติราชการแทนผู้ตรวจกระทรวงเขต 4
       if(purchasing[0].bid_id!=2) 
         | #{chief}

@@ -347,7 +347,7 @@ export class PurchasingOrderModel {
   getPurchaseCheckHoliday(knex: Knex, date) {
     return knex('sys_holidays').where('date', date);
   }
-  getPOid(knex: Knex, sId: string, eId: string, genericTypeId: string, orderStatus: string) {
+  getPOid(knex: Knex, sId: string, eId: string, genericTypeId: string, orderStatus: string, yearPO: any) {
     let sql = `SELECT
     pp.purchase_order_id,
     pp.purchase_order_number AS po_id,
@@ -361,7 +361,8 @@ export class PurchasingOrderModel {
         RIGHT (pp.purchase_order_number, 6) AS UNSIGNED
       ) BETWEEN ${sId}
     AND ${eId}
-    AND pp.generic_type_id = ${genericTypeId}`
+    AND pp.generic_type_id = ${genericTypeId}
+    AND pp.budget_year = ${yearPO}`
     if (orderStatus !== 'ALL') {
       sql += ` AND pp.purchase_order_status = ${orderStatus}`
     }

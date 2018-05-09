@@ -50,15 +50,16 @@ router.get('/officers', async (req, res, next) => {
   }
 });
 
-router.get('/getpoId/:sId/:eId/:genericTypeId/:orderStatus', async (req, res, next) => {
+router.get('/getpoId/:sId/:eId/:genericTypeId/:orderStatus/:yearPO', async (req, res, next) => {
 
   let db = req.db;
   let sId = req.params.sId;
   let eId = req.params.eId;
   let genericTypeId = req.params.genericTypeId;
   let orderStatus = req.params.orderStatus;
+  let yearPO = req.params.yearPO;
   try {
-    let rs: any = await model.getPOid(db, sId, eId, genericTypeId, orderStatus);
+    let rs: any = await model.getPOid(db, sId, eId, genericTypeId, orderStatus, yearPO);
     res.send({ ok: true, rows: rs[0] });
   } catch (error) {
     res.send({ ok: false, error: error.message });
@@ -833,7 +834,6 @@ router.get('/detail', (req, res, next) => {
     .finally(() => {
       db.destroy();
     });
-
 });
 
 router.get('/lastorder/:id', async (req, res, next) => {
@@ -1003,6 +1003,19 @@ router.get('/book-number', async (req, res, next) => {
   try {
     let rs: any = await model.getBookNumber(db);
     res.send({ ok: true, rows: rs });
+  } catch (error) {
+    res.send({ ok: false, error: error.message });
+  } finally {
+    db.destroy();
+  }
+});
+
+router.get('/view-contract', async (req, res, next) => {
+  let db = req.db;
+  let productId = req.query.productId
+  try {
+    let rs: any = await model.getContract(db, productId);
+    res.send({ ok: true, rows: rs[0] });
   } catch (error) {
     res.send({ ok: false, error: error.message });
   } finally {

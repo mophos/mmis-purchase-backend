@@ -319,7 +319,18 @@ export class PurchasingOrderModel {
       .update(datas);
   }
 
+  getContract(knex: Knex, productId: any) {
+    return knex('view_cm_products_active AS vcpa')
+      .where('vcpa.product_id', productId);
+  }
+
   detail(knex: Knex, id: string) {
+    console.log('xxxxxxxxxxxx', knex(this.tableName)
+      .select('pc_purchasing_order.*', 'mm_labelers.labeler_name', 'bgd.bgtypesub_id', 'cm.contract_no')
+      .innerJoin('mm_labelers', 'mm_labelers.labeler_id', 'pc_purchasing_order.labeler_id')
+      .leftJoin('bm_budget_detail as bgd', 'bgd.bgdetail_id', 'pc_purchasing_order.budget_detail_id')
+      .leftJoin('cm_contracts as cm', 'cm.contract_id', 'pc_purchasing_order.contract_id')
+      .where(this.primaryKey, id).toString())
     return knex(this.tableName)
       .select('pc_purchasing_order.*', 'mm_labelers.labeler_name', 'bgd.bgtypesub_id', 'cm.contract_no')
       .innerJoin('mm_labelers', 'mm_labelers.labeler_id', 'pc_purchasing_order.labeler_id')
@@ -336,7 +347,7 @@ export class PurchasingOrderModel {
   getPurchaseCheckHoliday(knex: Knex, date) {
     return knex('sys_holidays').where('date', date);
   }
-  getPOid(knex: Knex, sId: string, eId: string, genericTypeId: string, orderStatus: string) {
+  getPOid(knex: Knex, sId: string, eId: string, genericTypeId: string, orderStatus: string, yearPO: any) {
     let sql = `SELECT
     pp.purchase_order_id,
     pp.purchase_order_number AS po_id,
@@ -346,12 +357,15 @@ export class PurchasingOrderModel {
     pc_purchasing_order AS pp
     JOIN mm_generic_types AS mg ON pp.generic_type_id = mg.generic_type_id 
   WHERE
-    pp.purchase_order_number BETWEEN '${sId}' AND '${eId}' 
-    AND pp.generic_type_id = ${genericTypeId}`
+      CAST(
+        RIGHT (pp.purchase_order_number, 6) AS UNSIGNED
+      ) BETWEEN ${sId}
+    AND ${eId}
+    AND pp.generic_type_id = ${genericTypeId}
+    AND pp.budget_year = ${yearPO}`
     if (orderStatus !== 'ALL') {
       sql += ` AND pp.purchase_order_status = ${orderStatus}`
     }
-    console.log('000000000000000', sql);
     return (knex.raw(sql))
   }
 

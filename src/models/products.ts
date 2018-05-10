@@ -111,7 +111,7 @@ export class ProductsModel {
     return con;
   }
 
-  getReOrderPointTrade(knex: Knex, warehouseId: any, genericTypeIds: string[], limit: number = 20, offset: number = 0, query: any = '', showNotPurchased: any = 'N') {
+  getReOrderPointTrade(knex: Knex, warehouseId: any, genericTypeIds: string[], limit: number = 20, offset: number = 0, query: any = '', showNotPurchased: any = 'N', sort: any = {}) {
 
     let subQuery = knex('wm_products as wp')
       .select(knex.raw('sum(wp.qty)'))
@@ -169,8 +169,28 @@ export class ProductsModel {
     // sql.groupBy('mp.product_id');
     if (showNotPurchased === 'N') {
       sql.havingRaw('remain_qty<=mg.min_qty');
-    } else { 
+    } else {
       sql.havingRaw('remain_qty<=mg.min_qty OR remain_qty is NULL');
+    }
+
+    // order by
+    if (sort.by) {
+      let reverse = sort.reverse ? 'DESC' : 'ASC';
+      if (sort.by === 'generic_name') {
+        sql.orderBy('mg.generic_name', reverse);
+      }
+
+      if (sort.by === 'labeler_name') {
+        sql.orderBy('ml.labeler_name', reverse);
+      }
+
+      if (sort.by === 'generic_type_name') {
+        sql.orderBy('gt.generic_type_name', reverse);
+      }
+
+      if (sort.by === 'product_name') {
+        sql.orderBy('mp.product_name', reverse);
+      }
     }
 
     return sql.limit(limit)
@@ -178,7 +198,7 @@ export class ProductsModel {
       .orderByRaw('mg.generic_name, ml.labeler_name');
   }
 
-  getReOrderPointTradeReserved(knex: Knex, warehouseId: any, genericTypeIds: string[], limit: number = 20, offset: number = 0, query: any = '') {
+  getReOrderPointTradeReserved(knex: Knex, warehouseId: any, genericTypeIds: string[], limit: number = 20, offset: number = 0, query: any = '', sort: any = {}) {
 
     let subQuery = knex('wm_products as wp')
       .select(knex.raw('sum(wp.qty)'))
@@ -217,6 +237,18 @@ export class ProductsModel {
           .orWhere('mg.keywords', 'like', _queryAll)
           .orWhere('ml.labeler_name', 'like', _queryAll)
       })
+    }
+
+    // order by
+    if (sort.by) {
+      let reverse = sort.reverse ? 'DESC' : 'ASC';
+      if (sort.by === 'generic_name') {
+        sql.orderBy('mg.generic_name', reverse);
+      }
+
+      if (sort.by === 'labeler_name') {
+        sql.orderBy('ml.labeler_name', reverse);
+      }
     }
 
     // sql.groupBy('mp.product_id');

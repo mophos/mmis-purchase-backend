@@ -111,7 +111,7 @@ export class PurchasingOrderModel {
     contract: string = 'ALL', query: string = '',
     start_date: string = '', end_date: string = '',
     limit: number = 20, offset: number = 0,
-    genericTypeIds: any[]) {
+    genericTypeIds: any[], sort: any = {}) {
     let sumItems = knex
       .select(knex.raw('sum(po.unit_price*po.qty)'))
       .from('pc_purchasing_order_item as po')
@@ -136,13 +136,41 @@ export class PurchasingOrderModel {
       .leftJoin('cm_contracts as cm', 'cm.contract_id', 'pc_purchasing_order.contract_id')
       .whereIn('pc_purchasing_order.purchase_order_status', status)
       .whereIn('pc_purchasing_order.generic_type_id', genericTypeIds)
-      .orderBy('pc_purchasing_order.order_date', 'DESC')
-      .orderBy('pc_purchasing_order.purchase_order_number', 'DESC');
 
-    if (contract === 'Y') {
-      con.where('pc_purchasing_order.is_contract', 'Y');
-    } else if (contract === 'N') {
-      con.where('pc_purchasing_order.is_contract', 'N');
+    // order by
+    if (sort.by) {
+      let reverse = sort.reverse ? 'DESC' : 'ASC';
+      console.log(reverse);
+      if (sort.by === 'order_date') {
+        con.orderBy('pc_purchasing_order.order_date', reverse);
+      }
+
+      if (sort.by === 'labeler_name') {
+        con.orderBy('l.labeler_name', reverse);
+      }
+
+      if (sort.by === 'bid_process_name') {
+        con.orderBy('bp.name', reverse);
+      }
+
+      if (sort.by === 'bgtypesub_name') {
+        con.orderBy('bgs.bgtypesub_name', reverse);
+      }
+
+      if (sort.by === 'purchase_order_number') {
+        con.orderBy('pc_purchasing_order.purchase_order_number', reverse);
+      }
+    } else {
+      con.orderBy('pc_purchasing_order.order_date', 'DESC')
+      con.orderBy('pc_purchasing_order.purchase_order_number', 'DESC');
+    }
+
+    if (contract === 'T') {
+      con.whereNotNull('pc_purchasing_order.contract_id');
+    } else if (contract === 'F') {
+      con.whereNull('pc_purchasing_order.is_contract');
+    } else {
+      // all
     }
 
     if (query !== '') {
@@ -319,7 +347,18 @@ export class PurchasingOrderModel {
       .update(datas);
   }
 
+  getContract(knex: Knex, productId: any) {
+    return knex('view_cm_products_active AS vcpa')
+      .where('vcpa.product_id', productId);
+  }
+
   detail(knex: Knex, id: string) {
+    console.log('xxxxxxxxxxxx', knex(this.tableName)
+      .select('pc_purchasing_order.*', 'mm_labelers.labeler_name', 'bgd.bgtypesub_id', 'cm.contract_no')
+      .innerJoin('mm_labelers', 'mm_labelers.labeler_id', 'pc_purchasing_order.labeler_id')
+      .leftJoin('bm_budget_detail as bgd', 'bgd.bgdetail_id', 'pc_purchasing_order.budget_detail_id')
+      .leftJoin('cm_contracts as cm', 'cm.contract_id', 'pc_purchasing_order.contract_id')
+      .where(this.primaryKey, id).toString())
     return knex(this.tableName)
       .select('pc_purchasing_order.*', 'mm_labelers.labeler_name', 'bgd.bgtypesub_id', 'cm.contract_no')
       .innerJoin('mm_labelers', 'mm_labelers.labeler_id', 'pc_purchasing_order.labeler_id')
@@ -336,7 +375,7 @@ export class PurchasingOrderModel {
   getPurchaseCheckHoliday(knex: Knex, date) {
     return knex('sys_holidays').where('date', date);
   }
-  getPOid(knex: Knex, sId: string, eId: string, genericTypeId: string, orderStatus: string) {
+  getPOid(knex: Knex, sId: string, eId: string, genericTypeId: string, orderStatus: string, yearPO: any) {
     let sql = `SELECT
     pp.purchase_order_id,
     pp.purchase_order_number AS po_id,
@@ -346,12 +385,15 @@ export class PurchasingOrderModel {
     pc_purchasing_order AS pp
     JOIN mm_generic_types AS mg ON pp.generic_type_id = mg.generic_type_id 
   WHERE
-    pp.purchase_order_number BETWEEN '${sId}' AND '${eId}' 
-    AND pp.generic_type_id = ${genericTypeId}`
+      CAST(
+        RIGHT (pp.purchase_order_number, 6) AS UNSIGNED
+      ) BETWEEN ${sId}
+    AND ${eId}
+    AND pp.generic_type_id = ${genericTypeId}
+    AND pp.budget_year = ${yearPO}`
     if (orderStatus !== 'ALL') {
       sql += ` AND pp.purchase_order_status = ${orderStatus}`
     }
-    console.log('000000000000000', sql);
     return (knex.raw(sql))
   }
 
@@ -406,7 +448,7 @@ export class PurchasingOrderModel {
     return knex.select('*').from('wm_period').where('budget_year', year).where('period_month', month)
   }
 
-  getGeneric(knex: Knex, generic_type_id: any, limit: any, offset: any) {
+  getGeneric(knex: Knex, generic_type_id: any, limit: any, offset: any, sort: any) {
     let sql = `SELECT
     po.purchase_order_number,
     mg.generic_id,
@@ -418,32 +460,62 @@ export class PurchasingOrderModel {
   JOIN pc_purchasing_order AS po ON pp.purchase_order_id = po.purchase_order_id
   WHERE
     mg.generic_type_id IN (${generic_type_id})
-  GROUP BY mg.generic_id
-  limit ${limit}
-  offset ${offset}`
+  GROUP BY mg.generic_id `;
+
+    if (sort.by) {
+      let reverse = sort.reverse ? 'DESC' : 'ASC';
+
+      if (sort.by === 'generic_name') {
+        sql += ` order by mg.generic_name ${reverse}`;
+      }
+
+      if (sort.by === 'generic_code') {
+        sql += ` order by mg.working_code ${reverse}`;
+      }
+    } else {
+      sql += ` order by mg.generic_name`;
+    }
+
+    sql += ` limit ${limit} offset ${offset}`;
+
     return (knex.raw(sql))
   }
 
-  getGenericSearch(knex: Knex, generic_type_id: any, limit: any, offset: any, query) {
+  getGenericSearch(knex: Knex, generic_type_id: any, limit: any, offset: any, query: any, sort: any = {}) {
     let _query = `%${query}%`;
     let sql = `SELECT
     po.purchase_order_number,
     mg.generic_id,
     mg.generic_name,
     mg.working_code AS generic_code
-  FROM
-    mm_generics AS mg
-  JOIN pc_purchasing_order_item AS pp ON mg.generic_id = pp.generic_id
-  JOIN pc_purchasing_order AS po ON pp.purchase_order_id = po.purchase_order_id
-  WHERE
-    mg.generic_type_id IN (${generic_type_id}) and
-    (
-      mg.generic_id = '${query}' or
-      mg.generic_name like '${_query}'
-    )
-  GROUP BY mg.generic_id
-  limit ${limit}
-  offset ${offset}`
+    FROM
+      mm_generics AS mg
+    JOIN pc_purchasing_order_item AS pp ON mg.generic_id = pp.generic_id
+    JOIN pc_purchasing_order AS po ON pp.purchase_order_id = po.purchase_order_id
+    WHERE
+      mg.generic_type_id IN (${generic_type_id}) and
+      (
+        mg.generic_id = '${query}' or
+        mg.generic_name like '${_query}'
+      )
+    GROUP BY mg.generic_id`;
+
+    if (sort.by) {
+      let reverse = sort.reverse ? 'DESC' : 'ASC';
+
+      if (sort.by === 'generic_name') {
+        sql += ` order by mg.generic_name ${reverse}`;
+      }
+
+      if (sort.by === 'generic_code') {
+        sql += ` order by mg.working_code ${reverse}`;
+      }
+    } else {
+      sql += ` order by mg.generic_name`;
+    }
+
+    sql += ` limit ${limit} offset ${offset}`;
+
     return (knex.raw(sql))
   }
 

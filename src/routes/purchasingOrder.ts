@@ -50,15 +50,16 @@ router.get('/officers', async (req, res, next) => {
   }
 });
 
-router.get('/getpoId/:sId/:eId/:genericTypeId/:orderStatus', async (req, res, next) => {
+router.get('/getpoId/:sId/:eId/:genericTypeId/:orderStatus/:yearPO', async (req, res, next) => {
 
   let db = req.db;
   let sId = req.params.sId;
   let eId = req.params.eId;
   let genericTypeId = req.params.genericTypeId;
   let orderStatus = req.params.orderStatus;
+  let yearPO = req.params.yearPO;
   try {
-    let rs: any = await model.getPOid(db, sId, eId, genericTypeId, orderStatus);
+    let rs: any = await model.getPOid(db, sId, eId, genericTypeId, orderStatus, yearPO);
     res.send({ ok: true, rows: rs[0] });
   } catch (error) {
     res.send({ ok: false, error: error.message });
@@ -160,6 +161,7 @@ router.post('/by-status', async (req, res, next) => {
   let end_date = req.body.end_date || '';
   let limit = req.body.limit || 20;
   let offset = req.body.offset || 0;
+  let sort = req.body.sort;
 
   let genericTypeIds = [];
 
@@ -168,8 +170,10 @@ router.post('/by-status', async (req, res, next) => {
     genericTypeIds = g.split(',');
   }
 
+  console.log(sort);
+
   try {
-    let rs: any = await model.listByStatus(db, status, contract, query, start_date, end_date, limit, offset, genericTypeIds);
+    let rs: any = await model.listByStatus(db, status, contract, query, start_date, end_date, limit, offset, genericTypeIds, sort);
     let rsTotal: any = await model.listByStatusTotal(db, status, contract, query, start_date, end_date, genericTypeIds);
 
     res.send({ ok: true, rows: rs, total: rsTotal[0].total });
@@ -833,7 +837,6 @@ router.get('/detail', (req, res, next) => {
     .finally(() => {
       db.destroy();
     });
-
 });
 
 router.get('/lastorder/:id', async (req, res, next) => {
@@ -911,13 +914,15 @@ router.get('/period/status', (async (req, res, next) => {
   }
 }));
 
-router.get('/getGeneric', async (req, res, next) => {
+router.post('/getGeneric', async (req, res, next) => {
   let db = req.db;
-  let limit = req.query.limit;
-  let offset = req.query.offset;
-  let generic_type_id = req.decoded.generic_type_id
+  let limit = req.body.limit;
+  let offset = req.body.offset;
+  let generic_type_id = req.decoded.generic_type_id;
+  let sort = req.body.sort;
+
   try {
-    let rs: any = await model.getGeneric(db, generic_type_id, limit, offset);
+    let rs: any = await model.getGeneric(db, generic_type_id, limit, offset, sort);
     let rsTotal: any = await model.getGenericTotal(db, generic_type_id);
     res.send({ ok: true, rows: rs[0], total: rsTotal[0][0].total });
   } catch (error) {
@@ -927,14 +932,16 @@ router.get('/getGeneric', async (req, res, next) => {
   }
 });
 
-router.get('/getGeneric/search', async (req, res, next) => {
+router.post('/getGeneric/search', async (req, res, next) => {
   let db = req.db;
-  let limit = req.query.limit;
-  let offset = req.query.offset;
+  let limit = req.body.limit;
+  let offset = req.body.offset;
   let generic_type_id = req.decoded.generic_type_id
-  let query = req.query.query;
+  let query = req.body.query;
+  let sort = req.body.sort;
+
   try {
-    let rs: any = await model.getGenericSearch(db, generic_type_id, limit, offset, query);
+    let rs: any = await model.getGenericSearch(db, generic_type_id, limit, offset, query, sort);
     let rsTotal: any = await model.getGenericTotalSearch(db, generic_type_id, query);
     res.send({ ok: true, rows: rs[0], total: rsTotal[0][0].total });
   } catch (error) {
@@ -1003,6 +1010,19 @@ router.get('/book-number', async (req, res, next) => {
   try {
     let rs: any = await model.getBookNumber(db);
     res.send({ ok: true, rows: rs });
+  } catch (error) {
+    res.send({ ok: false, error: error.message });
+  } finally {
+    db.destroy();
+  }
+});
+
+router.get('/view-contract', async (req, res, next) => {
+  let db = req.db;
+  let productId = req.query.productId
+  try {
+    let rs: any = await model.getContract(db, productId);
+    res.send({ ok: true, rows: rs[0] });
   } catch (error) {
     res.send({ ok: false, error: error.message });
   } finally {

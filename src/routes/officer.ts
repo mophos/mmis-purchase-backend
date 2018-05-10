@@ -177,7 +177,7 @@ router.post('/deletePurchasingOfficer', (req, res, next) => {
 
 router.delete('/:officerId', (req, res, next) => {
   let db = req.db;
-  let officerId: string = req.params.officerId;
+  let officerId = req.params.officerId;
   officerModel.deleteOfficer(db, officerId)
     .then((results: any) => {
       res.send({ ok: true, ref: results[0] });

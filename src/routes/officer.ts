@@ -158,7 +158,6 @@ router.post('/deletePurchasingOfficer', (req, res, next) => {
   let ref = req.body.ref;
   let db = req.db;
   let tokenKey: string = req.body.tokenKey;
-  console.log("\ndelete: um_purchasing_officer ref:" + ref);
   if (tokenKey === "") {
     res.send({ ok: false, err: 'token error' });
   }
@@ -168,7 +167,19 @@ router.post('/deletePurchasingOfficer', (req, res, next) => {
 
   officerModel.deletePurchasingOfficer(db, ref)
     .then((results: any) => {
-      console.log("\ndelete um_purchasing_officer =" + results[0]);
+      res.send({ ok: true, ref: results[0] });
+    })
+    .catch(error => {
+      console.log({ ok: false, error: error });
+      res.send({ ok: false, error: error });
+    });
+});
+
+router.delete('/', (req, res, next) => {
+  let db = req.db;
+  let officerId: string = req.params.officerId;
+  officerModel.deleteOfficer(db, officerId)
+    .then((results: any) => {
       res.send({ ok: true, ref: results[0] });
     })
     .catch(error => {

@@ -175,7 +175,7 @@ router.post('/deletePurchasingOfficer', (req, res, next) => {
     });
 });
 
-router.delete('/', (req, res, next) => {
+router.delete('/:officerId', (req, res, next) => {
   let db = req.db;
   let officerId: string = req.params.officerId;
   officerModel.deleteOfficer(db, officerId)

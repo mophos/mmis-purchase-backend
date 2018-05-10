@@ -183,6 +183,14 @@ export class ProductsModel {
       if (sort.by === 'labeler_name') {
         sql.orderBy('ml.labeler_name', reverse);
       }
+
+      if (sort.by === 'generic_type_name') {
+        sql.orderBy('gt.generic_type_name', reverse);
+      }
+
+      if (sort.by === 'product_name') {
+        sql.orderBy('mp.product_name', reverse);
+      }
     }
 
     return sql.limit(limit)

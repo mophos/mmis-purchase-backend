@@ -30,13 +30,14 @@ router.post('/reorderpoint/trade', async (req, res, next) => {
   let db = req.db;
   let warehouseId = req.decoded.warehouseId;
   let genericTypeId = req.body.genericTypeId;
-  let limit = +req.body.limit || 20;  
-  let offset = +req.body.offset || 0;  
+  let limit = +req.body.limit || 20;
+  let offset = +req.body.offset || 0;
   let query = req.body.query || '';
   let showNotPurchased = req.body.showNotPurchased || 'N';
+  let sort = req.body.sort;
 
   try {
-    let rs: any = await model.getReOrderPointTrade(db, warehouseId, genericTypeId, limit, offset, query, showNotPurchased);
+    let rs: any = await model.getReOrderPointTrade(db, warehouseId, genericTypeId, limit, offset, query, showNotPurchased, sort);
     let rsTotal: any = await model.getReOrderPointTradeTotal(db, warehouseId, genericTypeId, query, showNotPurchased);
     res.send({ ok: true, rows: rs, total: rsTotal.length });
   } catch (error) {
@@ -51,12 +52,13 @@ router.post('/reorderpoint/trade/reserved', async (req, res, next) => {
   let db = req.db;
   let warehouseId = req.decoded.warehouseId;
   let genericTypeId = req.body.genericTypeId;
-  let limit = +req.body.limit || 20;  
-  let offset = +req.body.offset || 0;  
+  let limit = +req.body.limit || 20;
+  let offset = +req.body.offset || 0;
   let query = req.body.query || '';
+  let sort = req.body.sort;
 
   try {
-    let rs: any = await model.getReOrderPointTradeReserved(db, warehouseId, genericTypeId, limit, offset, query);
+    let rs: any = await model.getReOrderPointTradeReserved(db, warehouseId, genericTypeId, limit, offset, query, sort);
     let rsTotal: any = await model.getReOrderPointTradeReservedTotal(db, warehouseId, genericTypeId, query);
     res.send({ ok: true, rows: rs, total: rsTotal[0].total });
   } catch (error) {
@@ -90,7 +92,7 @@ router.put('/reorderpoint/trade/reserved-update', async (req, res, next) => {
     } else {
       res.send({ ok: false, error: 'ไม่พบรายการที่ต้องการบันทึก' });
     }
-   
+
   } catch (error) {
     res.send({ ok: false, error: error.message });
   } finally {
@@ -112,7 +114,7 @@ router.get('/reorderpoint/trade/reserved/confirmed', async (req, res, next) => {
   } finally {
     db.destroy();
   }
-  
+
 });
 
 router.post('/save-reserved', async (req, res, next) => {
@@ -176,7 +178,7 @@ router.post('/orderspoint', async (req, res, next) => {
   } else {
     genericTypeIds.push(generictype);
   }
- 
+
   try {
     let rs: any = await model.getOrderPoint(db, warehouseId, q, genericTypeIds, limit, offset);
     let rsCount: any = await model.getTotalOrderPoint(db, warehouseId, q, genericTypeIds);
@@ -187,7 +189,7 @@ router.post('/orderspoint', async (req, res, next) => {
     });
 
   } catch (error) {
-    res.send({ ok: false, error: error.message });    
+    res.send({ ok: false, error: error.message });
   } finally {
     db.destroy();
   }
@@ -202,7 +204,7 @@ router.get('/orderspoint/product-list-by-generic/:genericId', async (req, res, n
     let rs: any = await model.getOrderProductListByGeneric(db, warehouseId, genericId);
     res.send({ ok: true, rows: rs[0] });
   } catch (error) {
-    res.send({ ok: false, error: error.message });    
+    res.send({ ok: false, error: error.message });
   } finally {
     db.destroy();
   }
@@ -290,7 +292,7 @@ router.get('/search/autocomplete-labeler', async (req, res, next) => {
   } finally {
     db.destroy();
   }
-  
+
 });
 
 router.post('/productsbylabeler/:id', async (req, res, next) => {
@@ -369,14 +371,14 @@ router.post('/types', async (req, res, next) => {
   let db = req.db;
   let types = req.body.types;
   try {
-    let rs: any = await model.types(db,types);
-    res.send({ ok: true, rows: rs});
+    let rs: any = await model.types(db, types);
+    res.send({ ok: true, rows: rs });
   } catch (error) {
     res.send({ ok: false, error: error.message });
   } finally {
     db.destroy();
   }
-  
+
 });
 
 export default router;

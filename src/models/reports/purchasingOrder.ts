@@ -792,7 +792,21 @@ export class PurchasingOrderReportModel {
             ml.labeler_name,
             mg.generic_id,
             mg.generic_name,
-            IFNULL((SELECT FLOOR(( IF ( SUM( wp.qty ) IS NULL, 0, SUM( wp.qty ) ) ) / mup.qty) FROM wm_products wp WHERE wp.product_id = poi.product_id AND wp.warehouse_id = ${warehouseId}),0) AS qty,
+            IFNULL(
+                (
+            SELECT
+                FLOOR(
+                ( IF ( SUM( wp.qty ) IS NULL, 0, SUM( wp.qty ) ) ) / mup.qty
+                ) 
+            FROM
+                wm_products wp 
+            JOIN mm_products AS mmp on mmp.product_id = wp.product_id
+            WHERE
+                mg.generic_id = mmp.generic_id
+                AND wp.warehouse_id = ${warehouseId} 
+                ),
+                0 
+                ) AS qty,
             poi.qty AS qtyPoi,
             poi.unit_price,
             poi.total_price,
@@ -851,7 +865,7 @@ export class PurchasingOrderReportModel {
                 JOIN mm_products AS mmp on mmp.product_id = wp.product_id
                 WHERE
                     mg.generic_id = mmp.generic_id
-                    AND wp.warehouse_id = '505' 
+                    AND wp.warehouse_id = ${warehouseId} 
                     ),
                     0 
                     ) AS qty`),

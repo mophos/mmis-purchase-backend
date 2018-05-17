@@ -235,7 +235,7 @@ export class PurchasingOrderReportModel {
             INNER JOIN mm_generic_types AS gt ON gt.generic_type_id = mg.generic_type_id
             INNER JOIN mm_units AS u ON u.unit_id = mg.primary_unit_id 
             INNER JOIN mm_products as mp on mp.generic_id = mg.generic_id
-            INNER JOIN wm_products as wp on wp.product_id = mp.product_id
+            LEFT JOIN wm_products as wp on wp.product_id = mp.product_id
             INNER JOIN mm_unit_generics as ug on ug.unit_generic_id = wp.unit_generic_id
             INNER JOIN mm_labelers as mlv on mlv.labeler_id = mp.v_labeler_id
             INNER JOIN mm_labelers as mlm on mlm.labeler_id = mp.m_labeler_id

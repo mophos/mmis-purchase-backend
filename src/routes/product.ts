@@ -26,7 +26,7 @@ router.get('/', (req, res, next) => {
     });
 });
 
-router.post('/reorderpoint/trade', async (req, res, next) => {
+router.post('/reorderpoint/generic', async (req, res, next) => {
   let db = req.db;
   let warehouseId = req.decoded.warehouseId;
   let genericTypeId = req.body.genericTypeId;
@@ -37,8 +37,8 @@ router.post('/reorderpoint/trade', async (req, res, next) => {
   let sort = req.body.sort;
 
   try {
-    let rs: any = await model.getReOrderPointTrade(db, warehouseId, genericTypeId, limit, offset, query, showNotPurchased, sort);
-    let rsTotal: any = await model.getReOrderPointTradeTotal(db, warehouseId, genericTypeId, query, showNotPurchased);
+    let rs: any = await model.getReOrderPointGeneric(db, warehouseId, genericTypeId, limit, offset, query, showNotPurchased, sort);
+    let rsTotal: any = await model.getReOrderPointGenericTotal(db, warehouseId, genericTypeId, query, showNotPurchased);
     res.send({ ok: true, rows: rs, total: rsTotal.length });
   } catch (error) {
     res.send({ ok: false, error: error.message });

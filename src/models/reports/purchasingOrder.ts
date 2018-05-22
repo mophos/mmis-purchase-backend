@@ -235,7 +235,7 @@ export class PurchasingOrderReportModel {
             INNER JOIN mm_generic_types AS gt ON gt.generic_type_id = mg.generic_type_id
             INNER JOIN mm_units AS u ON u.unit_id = mg.primary_unit_id 
             INNER JOIN mm_products as mp on mp.generic_id = mg.generic_id
-            INNER JOIN wm_products as wp on wp.product_id = mp.product_id
+            LEFT JOIN wm_products as wp on wp.product_id = mp.product_id
             INNER JOIN mm_unit_generics as ug on ug.unit_generic_id = wp.unit_generic_id
             INNER JOIN mm_labelers as mlv on mlv.labeler_id = mp.v_labeler_id
             INNER JOIN mm_labelers as mlm on mlm.labeler_id = mp.m_labeler_id
@@ -792,7 +792,21 @@ export class PurchasingOrderReportModel {
             ml.labeler_name,
             mg.generic_id,
             mg.generic_name,
-            IFNULL((SELECT FLOOR(( IF ( SUM( wp.qty ) IS NULL, 0, SUM( wp.qty ) ) ) / mup.qty) FROM wm_products wp WHERE wp.product_id = poi.product_id AND wp.warehouse_id = ${warehouseId}),0) AS qty,
+            IFNULL(
+                (
+            SELECT
+                FLOOR(
+                ( IF ( SUM( wp.qty ) IS NULL, 0, SUM( wp.qty ) ) ) / mup.qty
+                ) 
+            FROM
+                wm_products wp 
+            JOIN mm_products AS mmp on mmp.product_id = wp.product_id
+            WHERE
+                mg.generic_id = mmp.generic_id
+                AND wp.warehouse_id = ${warehouseId} 
+                ),
+                0 
+                ) AS qty,
             poi.qty AS qtyPoi,
             poi.unit_price,
             poi.total_price,
@@ -840,7 +854,21 @@ export class PurchasingOrderReportModel {
                 'ml.labeler_name',
                 'mg.generic_id',
                 'mg.generic_name',
-                knex.raw(`IFNULL((SELECT FLOOR(( IF ( SUM( wp.qty ) IS NULL, 0,SUM( wp.qty ) ) ) / mup.qty) FROM wm_products wp WHERE wp.product_id = poi.product_id AND wp.warehouse_id = ${warehouseId}),0) AS qty`),
+                knex.raw(`IFNULL(
+                    (
+                SELECT
+                    FLOOR(
+                    ( IF ( SUM( wp.qty ) IS NULL, 0, SUM( wp.qty ) ) ) / mup.qty
+                    ) 
+                FROM
+                    wm_products wp 
+                JOIN mm_products AS mmp on mmp.product_id = wp.product_id
+                WHERE
+                    mg.generic_id = mmp.generic_id
+                    AND wp.warehouse_id = ${warehouseId} 
+                    ),
+                    0 
+                    ) AS qty`),
                 'poi.qty AS qtyPoi',
                 'poi.unit_price',
                 'poi.total_price',

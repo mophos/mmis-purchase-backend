@@ -198,7 +198,7 @@ export class ProductsModel {
       sql.orderByRaw('mg.generic_name');
     }
 
-    return sql.limit(limit)
+    return sql.groupBy('mg.working_code').limit(limit)
       .offset(offset);
 
   }

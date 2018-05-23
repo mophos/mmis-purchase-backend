@@ -123,6 +123,7 @@ export class PurchasingOrderModel {
       .count('r.purchase_order_id')
       .from('wm_receives as r')
       .whereRaw('r.purchase_order_id = pc_purchasing_order.purchase_order_id')
+      .whereNot('r.is_cancel', 'N')
       .as('recieve_count');
 
 

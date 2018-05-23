@@ -170,8 +170,6 @@ router.post('/by-status', async (req, res, next) => {
     genericTypeIds = g.split(',');
   }
 
-  console.log(sort);
-
   try {
     let rs: any = await model.listByStatus(db, status, contract, query, start_date, end_date, limit, offset, genericTypeIds, sort);
     let rsTotal: any = await model.listByStatusTotal(db, status, contract, query, start_date, end_date, genericTypeIds);

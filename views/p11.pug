@@ -1,0 +1,113 @@
+//- include css.pug
+style(type='text/css').
+  body{
+    font-family:'THSarabunIT';
+  }
+style(type='text/css' media='print').
+   @page{
+   margin-top: 1cm;
+   margin-left: 2cm;
+   margin-right: 1.5cm;
+  }
+doctype html
+html
+  head
+    meta(charset="utf-8")
+    title report
+  body
+    button.btn.btn-sm.btn-success.btnprint(onclick='window.print()') Print
+    table(style='width:100%;')
+        tr
+          td.center
+            img(src=APIURL+'krut.png', height='94.8px')
+    br
+    .center ใบสั่งซื้อยา/เวชภัณฑ์มิใช่ยา
+    br
+    table(style='width:100%; font-size: 15pt')
+        tr
+            td.left(style='width:50%;') ผู้ขาย #{purchasing[0].labeler_name}
+            td.left(style='width:50%;') เลขที่
+              if(purchasing[0].purchase_order_book_number)
+                | &nbsp;#{purchasing[0].purchase_order_book_number}
+              else
+                | &nbsp;#{purchasing[0].purchase_order_number}
+        tr
+            td.left
+            td.left วันที่ 
+        tr
+            td.left 
+            td.left ส่วนราชการ#{hospitalName}
+        tr
+            td.left
+            td.left ที่อยู่ #{hosaddress}
+        tr
+            td.left 
+            td.left
+        tr
+            td.left 
+            td.left โทรศัพท์ #{hostel}
+        tr
+            td.left 
+            td.left
+        tr
+            td.left 
+            td.left
+    br
+    .fontspace
+    label(style="font-size: 15pt;") ตามที่ บริษัท ได้เสนอราคาไว้ต่อ#{hospitalName} ซึ่งได้รับราคาและตกลงซื้อ ตามรายการต่อไปนี้
+    table(style="font-size: 15pt;")
+        thead
+          tr(style="font-size: 15pt;")
+            th(width='5%' style="font-size: 15pt;") ลำดับ&nbsp;
+            th(width='50%' style="font-size: 15pt;").center รายการ
+            th(width='15%' style="font-size: 15pt;") จำนวนสั่งซื้อ
+            th(width='15%' style="font-size: 15pt;").right ราคาต่อหน่วย
+            th(width='15%' style="font-size: 15pt;").right จำนวนเงิน
+        tbody
+          - var y=0
+            for b in purchasing
+              - y++
+                tr
+                  td.center #{y}
+                  td.left 
+                    | #{b.generic_name} 
+                    br
+                    | ชื่อการค้า :  #{b.product_name}
+                  td.center #{b.qtyPoi} x #{b.conversion} #{b.primary_unit}
+                  td.right #{b.unit_price}
+                  td.right #{b.total_price}
+          -var count=10-y
+          - for (var k = y; k < count; ++k) {
+            tr
+              td(colspan='5') &nbsp;
+          - }
+        tfooter
+          tr
+            td.right(colspan='5' style='border-top: 1px dashed black;') รวมเป็นเงิน #{total} บาท
+          tr
+            td.right(colspan='5')  (#{bahtText})
+  br
+  br
+  table.table( style='float:right; width:50%; font-size: 15pt;')
+      tr
+        td.center  ลงชื่อ......................................................ผู้สั่งซื้อ
+      if(purchasing[0].chief_id===null)
+        tr
+          td(height='30px')
+      else
+        tr
+          td.center ( #{purchasingChief.chief_fullname} )
+        tr
+          td.center #{cposition.position_name} 
+        tr
+          td.center หัวหน้าเจ้าหน้าที่ 
+      tr
+        td(height='40px')
+      tr
+        td.center  ลงชื่อ......................................................ผู้ขาย
+      tr
+        td.center  (......................................................)
+      tr
+        td.center  วันที่รับใบสั่งซื้อ_____/_________/_____
+      tr
+        td.center 

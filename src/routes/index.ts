@@ -2079,7 +2079,7 @@ router.get('/report/allpo/egp/', wrap(async (req, res, next) => {
     bidname = await model.bidName(db, purchasing[i][0].purchase_method_id);
     arrayBid.push(bidname);
   }
-
+  
   res.render('egp', {
     arrayNet: arrayNet,
     arrayVat: arrayVat,

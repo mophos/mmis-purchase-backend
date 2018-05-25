@@ -77,7 +77,11 @@ html
                     | &nbsp;(ของแถม)
                   td.center(style='border: 1px solid black;') #{b.qty} x #{b.conversion} #{b.primary_unit}
                   td.center(style='border: 1px solid black;') #{b.qtyPoi} x #{b.conversion} #{b.primary_unit}
-                  td.right(style='border: 1px solid black;') #{b.unit_price}
+                  td.right(style='border: 1px solid black;') 
+                    if( b.total_price < 1 )
+                      | 0
+                    else
+                      | #{b.unit_price}
                   td.right(style='border: 1px solid black;') #{b.total_price}
                   td.right(style='border: 1px solid black;') 
                     if( b.standard_cost > 1 )

@@ -2021,6 +2021,8 @@ router.get('/report/allpo/egp/', wrap(async (req, res, next) => {
   let allAmount;
   let limitDate: any = [];
 
+  let standardCost = [];
+  let standardCostText = [];
   for (let i in porder) {
     arrayItems = await model.purchasingEgp(db, porder[i], warehouseId);
     purchasing.push(arrayItems);

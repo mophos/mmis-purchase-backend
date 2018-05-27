@@ -73,11 +73,21 @@ html
                 tr
                   td.center(style='border: 1px solid black;') #{y}
                   td(style='border: 1px solid black;font-family:THSarabunNew; font-size:11pt;') #{b.generic_id} : #{b.generic_name}
+                   if( b.total_price < 1 )
+                    | &nbsp;(ของแถม)
                   td.center(style='border: 1px solid black;') #{b.qty} x #{b.conversion} #{b.primary_unit}
                   td.center(style='border: 1px solid black;') #{b.qtyPoi} x #{b.conversion} #{b.primary_unit}
-                  td.right(style='border: 1px solid black;') #{b.unit_price}
+                  td.right(style='border: 1px solid black;') 
+                    if( b.total_price < 1 )
+                      | 0
+                    else
+                      | #{b.unit_price}
                   td.right(style='border: 1px solid black;') #{b.total_price}
-                  td.right(style='border: 1px solid black;') #{b.unit_price}
+                  td.right(style='border: 1px solid black;') 
+                    if( b.standard_cost > 1 )
+                      | #{b.standard_cost}
+                    else
+                      | #{b.unit_price}
                   td.right(style='border: 1px solid black;') #{b.unit_price}
       tr
         td

@@ -604,16 +604,23 @@ router.put('/:purchaseOrderId', async (req, res, next) => {
 
 router.post('/checkApprove', async (req, res, next) => {
   let db = req.db;
-  let username = req.body.username;
-  let password = req.body.password;
-  let action = req.body.action;
-  console.log(action, password, username);
-  password = crypto.createHash('md5').update(password).digest('hex');
-  const isCheck = await model.checkApprove(db, username, password, action);
-  let rights = isCheck[0].split(',');
-  if (_.indexOf(rights, action) > -1) {
-    res.send({ ok: true })
-  } else {
+  try {
+    let username = req.body.username;
+    let password = req.body.password;
+    let action = req.body.action;
+    console.log(action, password, username);
+    password = crypto.createHash('md5').update(password).digest('hex');
+    const isCheck = await model.checkApprove(db, username, password, action);
+    console.log(isCheck);
+    
+    let rights = isCheck[0].access_right.split(',');
+    if (_.indexOf(rights, action) > -1) {
+      res.send({ ok: true })
+    } else {
+      res.send({ ok: false });
+    }
+    
+  } catch (error) {
     res.send({ ok: false });
   }
 });

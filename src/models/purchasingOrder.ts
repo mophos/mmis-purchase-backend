@@ -32,11 +32,9 @@ export class PurchasingOrderModel {
   }
 
   checkApprove(knex: Knex, username: any, password: any, action: any) {
-    return knex('sys_approve as sa')
-      .leftJoin('um_users as uu', 'uu.user_id', 'sa.user_id')
-      .where('sa.action_name', action)
+    return knex('um_users as uu')
       .andWhere('uu.username', username)
-      .andWhere('sa.password', password)
+      .andWhere('uu.password',  password)
   }
 
   getLastOrderByLabeler(knex: Knex, labeler_id: string) {

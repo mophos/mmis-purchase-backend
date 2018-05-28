@@ -6,7 +6,7 @@ import { PurchasingOrderModel } from '../models/purchasingOrder';
 import { PurchasingOrderItemModel } from '../models/purchasingOrderItem'
 import util = require('util')
 import { SerialModel } from '../models/serial';
-
+import * as crypto from 'crypto'
 import * as _ from 'lodash';
 import { PeriodModel } from '../models/period';
 import { BudgetTransectionModel } from '../models/budgetTransection';
@@ -604,15 +604,23 @@ router.put('/:purchaseOrderId', async (req, res, next) => {
 
 router.post('/checkApprove', async (req, res, next) => {
   let db = req.db;
-  let username = req.body.username;
-  let password = req.body.password;
-  let action = req.body.action;
-  console.log(action, password, username);
-
-  const isCheck = await model.checkApprove(db, username, password, action);
-  if (isCheck[0]) {
-    res.send({ ok: true })
-  } else {
+  try {
+    let username = req.body.username;
+    let password = req.body.password;
+    let action = req.body.action;
+    console.log(action, password, username);
+    password = crypto.createHash('md5').update(password).digest('hex');
+    const isCheck = await model.checkApprove(db, username, password, action);
+    console.log(isCheck);
+    
+    let rights = isCheck[0].access_right.split(',');
+    if (_.indexOf(rights, action) > -1) {
+      res.send({ ok: true })
+    } else {
+      res.send({ ok: false });
+    }
+    
+  } catch (error) {
     res.send({ ok: false });
   }
 });

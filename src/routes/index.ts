@@ -689,6 +689,7 @@ router.get('/report/purchasing/6', wrap(async (req, res, next) => {
   let budgetYear = await model.budgetYear(db, year)
   let amount_budget = budgetYear[0].amount
   let labeler_name = results[0].labeler_name
+  let labeler_name_po = results[0].labeler_name_po
   committee = committee[0];
   let committee1 = committee[0].title_name + committee[0].fname + ' ' + committee[0].lname + ' ' + committee[0].position2 + ' เป็น' + committee[0].position_name;
   let committee2 = committee[1].title_name + committee[1].fname + ' ' + committee[1].lname + ' ' + committee[1].position2 + ' เป็น' + committee[1].position_name;
@@ -729,6 +730,7 @@ router.get('/report/purchasing/6', wrap(async (req, res, next) => {
     chief_position: chief_position,
     province: province,
     labeler_name: labeler_name,
+    labeler_name_po: labeler_name_po,
     name: name
   });
 }));
@@ -762,6 +764,7 @@ router.get('/report/purchasing/7', wrap(async (req, res, next) => {
   let budgetYear = await model.budgetYear(db, year)
   let amount_budget = budgetYear[0].amount
   let labeler_name = results[0].labeler_name
+  let labeler_name_po = results[0].labeler_name_po
   let labeler_address = results[0].address
   let labeler_phone = results[0].phone
   let nin = results[0].nin
@@ -802,6 +805,7 @@ router.get('/report/purchasing/7', wrap(async (req, res, next) => {
     chief_position: chief_position,
     province: province,
     labeler_name: labeler_name,
+    labeler_name_po: labeler_name_po,
     name: name,
     address: address,
     purchaOrderId: purchaOrderId,

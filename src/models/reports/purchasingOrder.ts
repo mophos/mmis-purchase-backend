@@ -72,6 +72,7 @@ export class PurchasingOrderReportModel {
         ROUND(pci.unit_price, 2) AS unit,
         ROUND(pci.total_price, 2) AS total,
         ml.labeler_name,
+        ml.labeler_name_po,
         ml.address,
         pcpo.order_date,
         pcpo.chief_id,
@@ -117,7 +118,8 @@ export class PurchasingOrderReportModel {
     ROUND(poi.unit_price, 2) AS unit_price ,
     ROUND(poi.total_price, 2) AS total_price ,
     b.bgtype_name ,
-    l.labeler_name 
+    l.labeler_name,
+    l.labeler_name_po,
     FROM
     pc_purchasing_order po 
     JOIN pc_purchasing_order_item poi ON poi.purchase_order_id = po.purchase_order_id 
@@ -140,7 +142,8 @@ export class PurchasingOrderReportModel {
         wp.qty,
         poi.qty AS orderqty,
         mp.product_name,
-        l.labeler_name
+        l.labeler_name,
+        l.labeler_name_po
     FROM
         pc_purchasing_order po
         JOIN pc_purchasing_order_item poi ON po.purchase_order_id = poi.purchase_order_id
@@ -176,6 +179,8 @@ export class PurchasingOrderReportModel {
             ) AS remain_qty,	
             mlv.labeler_name as vlabeler,
             mlm.labeler_name as mlabeler,
+            mlv.labeler_name_po as vlabelerpo,
+            mlm.labeler_name_po as mlabelerpo,
             mp.product_name,
             ug.qty,	
             gt.generic_type_name,
@@ -220,6 +225,8 @@ export class PurchasingOrderReportModel {
             ) AS remain_qty,	
             mlv.labeler_name as vlabeler,
             mlm.labeler_name as mlabeler,
+            mlv.labeler_name_po as vlabelerpo,
+            mlm.labeler_name_po as mlabelerpo,
             mp.product_name,
             ug.qty,	
             gt.generic_type_name,
@@ -259,7 +266,8 @@ export class PurchasingOrderReportModel {
         wp.qty,
         poi.qty AS orderqty,
         mp.product_name,
-        l.labeler_name
+        l.labeler_name,
+        l.labeler_name_po
     FROM
         pc_purchasing_order po
         JOIN pc_purchasing_order_item poi ON po.purchase_order_id = poi.purchase_order_id
@@ -322,7 +330,8 @@ export class PurchasingOrderReportModel {
         uu.unit_name,
         ROUND( poi.unit_price, 2 ) AS unit_price,
         ROUND( poi.total_price, 2 ) AS total_price,
-        l.labeler_name 
+        l.labeler_name, 
+        l.labeler_name_po 
     FROM
         pc_purchasing_order po
         JOIN pc_purchasing_order_item poi ON poi.purchase_order_id = po.purchase_order_id
@@ -356,7 +365,8 @@ export class PurchasingOrderReportModel {
         uu.unit_name,
         ROUND( poi.unit_price, 2 ) AS unit_price,
         ROUND( SUM(poi.total_price), 2 ) AS total_price,
-        l.labeler_name 
+        l.labeler_name, 
+        l.labeler_name_po 
     FROM
         pc_purchasing_order po
         JOIN pc_purchasing_order_item poi ON poi.purchase_order_id = po.purchase_order_id
@@ -392,7 +402,8 @@ export class PurchasingOrderReportModel {
         muu.unit_name,
         ROUND( poi.unit_price, 2 ) AS unit_price,
         ROUND( poi.total_price, 2 ) AS total_price,
-        l.labeler_name 
+        l.labeler_name, 
+        l.labeler_name_po  
     FROM
         pc_purchasing_order po
         JOIN pc_purchasing_order_item poi ON poi.purchase_order_id = po.purchase_order_id
@@ -709,6 +720,7 @@ export class PurchasingOrderReportModel {
         po.purchase_order_id,
         cbp.name,
         ml.labeler_name,
+        ml.labeler_name_po,
         g.generic_id,
         g.generic_name,
         SUM(wp.qty) AS qty,
@@ -762,7 +774,8 @@ export class PurchasingOrderReportModel {
     mup.qty as qty1,
     mu.unit_name,
     ROUND(poi.total_price,2) AS total_price,
-    ml.labeler_name
+    ml.labeler_name,
+    ml.labeler_name_po
     FROM pc_purchasing_order po
     JOIN pc_purchasing_order_item poi ON po.purchase_order_id=poi.purchase_order_id
     JOIN view_products vp ON vp.generic_id=poi.generic_id
@@ -790,6 +803,7 @@ export class PurchasingOrderReportModel {
             cbt.bid_name,
             cbt.bid_id,
             ml.labeler_name,
+            ml.labeler_name_po,
             mg.generic_id,
             mg.generic_name,
             IFNULL(
@@ -852,6 +866,7 @@ export class PurchasingOrderReportModel {
                 'cbt.bid_name',
                 'cbt.bid_id',
                 'ml.labeler_name',
+                'ml.labeler_name_po',
                 'mg.generic_id',
                 'mg.generic_name',
                 knex.raw(`IFNULL(

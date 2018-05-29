@@ -25,7 +25,7 @@ html
     br
     table(style='width:100%; font-size: 15pt')
         tr
-            td.left(style='width:50%;') ผู้ขาย #{purchasing[i][0].labeler_name}
+            td.left(style='width:50%;') ผู้ขาย #{purchasing[i][0].labeler_name_po}
             td.left(style='width:50%;') เลขที่
               if(purchasing[i][0].purchase_order_book_number)
                 | &nbsp;#{purchasing[i][0].purchase_order_book_number}

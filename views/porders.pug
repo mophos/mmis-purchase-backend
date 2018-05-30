@@ -27,7 +27,7 @@ html
         br
         table(style='width:100%;')
             tr
-                td.left(style='width:50%;') ผู้ขาย/ผู้รับจ้าง #{array[a][0].labeler_name}
+                td.left(style='width:50%;') ผู้ขาย/ผู้รับจ้าง #{array[a][0].labeler_name_po}
                 td.left(style='width:50%;') ใบสั่งซื้อ/สั่งจ้างเลขที่ #{array[a][0].purchase_order_id}
             tr
                 td.left ที่อยู่ #{array[a][0].address}
@@ -52,7 +52,7 @@ html
                 td.left
         br
         .fontspace
-        | ตามที่ บริษัท #{array[a][0].labeler_name} ได้เสนอราคาไว้ต่อ #{hospitalName} ซึ่งได้รับราคาและตกลงซื้อ/จ้าง ตามรายการต่อไปนี้
+        | ตามที่ #{array[a][0].labeler_name_po} ได้เสนอราคาไว้ต่อ #{hospitalName} ซึ่งได้รับราคาและตกลงซื้อ/จ้าง ตามรายการต่อไปนี้
         table(style='font-size: 13pt;')
           thead
             tr 

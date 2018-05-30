@@ -20,6 +20,7 @@ export class RequisitionOrderReportModel {
     let sql = `select ppo.purchase_order_id,
     ppo.order_date,
     ml.labeler_name,
+    ml.labeler_name_po,
     vg.generic_name,
     ppoi.qty,
     round(ppoi.unit_price,2) AS unit,

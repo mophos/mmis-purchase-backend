@@ -393,6 +393,7 @@ export class PurchasingOrderModel {
     if (orderStatus !== 'ALL') {
       sql += ` AND pp.purchase_order_status = ${orderStatus}`
     }
+    sql += ` ORDER BY pp.purchase_order_number`;
     return (knex.raw(sql))
   }
 

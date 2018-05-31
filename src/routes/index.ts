@@ -1867,6 +1867,7 @@ router.get('/report/getporder/singburi', wrap(async (req, res, next) => {
 
 router.get('/report/allpo/egp/singburi', wrap(async (req, res, next) => {
   let porder = req.query.porder;
+  
   porder = Array.isArray(porder) ? porder : [porder];
   let chief = "ปฎิบัติราชการแทนผู้ว่าราชการจังหวัด";
   let warehouseId = req.decoded.warehouseId;

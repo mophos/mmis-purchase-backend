@@ -51,7 +51,24 @@ export class ProductsModel {
       select sum(wp.qty) as total from wm_products as wp where wp.product_id=mp.product_id
       and wp.warehouse_id=?
     ) as remain_qty, 
-    0 as order_qty, vcmp.contract_no, vcmp.contract_id
+
+    0 as order_qty, vcmp.contract_no, vcmp.contract_id,
+    (
+    	select po.order_date
+    	from pc_purchasing_order as po 
+    	inner join pc_purchasing_order_item as pi on pi.purchase_order_id=po.purchase_order_id
+    	where pi.product_id=mp.product_id
+    	order by po.order_date desc
+    	limit 1
+    ) as last_purchased_date,
+    (
+    	select pi.unit_price
+    	from pc_purchasing_order as po 
+    	inner join pc_purchasing_order_item as pi on pi.purchase_order_id=po.purchase_order_id
+    	where pi.product_id=mp.product_id
+    	order by po.order_date desc
+    	limit 1
+    ) as last_purchased_unit_price
 
     from mm_products as mp
     inner join mm_labelers as lm on lm.labeler_id=mp.m_labeler_id
@@ -66,6 +83,7 @@ export class ProductsModel {
 
     and mp.is_active='Y' and mp.mark_deleted='N'
     group by mp.product_id
+    order by last_purchased_date desc
     `;
 
     return knex.raw(sql, [warehouseId, genericId]);

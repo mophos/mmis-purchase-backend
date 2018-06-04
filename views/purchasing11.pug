@@ -52,7 +52,10 @@ html
       br
       | ผู้อำนวยการ#{hospitalName}
       br
-      | 
+      if(purchasing[0].purchase_method_id==2) 
+        | ปฏิบัติราชการแทนผู้ตรวจกระทรวงเขต 4
+      if(purchasing[0].purchase_method_id!=2) 
+        | #{chief}#{province} 
     .enter 
     p(style='text-decoration:underline; font-size: 14pt;') เงื่อนไขในการสั่งซื้อ
     div(style='font-size: 14pt;')

@@ -149,7 +149,7 @@ export class ProductsModel {
       .innerJoin('pc_purchasing_order as pco', 'pco.purchase_order_id', 'pci.purchase_order_id')
       .innerJoin('mm_unit_generics as ug', 'ug.unit_generic_id', 'pci.unit_generic_id')
       .innerJoin('mm_products as mp', 'mp.product_id', 'pci.product_id')
-      .whereRaw('pco.purchase_order_status in ("ORDERPOINT", "PREPARED", "CONFIRM", "CONFIRMED")')
+      .whereIn('pco.purchase_order_status', ["ORDERPOINT", "PREPARED", "CONFIRM", "CONFIRMED"])
       .whereRaw('pco.is_cancel="N"')
       .whereRaw('mp.generic_id=mg.generic_id')
       .whereRaw('pci.product_id=mp.product_id')

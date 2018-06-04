@@ -149,8 +149,10 @@ export class ProductsModel {
       .innerJoin('mm_generic_types as gt', 'gt.generic_type_id', 'mg.generic_type_id')
       // .innerJoin('mm_labelers as ml', 'ml.labeler_id', 'mp.v_labeler_id')
       // .leftJoin('view_cm_products_active as vcpa', 'vcpa.product_id', 'mp.product_id')
+      .whereRaw('mg.mark_deleted="N"')
+      .whereRaw('mg.is_active="Y"')
       .whereNotIn('mg.generic_id', subGenerics);
-
+      
     if (genericTypeIds.length) {
       sql.whereIn('mg.generic_type_id', genericTypeIds);
     }
@@ -224,6 +226,7 @@ export class ProductsModel {
       .innerJoin('mm_labelers as ml', 'ml.labeler_id', 'mp.v_labeler_id')
       .innerJoin('pc_product_reserved as pcr', 'pcr.product_id', 'mp.product_id')
       .leftJoin('view_cm_products_active as vcpa', 'vcpa.product_id', 'mp.product_id')
+      .whereRaw('mg.mark_deleted="N"')
       .where('pcr.reserved_status', 'SELECTED');
 
     if (genericTypeIds.length) {
@@ -280,6 +283,7 @@ export class ProductsModel {
       // .innerJoin('mm_generics as mg', 'mg.generic_id', 'mp.generic_id')
       .innerJoin('mm_generic_types as gt', 'gt.generic_type_id', 'mg.generic_type_id')
       // .innerJoin('mm_labelers as ml', 'ml.labeler_id', 'mp.v_labeler_id')
+      .whereRaw('mg.mark_deleted="N"')
       .whereNotIn('mg.generic_id', subGenerics);
 
     if (genericTypeIds.length) {
@@ -320,6 +324,7 @@ export class ProductsModel {
       .innerJoin('mm_generic_types as gt', 'gt.generic_type_id', 'mg.generic_type_id')
       .innerJoin('mm_labelers as ml', 'ml.labeler_id', 'mp.v_labeler_id')
       .innerJoin('pc_product_reserved as pcr', 'pcr.product_id', 'mp.product_id')
+      .whereRaw('mg.mark_deleted="N"')
       .where('pcr.reserved_status', 'SELECTED');
 
     if (genericTypeIds.length) {
@@ -407,6 +412,7 @@ export class ProductsModel {
       .leftJoin('mm_units as uf', 'uf.unit_id', 'ug.from_unit_id')
       .leftJoin('mm_units as ut', 'ut.unit_id', 'ug.to_unit_id')
       .leftJoin('view_cm_products_active as vcpa', 'vcpa.product_id', 'mp.product_id')
+      .whereRaw('mg.mark_deleted="N"')
       .where('rv.reserved_status', 'CONFIRMED')
       .orderBy('ml.labeler_name');
   }

@@ -15,6 +15,22 @@ const model = new PurchasingOrderReportModel();
 const modelPr = new RequisitionOrderReportModel();
 const router = express.Router();
 
+let chief = "ปฎิบัติราชการแทนผู้ว่าราชการจังหวัด";
+const boss = [
+  { "province": [""], "boss": "ปฏิบัติราชการแทนผู้ตรวจกระทรวงเขต 1" },
+  { "province": [""], "boss": "ปฏิบัติราชการแทนผู้ตรวจกระทรวงเขต 2" },
+  { "province": [""], "boss": "ปฏิบัติราชการแทนผู้ตรวจกระทรวงเขต 3" },
+  { "province": ["สิงห์บุรี","อ่างทอง"], "boss": "ปฏิบัติราชการแทนผู้ตรวจกระทรวงเขต 4" },
+  { "province": ["สมุทรสาคร","สมุทรปราการ","สมุทรสงคราม"], "boss": "ปฏิบัติราชการแทนผู้ตรวจกระทรวงเขต 5" },
+  { "province": [""], "boss": "ปฏิบัติราชการแทนผู้ตรวจกระทรวงเขต 6" },
+  { "province": [""], "boss": "ปฏิบัติราชการแทนผู้ตรวจกระทรวงเขต 7" },
+  { "province": [""], "boss": "ปฏิบัติราชการแทนผู้ตรวจกระทรวงเขต 8" },
+  { "province": [""], "boss": "ปฏิบัติราชการแทนผู้ตรวจกระทรวงเขต 9" },
+  { "province": [""], "boss": "ปฏิบัติราชการแทนผู้ตรวจกระทรวงเขต 10" },
+  { "province": [""], "boss": "ปฏิบัติราชการแทนผู้ตรวจกระทรวงเขต 11" },
+  { "province": [""], "boss": "ปฏิบัติราชการแทนผู้ตรวจกระทรวงเขต 12" }
+]
+
 router.get('/', (req, res, next) => {
   res.send({ ok: true, message: 'Welcome to Purchasing API server' });
 });
@@ -872,7 +888,7 @@ router.get('/report/purchasing/10/', wrap(async (req, res, next) => {
   let db = req.db;
   let type = req.query.type;
   let purchaOrderId = req.query.purchaOrderId;
-  let chief = "ปฎิบัติราชการแทนผู้ว่าราชการจังหวัด";
+
   let warehouseId = req.decoded.warehouseId;
 
   let purchasingOfficer = await model.getPurchasingOfficer(db);
@@ -993,7 +1009,7 @@ router.get('/report/purchasing/standard', wrap(async (req, res, next) => {
   let db = req.db;
   let type = req.query.type;
   let purchaOrderId = req.query.purchaOrderId;
-  let chief = "ปฎิบัติราชการแทนผู้ว่าราชการจังหวัด";
+
   let warehouseId = req.decoded.warehouseId;
 
   let purchasingOfficer = await model.getPurchasingOfficer(db);
@@ -1117,7 +1133,7 @@ router.get('/report/purchasing/11', wrap(async (req, res, next) => {
   let bgtype = req.query.bgtype;
   let purchaOrderId = req.query.purchaOrderId;
   let warehouseId = req.decoded.warehouseId;
-  let chief = "ปฎิบัติราชการแทนผู้ว่าราชการจังหวัด";
+
 
   let purchasingOfficer = await model.getPurchasingOfficer(db);
   let purchasingChief = await model.purchasing2Chief(db, purchaOrderId)
@@ -1232,7 +1248,10 @@ router.get('/report/purchasing-standard/11', wrap(async (req, res, next) => {
   let bgtype = req.query.bgtype;
   let purchaOrderId = req.query.purchaOrderId;
   let warehouseId = req.decoded.warehouseId;
-  let chief = "ปฎิบัติราชการแทนผู้ว่าราชการจังหวัด";
+
+  boss.forEach(v => {
+    console.log(v);
+  });
 
   let purchasingOfficer = await model.getPurchasingOfficer(db);
   let purchasingChief = await model.purchasing2Chief(db, purchaOrderId)
@@ -1867,9 +1886,9 @@ router.get('/report/getporder/singburi', wrap(async (req, res, next) => {
 
 router.get('/report/allpo/egp/singburi', wrap(async (req, res, next) => {
   let porder = req.query.porder;
-  
+
   porder = Array.isArray(porder) ? porder : [porder];
-  let chief = "ปฎิบัติราชการแทนผู้ว่าราชการจังหวัด";
+
   let warehouseId = req.decoded.warehouseId;
   let type = req.query.type;
   let db = req.db;
@@ -1983,7 +2002,7 @@ router.get('/report/allpo/egp/singburi', wrap(async (req, res, next) => {
 router.get('/report/allpo/egp/', wrap(async (req, res, next) => {
   let porder = req.query.porder;
   porder = Array.isArray(porder) ? porder : [porder];
-  let chief = "ปฎิบัติราชการแทนผู้ว่าราชการจังหวัด";
+
   let warehouseId = req.decoded.warehouseId;
   let type = req.query.type;
   let db = req.db;
@@ -2086,7 +2105,7 @@ router.get('/report/allpo/egp/', wrap(async (req, res, next) => {
     bidname = await model.bidName(db, purchasing[i][0].purchase_method_id);
     arrayBid.push(bidname);
   }
-  
+
   res.render('egp', {
     arrayNet: arrayNet,
     arrayVat: arrayVat,
@@ -2115,7 +2134,7 @@ router.get('/report/allpo/egp/', wrap(async (req, res, next) => {
 router.get('/report/getporder/standard/', wrap(async (req, res, next) => {
   let porder = req.query.porder;
   porder = Array.isArray(porder) ? porder : [porder];
-  let chief = "ปฎิบัติราชการแทนผู้ว่าราชการจังหวัด";
+
   let warehouseId = req.decoded.warehouseId;
   let type = req.query.type;
   let db = req.db;

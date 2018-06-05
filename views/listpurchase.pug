@@ -58,7 +58,7 @@ html
         for b in results
           - y++
             tr(style=" border: 1px solid black;")
-              td(style=" border: 1px solid black;") #{b.generic_name}
+              td(style=" border: 1px solid black;") #{y}. #{b.generic_name}
               td(style=" border: 1px solid black;").left #{b.qty}
               td(style=" border: 1px solid black;").left #{b.primary_unit_name}
               td(style=" border: 1px solid black;").right #{b.min_qty}

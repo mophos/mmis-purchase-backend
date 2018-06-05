@@ -247,8 +247,7 @@ export class PurchasingOrderReportModel {
             LEFT JOIN mm_labelers as mlv on mlv.labeler_id = mp.v_labeler_id
             LEFT JOIN mm_labelers as mlm on mlm.labeler_id = mp.m_labeler_id
         WHERE
-            mg.mark_deleted = "N" 
-            AND wp.product_id IN (${product_id}) 
+            mp.product_id IN (${product_id}) 
         GROUP BY wp.product_id
         ORDER BY
             mlv.labeler_name ASC`)

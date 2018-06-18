@@ -16,20 +16,6 @@ const modelPr = new RequisitionOrderReportModel();
 const router = express.Router();
 
 let chief = "ปฎิบัติราชการแทนผู้ว่าราชการจังหวัด";
-const boss = [
-  { "province": [""], "boss": "ปฏิบัติราชการแทนผู้ตรวจกระทรวงเขต 1" },
-  { "province": [""], "boss": "ปฏิบัติราชการแทนผู้ตรวจกระทรวงเขต 2" },
-  { "province": [""], "boss": "ปฏิบัติราชการแทนผู้ตรวจกระทรวงเขต 3" },
-  { "province": ["สิงห์บุรี","อ่างทอง"], "boss": "ปฏิบัติราชการแทนผู้ตรวจกระทรวงเขต 4" },
-  { "province": ["สมุทรสาคร","สมุทรปราการ","สมุทรสงคราม"], "boss": "ปฏิบัติราชการแทนผู้ตรวจกระทรวงเขต 5" },
-  { "province": [""], "boss": "ปฏิบัติราชการแทนผู้ตรวจกระทรวงเขต 6" },
-  { "province": [""], "boss": "ปฏิบัติราชการแทนผู้ตรวจกระทรวงเขต 7" },
-  { "province": [""], "boss": "ปฏิบัติราชการแทนผู้ตรวจกระทรวงเขต 8" },
-  { "province": [""], "boss": "ปฏิบัติราชการแทนผู้ตรวจกระทรวงเขต 9" },
-  { "province": [""], "boss": "ปฏิบัติราชการแทนผู้ตรวจกระทรวงเขต 10" },
-  { "province": [""], "boss": "ปฏิบัติราชการแทนผู้ตรวจกระทรวงเขต 11" },
-  { "province": [""], "boss": "ปฏิบัติราชการแทนผู้ตรวจกระทรวงเขต 12" }
-]
 
 router.get('/', (req, res, next) => {
   res.send({ ok: true, message: 'Welcome to Purchasing API server' });
@@ -1248,10 +1234,6 @@ router.get('/report/purchasing-standard/11', wrap(async (req, res, next) => {
   let bgtype = req.query.bgtype;
   let purchaOrderId = req.query.purchaOrderId;
   let warehouseId = req.decoded.warehouseId;
-
-  boss.forEach(v => {
-    console.log(v);
-  });
 
   let purchasingOfficer = await model.getPurchasingOfficer(db);
   let purchasingChief = await model.purchasing2Chief(db, purchaOrderId)

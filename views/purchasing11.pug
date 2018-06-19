@@ -189,7 +189,10 @@ html
       br
       | ผู้อำนวยการ#{hospitalName}
       br
-      | 
+      if(purchasing[0].purchase_method_id==2) 
+        | ปฏิบัติราชการแทนผู้ตรวจกระทรวงเขต 4
+      if(purchasing[0].purchase_method_id!=2) 
+        | #{chief}#{province}
     hr.hideprint
     div(style='page-break-after: always;')
   include puchasing11con.pug

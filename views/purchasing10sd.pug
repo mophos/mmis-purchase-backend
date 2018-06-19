@@ -83,11 +83,7 @@ html
                     else
                       | #{b.unit_price}
                   td.right(style='border: 1px solid black;') #{b.total_price}
-                  td.right(style='border: 1px solid black;') 
-                    if( b.standard_cost > 1 )
-                      | #{b.standard_cost}
-                    else
-                      | #{b.unit_price}
+                  td.right(style='border: 1px solid black;') #{b.standard_cost}
                   td.right(style='border: 1px solid black;') #{b.unit_price}
       tr
         td

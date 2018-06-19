@@ -10,6 +10,7 @@ import { RequisitionOrderReportModel } from '../models/reports/requisitionOrder'
 import { log } from 'util';
 import { PurchasingOrderModel } from '../models/purchasingOrder'
 import { each } from 'bluebird';
+import { checkServerIdentity } from 'tls';
 
 const model = new PurchasingOrderReportModel();
 const modelPr = new RequisitionOrderReportModel();
@@ -1310,6 +1311,8 @@ router.get('/report/purchasing-standard/11', wrap(async (req, res, next) => {
   getAmountTransaction = getAmountTransaction[0];
   let allAmount: any = getAmountTransaction[0].amount;
   allAmount = model.comma(allAmount);
+
+  console.log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',chief)
 
   res.render('purchasing11standard', {
     addressCityHall: addressCityHall,

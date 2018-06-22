@@ -921,14 +921,17 @@ router.get('/report/purchasing/10/', wrap(async (req, res, next) => {
   });
 
   purchasing.forEach(value => {
+    value.standard_cost = value.standard_cost < value.unit_price ? value.unit_price : value.standard_cost;
     totalprice += value.total_price;
     if (value.qty == null) value.qty = 0;
     value.qty = model.commaQty(value.qty);
     value.qtyPoi = model.commaQty(value.qtyPoi);
     value.total_price = model.comma(value.total_price);
     value.unit_price = model.comma(value.unit_price);
+    value.standard_cost = model.comma(value.standard_cost);
     value.total = model.commaQty(value.total)
-    value.order_date = moment(value.order_date).format('D MMMM ') + +moment(value.order_date).get('year') + 543;
+    let year: number = +moment(value.order_date).get('year') + 543;
+    value.order_date = moment(value.order_date).format('D MMMM ') + year;
   })
 
   pcb.forEach(value => {
@@ -1042,14 +1045,17 @@ router.get('/report/purchasing/standard', wrap(async (req, res, next) => {
   });
 
   purchasing.forEach(value => {
+    value.standard_cost = value.standard_cost < value.unit_price ? value.unit_price : value.standard_cost;
     totalprice += value.total_price;
     if (value.qty == null) value.qty = 0;
     value.qty = model.commaQty(value.qty);
     value.qtyPoi = model.commaQty(value.qtyPoi);
     value.total_price = model.comma(value.total_price);
     value.unit_price = model.comma(value.unit_price);
-    value.total = model.commaQty(value.total)
-    value.order_date = moment(value.order_date).format('D MMMM ') + +moment(value.order_date).get('year') + 543;
+    value.standard_cost = model.comma(value.standard_cost);
+    value.total = model.commaQty(value.total);
+    let year: number = +moment(value.order_date).get('year') + 543;
+    value.order_date = moment(value.order_date).format('D MMMM ') + year;
   })
 
   pcb.forEach(value => {
@@ -1312,7 +1318,7 @@ router.get('/report/purchasing-standard/11', wrap(async (req, res, next) => {
   let allAmount: any = getAmountTransaction[0].amount;
   allAmount = model.comma(allAmount);
 
-  console.log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',chief)
+  console.log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', chief)
 
   res.render('purchasing11standard', {
     addressCityHall: addressCityHall,

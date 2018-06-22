@@ -75,10 +75,12 @@ html
                   td(style='border: 1px solid black;font-family:THSarabunNew; font-size:11pt;') #{b.generic_id} : #{b.generic_name}
                   td.center(style='border: 1px solid black;') #{b.qty} x #{b.conversion} #{b.primary_unit}
                   td.center(style='border: 1px solid black;') #{b.qtyPoi} x #{b.conversion} #{b.primary_unit}
-                  td.right(style='border: 1px solid black;') #{b.unit_price}
+                  td.right(style='border: 1px solid black;') #{b.unit_price}  
                   td.right(style='border: 1px solid black;') #{b.total_price}
-                  td.right(style='border: 1px solid black;') #{b.unit_price}
-                  td.right(style='border: 1px solid black;') #{b.unit_price}
+                  td.right(style='border: 1px solid black;') #{b.standard_cost} /
+                    label(style = 'font-size: 11pt;')   #{b.primary_unit}
+                  td.right(style='border: 1px solid black;') #{b.unit_price} /
+                    label(style = 'font-size: 11pt;')   #{b.primary_unit}
       tr
         td
         td(colspan='7').right รวม #{y} รายการ รวมเป็นเงิน #{total} บาท

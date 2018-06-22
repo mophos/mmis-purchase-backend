@@ -1318,8 +1318,6 @@ router.get('/report/purchasing-standard/11', wrap(async (req, res, next) => {
   let allAmount: any = getAmountTransaction[0].amount;
   allAmount = model.comma(allAmount);
 
-  console.log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', chief)
-
   res.render('purchasing11standard', {
     addressCityHall: addressCityHall,
     province: province,

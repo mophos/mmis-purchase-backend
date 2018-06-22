@@ -43,7 +43,9 @@ export class ContractModel {
     
     return knex('cm_contracts as ct')
       .select('ct.*', subQuery)
-      .where('ct.contract_id', contractId);
+      .where('ct.contract_id', contractId)
+      .andWhereNot('ct.contract_status','SUCCESS')
+      .andWhereNot('ct.contract_status','CANCEL');
   }
 
   detailContract(knex: Knex, contractId: any) {

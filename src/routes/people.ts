@@ -46,17 +46,17 @@ router.post('/', (req, res, next) => {
   let datas = req.body;
   let db = req.db;
 
-    model.save(db, datas)
-      .then((results: any) => {
-        res.send({ ok: true })
-      })
-      .catch(error => {
-        res.send({ ok: false, error: error })
-      })
-      .finally(() => {
-        db.destroy();
-      });
-  
+  model.save(db, datas)
+    .then((results: any) => {
+      res.send({ ok: true })
+    })
+    .catch(error => {
+      res.send({ ok: false, error: error })
+    })
+    .finally(() => {
+      db.destroy();
+    });
+
 });
 
 router.put('/:id', (req, res, next) => {

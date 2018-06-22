@@ -691,7 +691,7 @@ export class ProductsModel {
       mg.generic_name,
       mp.generic_id,
       ge.num_days AS expire_num_days,
-      vcm.contract_id, vcm.contract_no
+      vcm.contract_id, vcm.contract_no, vcm.contract_status
     FROM
       mm_products AS mp
     LEFT JOIN mm_generics AS mg ON mg.generic_id = mp.generic_id
@@ -726,7 +726,7 @@ export class ProductsModel {
       mg.generic_name,
       mp.generic_id,
       ge.num_days AS expire_num_days,
-      vcm.contract_id, vcm.contract_no
+      vcm.contract_id, vcm.contract_no, vcm.contract_status
     FROM
       mm_products AS mp
     LEFT JOIN mm_generics AS mg ON mg.generic_id = mp.generic_id
@@ -764,7 +764,7 @@ export class ProductsModel {
       mg.generic_name,
       mp.generic_id,
       ge.num_days AS expire_num_days,
-      vcm.contract_id, vcm.contract_no
+      vcm.contract_id, vcm.contract_no, vcm.contract_status
     FROM
       mm_products AS mp
     LEFT JOIN mm_generics AS mg ON mg.generic_id = mp.generic_id

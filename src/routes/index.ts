@@ -27,8 +27,9 @@ router.get('/version', (req, res, next) => {
 });
 
 router.get('/report/purchasingorder', wrap(async (req, res, next) => {
-  let purchasOrderId = req.query.purchaOrderId;
+  let purchasOrderId = req.query.porder;
   let db = req.db;
+
 
   let results = await model.purchasingOrder(db, purchasOrderId)
   results = results[0]

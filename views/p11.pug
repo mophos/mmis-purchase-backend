@@ -89,25 +89,39 @@ html
   br
   br
   table.table( style='float:right; width:50%; font-size: 15pt;')
+    tr
+      td.center  ลงชื่อ......................................................ผู้สั่งซื้อ
+    tr
+      td.center  ( #{poraor} )
+    tr
+      td.center  ผู้อำนวยการ#{hospitalName}
+    if(purchasing[0].purchase_method_id==2) 
       tr
-        td.center  ลงชื่อ......................................................ผู้สั่งซื้อ
-      if(purchasing[0].chief_id===null)
-        tr
-          td(height='30px')
-      else
-        tr
-          td.center ( #{purchasingChief.chief_fullname} )
-        tr
-          td.center #{cposition.position_name} 
-        tr
-          td.center หัวหน้าเจ้าหน้าที่ 
+        td.center ปฏิบัติราชการแทนผู้ตรวจกระทรวงเขต 4
+    if(purchasing[0].purchase_method_id!=2) 
+      tr
+        td.center #{chief}#{province}
+    tr
+      td(height='40px')
+    tr
+      td.center  ลงชื่อ......................................................
+    if(purchasing[0].chief_id===null)
       tr
         td(height='40px')
+    else
       tr
-        td.center  ลงชื่อ......................................................ผู้ขาย
+        td.center ( #{purchasingChief.chief_fullname} )
       tr
-        td.center  (......................................................)
+        td.center #{cposition.position_name} 
       tr
-        td.center  วันที่รับใบสั่งซื้อ_____/_________/_____
-      tr
-        td.center 
+        td.center หัวหน้าเจ้าหน้าที่ 
+    tr
+      td(height='40px')
+    tr
+      td.center  ลงชื่อ......................................................ผู้ขาย
+    tr
+      td.center  (......................................................)
+    tr
+      td.center  วันที่รับใบสั่งซื้อ_____/_________/_____
+    tr
+      td.center 

@@ -1161,9 +1161,9 @@ router.get('/report/purchasing/11', wrap(async (req, res, next) => {
   let at = await model.at(db)//book_prefix
   at = at[0]
   moment.locale('th');
-  let nDate = moment(new Date()).format('MMMM ') + (moment(new Date()).get('year') + 543)
-  let dDate = moment(new Date()).format(' MMMM ') + (moment(new Date()).get('year') + 543)
-  let year = moment(new Date).get('year') + 544
+  let nDate = moment(purchasing[0].order_date).format('MMMM ') + (moment(purchasing[0].order_date).get('year') + 543)
+  let dDate = moment(purchasing[0].order_date).format(' MMMM ') + (moment(purchasing[0].order_date).get('year') + 543)
+  let year = moment(purchasing[0].order_date).get('year') + 544
 
   let bidname = purchasing[0].name;
   let budget = await model.budgetType(db, purchasing[0].budget_detail_id)
@@ -1275,9 +1275,9 @@ router.get('/report/purchasing-standard/11', wrap(async (req, res, next) => {
   let at = await model.at(db)//book_prefix
   at = at[0]
   moment.locale('th');
-  let nDate = moment(new Date()).format('MMMM ') + (moment(new Date()).get('year') + 543)
-  let dDate = moment(new Date()).format(' MMMM ') + (moment(new Date()).get('year') + 543)
-  let year = moment(new Date).get('year') + 544
+  let nDate = moment(purchasing[0].order_date).format('MMMM ') + (moment(purchasing[0].order_date).get('year') + 543)
+  let dDate = moment(purchasing[0].order_date).format(' MMMM ') + (moment(purchasing[0].order_date).get('year') + 543)
+  let year = moment(purchasing[0].order_date).get('year') + 544
 
   let bidname = purchasing[0].name;
   let budget = await model.budgetType(db, purchasing[0].budget_detail_id)

@@ -117,4 +117,23 @@ router.delete('/:id', (req, res, next) => {
     });
 });
 
+router.get('/search', async (req, res, next) => {
+
+  let db = req.db;
+  let query = req.query.query;
+  console.log('mmmmmmmmmmmm', query)
+  try {
+    let rs: any = await model.search(db, query);
+    if (rs.length) {
+      res.send({ rows: rs });
+    } else {
+      res.send([]);
+    }
+  } catch (error) {
+    res.send({ ok: false, error: error.message });
+  } finally {
+    db.destroy();
+  }
+});
+
 export default router;

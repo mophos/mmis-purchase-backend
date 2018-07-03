@@ -23,7 +23,7 @@ router.get('/bid-amount/:id', (req, res, next) => {
   let db = req.db;
   let id = req.params.id;
 
-  model.bidAmount(db,id)
+  model.bidAmount(db, id)
     .then((results: any) => {
       res.send({ ok: true, rows: results });
     })
@@ -33,31 +33,32 @@ router.get('/bid-amount/:id', (req, res, next) => {
 });
 
 router.post('/', (req, res, next) => {
-  let datas = req.body;
+  let datas = req.body.data;
   let db = req.db;
+  console.log('xxxxxxxxxxxx',datas);
+  model.save(db, datas)
+    .then((results: any) => {
+      res.send({ ok: true })
+    })
+    .catch(error => {
+      res.send({ ok: false, error: error })
+    })
+    .finally(() => {
+      db.destroy();
+    });
 
-    model.save(db, datas)
-      .then((results: any) => {
-        res.send({ ok: true })
-      })
-      .catch(error => {
-        res.send({ ok: false, error: error })
-      })
-      .finally(() => {
-        db.destroy();
-      });
-  
 });
 
 router.put('/:id', (req, res, next) => {
   let id = req.params.id;
-  let typeName = req.body.typeName;
+  let data = req.body.data;
 
   let db = req.db;
 
   if (id) {
     let datas: any = {
-      type_name: typeName
+      name: data.bidname,
+      f_amount: data.f_amount
     }
 
     model.update(db, id, datas)

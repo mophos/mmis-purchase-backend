@@ -35,7 +35,7 @@ router.get('/bid-amount/:id', (req, res, next) => {
 router.post('/', (req, res, next) => {
   let datas = req.body.data;
   let db = req.db;
-  console.log('xxxxxxxxxxxx',datas);
+  
   model.save(db, datas)
     .then((results: any) => {
       res.send({ ok: true })
@@ -92,11 +92,11 @@ router.get('/detail/:id', (req, res, next) => {
     });
 });
 
-router.delete('/:id', (req, res, next) => {
+router.put('/is-active/:id', (req, res, next) => {
   let id = req.params.id;
   let db = req.db;
 
-  model.remove(db, id)
+  model.isActive(db, id)
     .then((results: any) => {
       res.send({ ok: true })
     })

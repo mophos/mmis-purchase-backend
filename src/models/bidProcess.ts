@@ -27,6 +27,12 @@ export class BidProcessModel {
       .update(datas);
   }
 
+  isActive(knex: Knex, id: string) {
+    return knex(this.tableName)
+      .where(this.primaryKey, id)
+      .update('is_active', 0);
+  }
+
   detail(knex: Knex, id: string) {
     return knex(this.tableName)
       .where(this.primaryKey, id);

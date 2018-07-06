@@ -609,8 +609,8 @@ export class PurchasingOrderModel {
   }
 
   getSysReport(db: Knex) {
-    return db('um_report')
-      .where('is_active', 'Y')
+    return db('um_report_detail')
+      .where('is_active', 'Y');
   }
 
   getBookNumber(db: Knex) {

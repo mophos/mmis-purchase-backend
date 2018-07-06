@@ -277,8 +277,8 @@ router.get('/report/process/purchase/:startdate/:enddate', wrap(async (req, res,
   })
 }));
 
-router.get('/report/purchasing/:startdate', wrap(async (req, res, next) => {
-  let startdate = req.params.startdate;
+router.get('/report/purchasing', wrap(async (req, res, next) => {
+  let startdate = req.query.startdate;
   // let enddate = req.params.enddate;
   let db = req.db;
   let results = await model.pPurchasing(db, moment(startdate).format('YYYY-MM-DD'));

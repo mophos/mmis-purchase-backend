@@ -2,22 +2,25 @@
 
 import * as express from 'express';
 import * as moment from 'moment';
-import * as fse from 'fs-extra';
 import * as wrap from 'co-express';
 import * as _ from 'lodash';
 import { PurchasingOrderReportModel } from '../models/reports/purchasingOrder';
 import { RequisitionOrderReportModel } from '../models/reports/requisitionOrder';
-import { log } from 'util';
-import { PurchasingOrderModel } from '../models/purchasingOrder'
-import { each } from 'bluebird';
-import { checkServerIdentity } from 'tls';
+
 
 const model = new PurchasingOrderReportModel();
 const modelPr = new RequisitionOrderReportModel();
 const router = express.Router();
 
 let chief = "ปฎิบัติราชการแทนผู้ว่าราชการจังหวัด";
+// moment.locale('th');
+// const printDate = 'วันที่พิมพ์ ' + moment().format('D MMMM ') + (moment().get('year') + 543) + moment().format(', HH:mm:ss น.');
 
+function printDate() {
+  moment.locale('th');
+  const printDate = 'วันที่พิมพ์ ' + moment().format('D MMMM ') + (moment().get('year') + 543) + moment().format(', HH:mm:ss น.');
+  return printDate
+}
 router.get('/', (req, res, next) => {
   res.send({ ok: true, message: 'Welcome to Purchasing API server' });
 });
@@ -274,20 +277,20 @@ router.get('/report/process/purchase/:startdate/:enddate', wrap(async (req, res,
   })
 }));
 
-router.get('/report/purchasing/:startdate/:enddate', wrap(async (req, res, next) => {
+router.get('/report/purchasing/:startdate', wrap(async (req, res, next) => {
   let startdate = req.params.startdate;
-  let enddate = req.params.enddate;
+  // let enddate = req.params.enddate;
   let db = req.db;
-  let results = await model.pPurchasing(db, startdate, enddate);
+  let results = await model.pPurchasing(db, moment(startdate).format('YYYY-MM-DD'));
   let hospname = await model.hospital(db);
   results = results[0]
   hospname = hospname[0].hospname
   moment.locale('th');
   let sdate = moment(startdate).format('D MMMM ') + (moment(startdate).get('year') + 543);
-  let edate = moment(enddate).format('D MMMM ') + (moment(enddate).get('year') + 543);
+  // let edate = moment(enddate).format('D MMMM ') + (moment(enddate).get('year') + 543);
   let nDate = moment(new Date()).format('DD MMMM YYYY');
   let dates = moment(startdate).format('MMMM');
-  let daten = moment(enddate).format('MMMM');
+  // let daten = moment(enddate).format('MMMM');
   let sum: any = 0;
 
   results.forEach(value => {
@@ -303,12 +306,8 @@ router.get('/report/purchasing/:startdate/:enddate', wrap(async (req, res, next)
   res.render('pPurchasing', {
     results: results,
     hospname: hospname,
-    daten: daten,
-    dates: dates,
     sum: sum,
-    nDate: nDate,
     sdate: sdate,
-    edate: edate
   })
 }));
 
@@ -319,12 +318,13 @@ router.get('/report/purchasing-list/:startdate/:enddate/:genericTypeId', wrap(as
   let db = req.db;
   let results = await model.PurchasingList(db, startdate, enddate, generic_type_id);
   let hospname = await model.hospital(db);
+  if (!results[0].length) { res.render('error404') };
   results = results[0]
   hospname = hospname[0].hospname
   moment.locale('th');
   let sdate = moment(startdate).format('D MMMM ') + (moment(startdate).get('year') + 543);
   let edate = moment(enddate).format('D MMMM ') + (moment(enddate).get('year') + 543);
-  let nDate = moment(new Date()).format('DD MMMM YYYY');
+  // let nDate = moment(new Date()).format('DD MMMM YYYY');
   let dates = moment(startdate).format('MMMM');
   let daten = moment(enddate).format('MMMM');
   let sum: any = 0;
@@ -339,13 +339,13 @@ router.get('/report/purchasing-list/:startdate/:enddate/:genericTypeId', wrap(as
   });
   sum = model.comma(sum)
 
-  res.render('pPurchasing', {
+  res.render('pPurchasingList', {
     results: results,
     hospname: hospname,
     daten: daten,
     dates: dates,
     sum: sum,
-    nDate: nDate,
+    printDate: printDate(),
     sdate: sdate,
     edate: edate
   })

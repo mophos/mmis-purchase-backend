@@ -313,7 +313,7 @@ export class PurchasingOrderReportModel {
     GROUP BY generic_type_name
     ORDER BY generic_type_id`);
     }
-    pPurchasing(knex: Knex, startdate, enddate) {
+    pPurchasing(knex: Knex, startdate) {
         let _query = '%' + startdate + '%'
         return knex.raw(`SELECT
         mp.product_name,
@@ -379,7 +379,7 @@ export class PurchasingOrderReportModel {
         po.order_date BETWEEN '${startdate}' 
         AND '${enddate}' 
         AND po.is_cancel = 'N' 
-        AND po.budget_detail_id = ${generic_type_id}
+        AND g.generic_type_id = ${generic_type_id}
     GROUP BY
         purchase_order_id,poi.product_id
     ORDER BY

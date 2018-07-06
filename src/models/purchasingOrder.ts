@@ -562,7 +562,8 @@ export class PurchasingOrderModel {
     pp.unit_price,
     pp.total_price,
     po.contract_id,
-    pp.giveaway
+    pp.giveaway,
+    po.order_date
   FROM
     mm_generics AS mg
   JOIN pc_purchasing_order_item AS pp ON mg.generic_id = pp.generic_id

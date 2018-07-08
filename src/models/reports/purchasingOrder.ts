@@ -364,7 +364,9 @@ export class PurchasingOrderReportModel {
         ROUND( poi.unit_price, 2 ) AS unit_price,
         ROUND( SUM(poi.total_price), 2 ) AS total_price,
         l.labeler_name, 
-        l.labeler_name_po 
+        l.labeler_name_po,
+        r.delivery_date,
+        r.delivery_code
     FROM
         pc_purchasing_order po
         JOIN pc_purchasing_order_item poi ON poi.purchase_order_id = po.purchase_order_id
@@ -375,6 +377,7 @@ export class PurchasingOrderReportModel {
         LEFT JOIN mm_unit_generics uc ON uc.unit_generic_id = poi.unit_generic_id
         LEFT JOIN mm_units u ON u.unit_id = uc.to_unit_id
         LEFT JOIN mm_units uu ON uu.unit_id = uc.from_unit_id 
+        LEFT JOIN wm_receives r on po.purchase_order_id = r.purchase_order_id
     WHERE
         po.order_date BETWEEN '${startdate}' 
         AND '${enddate}' 

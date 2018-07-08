@@ -311,10 +311,10 @@ router.get('/report/purchasing', wrap(async (req, res, next) => {
   })
 }));
 
-router.get('/report/purchasing-list/:startdate/:enddate/:genericTypeId', wrap(async (req, res, next) => {
-  let startdate = req.params.startdate;
-  let enddate = req.params.enddate;
-  let generic_type_id = req.params.genericTypeId;
+router.get('/report/purchasing-list', wrap(async (req, res, next) => {
+  let startdate = req.query.startDate;
+  let enddate = req.query.endDate;
+  let generic_type_id = req.query.genericTypeId;
   let db = req.db;
   let results = await model.PurchasingList(db, startdate, enddate, generic_type_id);
   let hospname = await model.hospital(db);
@@ -330,8 +330,9 @@ router.get('/report/purchasing-list/:startdate/:enddate/:genericTypeId', wrap(as
   let sum: any = 0;
 
   results.forEach(value => {
-    sum += value.total_price
-    value.order_date = moment(value.order_date).format('DD/MM/YYYY')
+    sum += value.total_price;
+    value.order_date = moment(value.order_date).isValid() ? moment(value.order_date).format('DD/MM/') + (moment(value.order_date).get('year') + 543) : '-';
+    value.delivery_date = moment(value.delivery_date).isValid() ? moment(value.delivery_date).format('DD/MM/') + (moment(value.delivery_date).get('year') + 543) : '-';
     value.unit_price = model.comma(value.unit_price)
     value.conversion = model.commaQty(value.conversion)
     value.qty = model.commaQty(value.qty)

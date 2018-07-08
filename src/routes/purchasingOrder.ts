@@ -138,12 +138,12 @@ router.get('/', async (req, res, next) => {
   }
 });
 
-router.get('/get-list-po/:bgSubType', async (req, res, next) => {
-  let bgSubType = req.params.bgSubType;
+router.get('/get-list-po', async (req, res, next) => {
+  let genericTypeId = req.query.genericTypeId;
   let db = req.db;
 
   try {
-    let rs: any = await model.getOrderList(db, bgSubType);
+    let rs: any = await model.getOrderList(db, genericTypeId);
     res.send({ ok: true, rows: rs });
   } catch (error) {
     res.send({ ok: false, error: error.error });

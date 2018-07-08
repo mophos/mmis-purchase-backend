@@ -34,7 +34,7 @@ export class PurchasingOrderModel {
   checkApprove(knex: Knex, username: any, password: any, action: any) {
     return knex('um_users as uu')
       .andWhere('uu.username', username)
-      .andWhere('uu.password',  password)
+      .andWhere('uu.password', password)
   }
 
   getLastOrderByLabeler(knex: Knex, labeler_id: string) {
@@ -94,12 +94,13 @@ export class PurchasingOrderModel {
       .orderBy('pc_purchasing_order.order_date', 'DESC');
   }
 
-  getOrderList(knex: Knex, bgSubType: any) {
+  getOrderList(knex: Knex, genericTypeId: any) {
     return knex('pc_purchasing_order as po')
       .select('*', knex.raw('ROUND( SUM(poi.total_price), 2 ) as total_price'))
       .join('pc_purchasing_order_item as poi', 'po.purchase_order_id', 'poi.purchase_order_id')
+      .join('mm_generics as mg', 'mg.generic_id', 'poi.generic_id')
       .where('po.is_cancel', 'N')
-      .andWhere('po.budget_detail_id', bgSubType)
+      .andWhere('mg.generic_type_id', genericTypeId)
       .groupBy('po.purchase_order_id')
       .orderBy('po.purchase_order_number')
   }

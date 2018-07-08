@@ -691,7 +691,9 @@ export class ProductsModel {
       mg.generic_name,
       mp.generic_id,
       ge.num_days AS expire_num_days,
-      vcm.contract_id, vcm.contract_no, vcm.contract_status
+      vcm.contract_id, vcm.contract_no, vcm.contract_status,
+      ifnull((SELECT qty from pc_purchasing_order_item poi JOIN pc_purchasing_order po ON poi.purchase_order_id = po.purchase_order_id  where poi.product_id=mp.product_id AND po.is_cancel = 'N' 
+	AND ( po.purchase_order_status = 'COMPLETED' OR po.purchase_order_status = 'APPROVED' ) ORDER BY purchase_order_item_id desc limit 1),0) as old_qty
     FROM
       mm_products AS mp
     LEFT JOIN mm_generics AS mg ON mg.generic_id = mp.generic_id
@@ -726,7 +728,9 @@ export class ProductsModel {
       mg.generic_name,
       mp.generic_id,
       ge.num_days AS expire_num_days,
-      vcm.contract_id, vcm.contract_no, vcm.contract_status
+      vcm.contract_id, vcm.contract_no, vcm.contract_status,
+      ifnull((SELECT qty from pc_purchasing_order_item poi JOIN pc_purchasing_order po ON poi.purchase_order_id = po.purchase_order_id  where poi.product_id=mp.product_id AND po.is_cancel = 'N' 
+	AND ( po.purchase_order_status = 'COMPLETED' OR po.purchase_order_status = 'APPROVED' ) ORDER BY purchase_order_item_id desc limit 1),0) as old_qty
     FROM
       mm_products AS mp
     LEFT JOIN mm_generics AS mg ON mg.generic_id = mp.generic_id
@@ -764,7 +768,9 @@ export class ProductsModel {
       mg.generic_name,
       mp.generic_id,
       ge.num_days AS expire_num_days,
-      vcm.contract_id, vcm.contract_no, vcm.contract_status
+      vcm.contract_id, vcm.contract_no, vcm.contract_status,
+      ifnull((SELECT qty from pc_purchasing_order_item poi JOIN pc_purchasing_order po ON poi.purchase_order_id = po.purchase_order_id  where poi.product_id=mp.product_id AND po.is_cancel = 'N' 
+	AND ( po.purchase_order_status = 'COMPLETED' OR po.purchase_order_status = 'APPROVED' ) ORDER BY purchase_order_item_id desc limit 1),0) as old_qty
     FROM
       mm_products AS mp
     LEFT JOIN mm_generics AS mg ON mg.generic_id = mp.generic_id

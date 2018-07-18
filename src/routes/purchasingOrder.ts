@@ -521,6 +521,7 @@ router.put('/:purchaseOrderId', async (req, res, next) => {
         purchase.discount_percent = summary.discount_percent;
         purchase.discount_cash = summary.discount_cash;
         purchase.exclude_vat = summary.exclude_vat;
+        purchase.include_vat = summary.include_vat;
         // purchase.is_before_vat = summary.is_before_vat;
         purchase.vat_rate = summary.vat_rate;
         purchase.vat = summary.vat;

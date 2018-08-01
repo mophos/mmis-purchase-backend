@@ -4,10 +4,10 @@ style(type='text/css').
     font-family:'THSarabunIT';
   }
 style(type='text/css' media='print').
-   @page{
-   margin-top: 1.5cm;
-   margin-left: 2.5cm;
-   margin-right: 2cm;
+  @page{
+  margin-top: 1.5cm;
+  margin-left: 2.5cm;
+  margin-right: 2cm;
   }
 doctype html
 html
@@ -25,32 +25,32 @@ html
     br
     table(style='width:100%;')
         tr
-            td.left(style='width:50%;') ผู้ขาย/ผู้รับจ้าง #{purchasing[0].labeler_name_po}
+            td.left(style='width:50%;') ผู้ขาย/ผู้รับจ้าง #{purchasing[i][0].labeler_name_po}
             td.left(style='width:50%;') ใบสั่งซื้อ/สั่งจ้างเลขที่ 
-              if(purchasing[0].purchase_order_book_number)
-                | #{purchasing[0].purchase_order_book_number}
+              if(purchasing[i][0].purchase_order_book_number)
+                | #{purchasing[i][0].purchase_order_book_number}
               else
-                | #{purchasing[0].purchase_order_number}
+                | #{purchasing[i][0].purchase_order_number}
         tr
-            td.left ที่อยู่ #{purchasing[0].address}
-            td.left วันที่ #{purchasing[0].order_date}
+            td.left ที่อยู่ #{purchasing[i][0].address}
+            td.left วันที่ #{purchasing[i][0].order_date}
         tr
             td.left 
             td.left ส่วนราชการ#{hospitalName}
         tr
-            td.left โทรศัพท์ #{purchasing[0].phone}
+            td.left โทรศัพท์ #{purchasing[i][0].phone}
             td.left ที่อยู่ #{hosaddress}
         tr
-            td.left เลขประจำตัวผู้เสียภาษี #{purchasing[0].nin}
+            td.left เลขประจำตัวผู้เสียภาษี #{purchasing[i][0].nin}
             td.left จังหวัด#{province}
         tr
-            td.left เลขที่บัญชีเงินฝากธนาคาร
+            td.left เลขที่บัญชีเงินฝากธนาคาร  ............................................
             td.left โทรศัพท์ #{hostel}
         tr
-            td.left ชื่อบัญชี
+            td.left ชื่อบัญชี  ............................................
             td.left
         tr
-            td.left ธนาคาร
+            td.left ธนาคาร  ............................................
             td.left
     br
     .fontspace
@@ -66,7 +66,7 @@ html
           td(style='font-size: 11pt; border: 1px solid black; vertical-align: middle;').center จำนวนเงิน(บาท)
       tbody
         - var y=0
-            for b in purchasing
+            for b in purchasing[i]
               - y++
                 tr
                   td.center(style='border: 1px solid black;') #{y}
@@ -74,19 +74,30 @@ html
                   td.center(style='border: 1px solid black;') #{b.qtyPoi}
                   td.center(style='border: 1px solid black;') #{b.unit_name}
                   td.right(style='border: 1px solid black;') #{b.unit_price}
-                  td.right(style='border: 1px solid black;') #{b.total_price}
-      tr
-        td
-        td(colspan='7').right รวม #{y} รายการ รวมเป็นเงิน #{total} บาท
-      tr
-        td
-        td(colspan='7').right (ตัวอักษร) (#{bahtText})
+                  td.right(style='border: 1px solid black;') #{b.sumcost}
+        tr
+          td(rowspan='4' colspan='3' style='font-weight: bold; border: 1px solid black; vertical-align: bottom;').center (#{arrayBahtText[i]})
+        tr
+          td(colspan='2' style='border: 1px solid black;').right รวมเป็นเงิน
+          td(style='border: 1px solid black;').right #{arrayTotal[i]}
+        tr
+          td(colspan='2' style='border: 1px solid black;').right ภาษีมูลค่าเพิ่ม
+          td(style='border: 1px solid black;').right #{purchasing[i][0].vat}
+        tr
+          td(colspan='2' style='border: 1px solid black;').right รวมเป็นเงินทั้งสิ้น
+          td(style='border: 1px solid black;').right #{arrayNet[i]}
+      //- tr
+      //-   td
+      //-   td(colspan='7').right รวม #{y} รายการ รวมเป็นเงิน #{arrayTotal[i]} บาท
+      //- tr
+      //-   td
+      //-   td(colspan='7').right (ตัวอักษร) (#{arrayBahtText[i]})
     br
     | การซื้อ/สั่งจ้าง อยู่ภายใต้เงื่อนไขต่อไปนี้
     br
-    | 1.กำหนดส่งมอบภายใน #{purchasing[0].delivery} วัน นับถัดจากวันที่ผู้รับจ้างได้รับใบสั่งซื้อ
+    | 1.กำหนดส่งมอบภายใน #{purchasing[i][0].delivery} วัน นับถัดจากวันที่ผู้รับจ้างได้รับใบสั่งซื้อ
     br
-    | 2.ครบกำหนดส่งมอบวันที่ #{limitDate}
+    | 2.ครบกำหนดส่งมอบวันที่ #{limitDate[i]}
     br
     | 3.สถานที่ส่งมอบ#{hospitalName}
     br

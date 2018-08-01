@@ -21,6 +21,7 @@ function printDate() {
   const printDate = 'วันที่พิมพ์ ' + moment().format('D MMMM ') + (moment().get('year') + 543) + moment().format(', HH:mm:ss น.');
   return printDate
 }
+
 router.get('/', (req, res, next) => {
   res.send({ ok: true, message: 'Welcome to Purchasing API server' });
 });
@@ -1038,6 +1039,8 @@ router.get('/report/purchasing/standard', wrap(async (req, res, next) => {
   let budget = await model.budgetType(db, purchasing[0].budget_detail_id)
   budget = budget[0]
   let totalprice = 0
+  let net = 0
+  let vat: any;
 
   let budgetsave = 0;
   budget.forEach(value => {
@@ -1048,7 +1051,9 @@ router.get('/report/purchasing/standard', wrap(async (req, res, next) => {
 
   purchasing.forEach(value => {
     value.standard_cost = value.standard_cost < value.unit_price ? value.unit_price : value.standard_cost;
-    totalprice += value.total_price;
+    totalprice = value.sub_total;
+    net = value.net_total;
+    vat = model.comma(value.vat)
     if (value.qty == null) value.qty = 0;
     value.qty = model.commaQty(value.qty);
     value.qtyPoi = model.commaQty(value.qtyPoi);
@@ -1067,7 +1072,8 @@ router.get('/report/purchasing/standard', wrap(async (req, res, next) => {
   })
 
   let ttotalprice = model.comma(totalprice)
-  let bahtText = model.bahtText(totalprice)
+  let net_price = model.comma(net)
+  let bahtText = model.bahtText(net)
   let _month: any = moment(new Date()).format('MM');
   let _year: any = moment(new Date()).get('year');
   if (_month >= 10) {
@@ -1106,7 +1112,9 @@ router.get('/report/purchasing/standard', wrap(async (req, res, next) => {
     type: type,
     purchasing: purchasing,
     sum: sum,
+    vat: vat,
     total: ttotalprice,
+    net: net_price,
     hospitalName: hospitalName,
     at_name: at[0].value,
     nDate: nDate,
@@ -1673,7 +1681,7 @@ router.get('/report/purchasing/16', wrap(async (req, res, next) => {
   let totalprice = 0
   let textamount = model.bahtText(budget[0].amount)
 
-  let limitDate = moment(moment().add(purchasing[0].delivery, 'days').calendar()).format('D MMMM ') + (moment(purchasing[0].order_date).get('year') + 543);
+  let limitDate = moment().add(purchasing[0].delivery, 'days').format('D MMMM ') + (moment(purchasing[0].order_date).get('year') + 543);
 
   let sum = model.comma(budget[0].amount - budget[0].order_amt)
   budget.forEach(value => {
@@ -2066,12 +2074,13 @@ router.get('/report/allpo/egp/', wrap(async (req, res, next) => {
 
     allAmount = model.comma(arAtransection[i][0].amount);
     arAllamount.push(allAmount);
-    limitDate.push(moment(moment().add(purchasing[i][0].delivery, 'days').calendar()).format('D MMMM ') + (moment(purchasing[i][0].order_date).get('year') + 543));
+    limitDate.push(moment().add(purchasing[i][0].delivery, 'days').format('D MMMM ') + (moment(purchasing[i][0].order_date).get('year') + 543));
 
     let total: any = 0;
     arrayItems.forEach(v => {
       v.order_date = moment(v.order_date).format('D MMMM ') + (moment(v.order_date).get('year') + 543);
-      total += v.total_price;
+      v.sumcost = model.comma(v.qtyPoi * v.unit_price)
+      total = v.sub_total;
       v.total_price = model.comma(v.total_price);
       v.qty = model.commaQty(v.qty);
       v.unit_price = model.comma(v.unit_price);
@@ -2195,12 +2204,13 @@ router.get('/report/getporder/standard/', wrap(async (req, res, next) => {
     }
     allAmount = model.comma(arAtransection[i][0].amount);
     arAllamount.push(allAmount);
-    limitDate.push(moment(moment().add(purchasing[i][0].delivery, 'days').calendar()).format('D MMMM ') + (moment(purchasing[i][0].order_date).get('year') + 543));
+    limitDate.push(moment().add(purchasing[i][0].delivery, 'days').format('D MMMM ') + (moment(purchasing[i][0].order_date).get('year') + 543));
 
     let total: any = 0;
     arrayItems.forEach(v => {
       v.order_date = moment(v.order_date).format('D MMMM ') + (moment(v.order_date).get('year') + 543);
-      total += v.total_price;
+      v.sumcost = model.comma(v.qtyPoi * v.unit_price)
+      total = v.sub_total;
       v.total_price = model.comma(v.total_price);
       v.qty = model.commaQty(v.qty);
       v.unit_price = model.comma(v.unit_price);
@@ -2339,13 +2349,17 @@ router.get('/report/getporder/DebaratanaNakhonratchasima/', wrap(async (req, res
     }
     allAmount = model.comma(arAtransection[i][0].amount);
     arAllamount.push(allAmount);
-    limitDate.push(moment(moment().add(purchasing[i][0].delivery, 'days').calendar()).format('D MMMM ') + (moment(purchasing[i][0].order_date).get('year') + 543));
+    limitDate.push(moment().add(purchasing[i][0].delivery, 'days').format('D MMMM ') + (moment(purchasing[i][0].order_date).get('year') + 543));
 
     let total: any = 0;
     arrayItems.forEach(v => {
-      console.log(v.purchase_order_number,'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',v.total_price);
       v.order_date = moment(v.order_date).format('D MMMM ') + (moment(v.order_date).get('year') + 543);
-      total += v.total_price;
+      v.sumcost = model.comma(v.qtyPoi * v.unit_price)
+      if (v.standard_cost <= v.unit_price) {
+        v.standard_cost = v.unit_price
+      }
+      v.total_price = v.sub_total
+      total = v.totalprice;
       v.total_price = model.comma(v.total_price);
       v.qty = model.commaQty(v.qty);
       v.unit_price = model.comma(v.unit_price);
@@ -2353,26 +2367,28 @@ router.get('/report/getporder/DebaratanaNakhonratchasima/', wrap(async (req, res
       v.standard_cost = model.comma(v.standard_cost);
       v.cost = model.comma(v.cost);
     });
-    
-    
-    let net = purchasing[i][0].vat + total;
+    res
+
+    //เช็ค net ระหว่าง ถอด vat กับ เพิ่ม vat
+    let net: any;
+    net = purchasing[i][0].vat + total;
     bahtText = model.bahtText(net);
     net = model.comma(net);
-    
     arrayNet.push(net);
-    
+
+
     purchasing[i][0].vat = model.comma(purchasing[i][0].vat);
     arrayVat.push(purchasing[i][0].vat);
-    
+
     total = model.comma(total);
     arrayTotal.push(total);
     arrayBahtText.push(bahtText);
-    
+
     bidname = await model.bidName(db, purchasing[i][0].purchase_method_id);
     arrayBid.push(bidname);
   }
-  console.log(',,,,,,,,,,,,,,,,,,',arrayItems);
-  
+  console.log(',,,,,,,,,,,,,,,,,,', arrayItems);
+
   res.render('purchasing16DebaratanaNakhonratchasima', {
     arrayNet: arrayNet,
     arrayVat: arrayVat,

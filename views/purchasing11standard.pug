@@ -39,7 +39,7 @@ html
     .fontspace
     .enter &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2. สำเนาใบอนุมัติสั่งซื้อยา&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; จำนวน 1 ฉบับ
     .fontspace
-    .enter(style="line-height: 1.2em;") &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ด้วยจังหวัด#{province} มีความประสงค์จะสั่งซื้อยา จากองค์การเภสัชกรรม เพื่อใช้ในราชการ #{hospitalName} จำนวน #{countp} รายการ เป็นเงิน #{total} บาท (#{bahtText}) สำเนาใบอนุมัติสั่งซื้อยาและใบสั่งซื้อยาพร้อมเงื่อนไขในการสั่งซื้อที่แนบมาพร้อมนี้
+    .enter(style="line-height: 1.2em;") &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ด้วยจังหวัด#{province} มีความประสงค์จะสั่งซื้อยา จากองค์การเภสัชกรรม เพื่อใช้ในราชการ #{hospitalName} จำนวน #{countp} รายการ เป็นเงิน #{net} บาท (#{bahtText}) สำเนาใบอนุมัติสั่งซื้อยาและใบสั่งซื้อยาพร้อมเงื่อนไขในการสั่งซื้อที่แนบมาพร้อมนี้
     .fontspace
     .enter &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;จึงเรียนมาเพื่อโปรดจัดส่งยา ให้แก่#{hospitalName} ตามกำหนดเวลาและสถานที่ ที่ระบุในใบสั่งซื้อด้วย จักเป็นพระคุณ
     div(style='margin-left: 40%; width: 40%; text-align:center;')
@@ -115,7 +115,7 @@ html
     .enter เรียน ผู้ว่าราชการจังหวัด#{province}
     .enter
     .fontspace
-    p(style="line-height: 1.2em;") ด้วย#{hospitalName} มีความประสงค์จะสั่งซื้อยา จากองค์การเภสัชกรรม ตามแบบ บส.09/1 ที่แนบมาพร้อมนี้ เพื่อใช้ในการรักษาพยาบาล จำนวน #{countp} รายการ เป็นเงิน #{total} บาท (#{bahtText}) โดยใช้#{budget[0].bgtype_name} ประจำปีงบประมาณ #{budget[0].bg_year}
+    p(style="line-height: 1.2em;") ด้วย#{hospitalName} มีความประสงค์จะสั่งซื้อยา จากองค์การเภสัชกรรม ตามแบบ บส.09/1 ที่แนบมาพร้อมนี้ เพื่อใช้ในการรักษาพยาบาล จำนวน #{countp} รายการ เป็นเงิน #{net} บาท (#{bahtText}) โดยใช้#{budget[0].bgtype_name} ประจำปีงบประมาณ #{budget[0].bg_year}
     .enter
     .fontspace
     | จึงเรียนมาเพื่อขออนุมัติซื้อยาดังกล่าว

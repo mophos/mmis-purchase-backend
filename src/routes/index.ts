@@ -1292,6 +1292,8 @@ router.get('/report/purchasing-standard/11', wrap(async (req, res, next) => {
   let budget = await model.budgetType(db, purchasing[0].budget_detail_id)
   budget = budget[0]
   let totalprice = 0
+  let net = 0
+  let vat: any
   let poNumber = purchasing[0].purchase_order_book_number ? purchasing[0].purchase_order_book_number : '';
 
   let sum = model.comma(budget[0].amount - budget[0].order_amt)
@@ -1302,7 +1304,9 @@ router.get('/report/purchasing-standard/11', wrap(async (req, res, next) => {
   let countp = 0;
   purchasing.forEach(value => {
     countp++;
-    totalprice += value.total_price
+    vat = value.vat
+    totalprice = value.sub_total
+    net = value.net_total
     if (value.qty == null) value.qty = 0;
     value.qty = model.commaQty(value.qty);
     value.conversion = model.commaQty(value.conversion);
@@ -1313,8 +1317,11 @@ router.get('/report/purchasing-standard/11', wrap(async (req, res, next) => {
     value.unit_price = model.comma(value.unit_price);
     value.total = model.commaQty(value.total)
   })
+
+  vat = model.comma(vat)
   let ttotalprice = model.comma(totalprice)
-  let bahtText = model.bahtText(totalprice)
+  let net_total = model.comma(net)
+  let bahtText = model.bahtText(net)
 
   let pcb = await model.pcBudget(db, purchaOrderId);
   pcb.forEach(value => {
@@ -1334,6 +1341,7 @@ router.get('/report/purchasing-standard/11', wrap(async (req, res, next) => {
     bidname: bidname,
     tel: tel,
     fax: fax,
+    vat: vat,
     address: address,
     allAmount: allAmount,
     pcb: pcb[0],
@@ -1345,6 +1353,7 @@ router.get('/report/purchasing-standard/11', wrap(async (req, res, next) => {
     sum: sum,
     countp: countp,
     total: ttotalprice,
+    net: net_total,
     hospitalName: hospitalName,
     at_name: at[0].value,
     chief: chief,

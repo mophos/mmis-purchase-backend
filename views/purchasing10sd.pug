@@ -85,12 +85,13 @@ html
                   td.right(style='border: 1px solid black;') #{b.total_price}
                   td.right(style='border: 1px solid black;') #{b.standard_cost}
                   td.right(style='border: 1px solid black;') #{b.unit_price}
-      tr
-        td
-        td(colspan='7').right รวมเป็นเงิน #{total} บาท
-      tr
-        td
-        td(colspan='7').right ภาษีมูลค่าเพิ่ม #{vat} บาท
+      if(vat > 0)
+        tr
+          td
+          td(colspan='7').right รวมเป็นเงิน #{total} บาท
+        tr
+          td
+          td(colspan='7').right ภาษีมูลค่าเพิ่ม #{vat} บาท
       tr
         td
         td(colspan='7').right รวม #{y} รายการ รวมเป็นเงินสุทธิ #{net} บาท
@@ -123,7 +124,7 @@ html
           td #{allAmount} บาท
         tr 
           td ยอดการจัดซื้อครั้งนี้
-          td #{total} บาท
+          td #{net} บาท
         tr 
           td ยอดเงินคงเหลือจากการซื้อครั้งนี้
           td #{pcb.balance} บาท

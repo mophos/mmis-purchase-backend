@@ -2367,8 +2367,7 @@ router.get('/report/getporder/DebaratanaNakhonratchasima/', wrap(async (req, res
       if (v.standard_cost <= v.unit_price) {
         v.standard_cost = v.unit_price
       }
-      v.total_price = v.sub_total
-      total = v.totalprice;
+      total = v.sub_total;
       v.total_price = model.comma(v.total_price);
       v.qty = model.commaQty(v.qty);
       v.unit_price = model.comma(v.unit_price);
@@ -2376,7 +2375,6 @@ router.get('/report/getporder/DebaratanaNakhonratchasima/', wrap(async (req, res
       v.standard_cost = model.comma(v.standard_cost);
       v.cost = model.comma(v.cost);
     });
-    res
 
     //เช็ค net ระหว่าง ถอด vat กับ เพิ่ม vat
     let net: any;

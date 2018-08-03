@@ -2375,7 +2375,6 @@ router.get('/report/getporder/DebaratanaNakhonratchasima/', wrap(async (req, res
       v.standard_cost = model.comma(v.standard_cost);
       v.cost = model.comma(v.cost);
     });
-    res
 
     //เช็ค net ระหว่าง ถอด vat กับ เพิ่ม vat
     let net: any;

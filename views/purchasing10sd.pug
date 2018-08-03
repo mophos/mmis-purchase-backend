@@ -87,7 +87,13 @@ html
                   td.right(style='border: 1px solid black;') #{b.unit_price}
       tr
         td
-        td(colspan='7').right รวม #{y} รายการ รวมเป็นเงิน #{total} บาท
+        td(colspan='7').right รวมเป็นเงิน #{total} บาท
+      tr
+        td
+        td(colspan='7').right ภาษีมูลค่าเพิ่ม #{vat} บาท
+      tr
+        td
+        td(colspan='7').right รวม #{y} รายการ รวมเป็นเงินสุทธิ #{net} บาท
       tr
         td
         td(colspan='7').right (ตัวอักษร) (#{bahtText})

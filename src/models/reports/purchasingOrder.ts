@@ -829,7 +829,12 @@ export class PurchasingOrderReportModel {
             po.verify_committee_id,
             po.check_price_committee_id,
             po.budget_detail_id,
-            po.order_date
+            po.order_date,
+            po.vat,
+            po.sub_total,
+            po.total_price as net_total,
+            po.include_vat,
+            po.exclude_vat
         FROM
             pc_purchasing_order po
             LEFT JOIN pc_purchasing_order_item poi ON poi.purchase_order_id = po.purchase_order_id
@@ -870,6 +875,10 @@ export class PurchasingOrderReportModel {
                 'ml.labeler_name_po',
                 'mg.generic_id',
                 'mg.generic_name',
+                'po.include_vat',
+                'po.exclude_vat',
+                'po.sub_total',
+                'mg.standard_cost',
                 knex.raw(`IFNULL(
                     (
                 SELECT
@@ -887,7 +896,10 @@ export class PurchasingOrderReportModel {
                     ) AS qty`),
                 'poi.qty AS qtyPoi',
                 'poi.unit_price',
+                //total_price ของ PO_item
                 'poi.total_price',
+                //totalprice ของ PO
+                'po.total_price as totalprice',
                 'mu.unit_name',
                 'po.verify_committee_id',
                 'po.check_price_committee_id',

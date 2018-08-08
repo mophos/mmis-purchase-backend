@@ -12,6 +12,11 @@ const model = new PurchasingOrderReportModel();
 const modelPr = new RequisitionOrderReportModel();
 const router = express.Router();
 
+const path = require('path')
+const fse = require('fs-extra');
+const fs = require('fs');
+const json2xls = require('json2xls');
+
 let chief = "ปฎิบัติราชการแทนผู้ว่าราชการจังหวัด";
 // moment.locale('th');
 // const printDate = 'วันที่พิมพ์ ' + moment().format('D MMMM ') + (moment().get('year') + 543) + moment().format(', HH:mm:ss น.');
@@ -2420,5 +2425,61 @@ router.get('/report/getporder/DebaratanaNakhonratchasima/', wrap(async (req, res
     pcb: pcb
   });
 }));
+
+router.get('/report/purchasing-list/excel', async (req, res, next) => {
+  let startdate = req.query.startDate;
+  let enddate = req.query.endDate;
+  let generic_type_id = req.query.genericTypeId;
+  let db = req.db;
+  let results = await model.PurchasingList(db, startdate, enddate, generic_type_id);
+  let hospname = await model.hospital(db);
+  if (!results[0].length) { res.render('error404') };
+  results = results[0]
+  hospname = hospname[0].hospname
+  moment.locale('th');
+  let sum: any = 0;
+  startdate = moment(startdate).format('DD-MM-') + (moment(startdate).get('year') + 543)
+  enddate = moment(enddate).format('DD-MM-') + (moment(enddate).get('year') + 543)
+
+  results.forEach(value => {
+    sum += value.total_price;
+    value.order_date = moment(value.order_date).isValid() ? moment(value.order_date).format('DD/MM/') + (moment(value.order_date).get('year') + 543) : '-';
+    value.delivery_date = moment(value.delivery_date).isValid() ? moment(value.delivery_date).format('DD/MM/') + (moment(value.delivery_date).get('year') + 543) : '-';
+    value.unit_price = model.comma(value.unit_price)
+    value.conversion = model.commaQty(value.conversion)
+    value.qty = model.commaQty(value.qty)
+    value.total_price = model.comma(value.total_price)
+  });
+  sum = model.comma(sum)
+  let json = [];
+
+  results.forEach(v => {
+    let obj: any = {};
+    obj.purchase_order_number = v.purchase_order_number;
+    obj.purchase_order_book_number = v.purchase_order_book_number;
+    obj.order_date = v.order_date;
+    obj.product_name = v.product_name;
+    obj.qty = v.qty;
+    obj.primary_unit = v.primary_unit;
+    obj.conversion = v.conversion;
+    obj.total_price = v.total_price;
+    obj.labeler_name_po = v.labeler_name_po;
+    obj.delivery_date = v.delivery_date;
+    obj.delivery_code = v.delivery_code;
+    obj.sum = ''
+    json.push(obj);
+  });
+
+  json[json.length - 1].sum = sum
+
+  const xls = json2xls(json);
+  const exportDirectory = path.join(process.env.MMIS_DATA, 'exports');
+  // create directory
+  fse.ensureDirSync(exportDirectory);
+  const filePath = path.join(exportDirectory, 'รายงานสรุปรายการเวชภัณฑ์ที่สั่งซื้อ ตั้งแต่ ' + startdate + ' ถึง ' + enddate + '.xlsx');
+  fs.writeFileSync(filePath, xls, 'binary');
+  // force download
+  res.download(filePath, 'รายงานสรุปรายการเวชภัณฑ์ที่สั่งซื้อ ตั้งแต่ ' + startdate + ' ถึง ' + enddate + '.xlsx');
+});
 
 export default router;

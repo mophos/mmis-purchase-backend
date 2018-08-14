@@ -1059,6 +1059,7 @@ export class PurchasingOrderReportModel {
             AND b.bg_year = ${budgetYear} 
             AND t.transaction_status = 'SPEND' 
             AND t.purchase_order_id = ${pid} 
+            AND t.amount > 0
         )`;
         return knex.raw(sql)
     }

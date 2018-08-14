@@ -98,10 +98,10 @@ export class BudgetTransectionModel {
 
   getHistory(knex: Knex, budgetDetailId: any) {
     return knex('pc_budget_transection as pt')
-      .select('pt.*', 'pc.purchase_order_number')  
-      .innerJoin('pc_purchasing_order as pc', 'pc.purchase_order_id', 'pt.purchase_order_id')  
+      .select('pt.*', 'pc.purchase_order_number')
+      .innerJoin('pc_purchasing_order as pc', 'pc.purchase_order_id', 'pt.purchase_order_id')
       .where('pt.bgdetail_id', budgetDetailId)
-      .orderBy('pt.date_time', 'desc');
+      .orderBy('pt.transection_id', 'desc');
   }
 
   getTransactionBalance(knex: Knex, budgetDetailId: any, purchaseOrderId: any = null) {
@@ -110,13 +110,13 @@ export class BudgetTransectionModel {
       .select(knex.raw('sum(bt.amount) as total_purchase'))
       .where('bt.bgdetail_id', budgetDetailId)
       .where('bt.transaction_status', 'SPEND');
-    
+
     if (purchaseOrderId) {
       query.whereNot('bt.purchase_order_id', purchaseOrderId);
     }
 
     return query;
-  
+
   }
 
   cancelTransaction(knex: Knex, purchaseOrderId: any) {

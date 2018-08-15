@@ -232,4 +232,32 @@ router.get('/history/:budgetDetailId', async (req, res, next) => {
   }
 });
 
+// router.get('/edit/:budgetDetailId', async (req, res, next) => {
+//   let budgetDetailId = req.params.budgetDetailId;
+//   let db = req.db;
+
+//   try {
+//     let rs = await budgetModel.edit(db, budgetDetailId);
+//     for (let i = 0; i < rs.length; i++) {
+//       if (rs[i].transection_id == 1039) {
+//         rs[i].incoming_balance = rs[i].incoming_balance - 510000
+//       }
+//       rs[i].balance = rs[i].incoming_balance - rs[i].amount
+//       if (i < rs.length - 1) {
+//         if (rs[i].transaction_status == 'SPEND') {
+//           rs[i + 1].incoming_balance = rs[i].balance
+//         } else {
+//           rs[i + 1].incoming_balance = rs[i].incoming_balance
+//         }
+//       }
+//       await budgetModel.update(db, rs[i].incoming_balance, rs[i].balance, rs[i].transection_id)
+//     }
+//     console.log(rs.length);
+//     res.send({ ok: true, rows: rs })
+//     db.destroy();
+//   } catch (error) {
+//     res.send({ ok: false, error: error })
+//   }
+// });
+
 export default router;

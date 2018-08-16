@@ -40,7 +40,7 @@ export class PurchasingOrderReportModel {
         b.bgtype_id,
         b.bgtype_name,
         bts.bgtypesub_name,
-        bd.amount,
+        (select sum(amount) from bm_budget_detail as bd1 where bd1.bgtype_id = bd.bgtype_id and bd1.bgtypesub_id = bd.bgtypesub_id  group by bd1.bgtype_id,bd1.bgtypesub_id) as amount,
         bd.bg_year+543 as bg_year
         FROM bm_bgtype b
         JOIN bm_budget_detail bd ON bd.bgtype_id=b.bgtype_id

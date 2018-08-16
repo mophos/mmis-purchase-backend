@@ -124,4 +124,18 @@ export class BudgetTransectionModel {
       .where('purchase_order_id', purchaseOrderId)
       .update('transaction_status', 'REVOKE');
   }
+
+  // edit(knex: Knex, budgetDetailId: any) {
+  //   return knex('pc_budget_transection as pt')
+  //     .select('pt.*')
+  //     .where('pt.bgdetail_id', budgetDetailId)
+  //     .orderBy('pt.transection_id', 'asc');
+  // }
+
+  // update(knex: Knex, incoming_balance: any, balance: any, transection_id: any) {
+  //   return knex('pc_budget_transection')
+  //     .where('transection_id', transection_id)
+  //     .update('incoming_balance', incoming_balance)
+  //     .update('balance', balance)
+  // }
 }

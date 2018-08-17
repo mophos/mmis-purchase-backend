@@ -2093,7 +2093,11 @@ router.get('/report/allpo/egp/', wrap(async (req, res, next) => {
     let total: any = 0;
     arrayItems.forEach(v => {
       v.order_date = moment(v.order_date).format('D MMMM ') + (moment(v.order_date).get('year') + 543);
-      v.sumcost = model.comma(v.qtyPoi * v.unit_price)
+      if (v.giveaway == 'Y') {
+        v.sumcost = model.comma(0.00)
+      } else {
+        v.sumcost = model.comma(v.qtyPoi * v.unit_price)
+      }
       total = v.sub_total;
       v.total_price = model.comma(v.total_price);
       v.qty = model.commaQty(v.qty);
@@ -2223,7 +2227,11 @@ router.get('/report/getporder/standard/', wrap(async (req, res, next) => {
     let total: any = 0;
     arrayItems.forEach(v => {
       v.order_date = moment(v.order_date).format('D MMMM ') + (moment(v.order_date).get('year') + 543);
-      v.sumcost = model.comma(v.qtyPoi * v.unit_price)
+      if (v.giveaway == 'Y') {
+        v.sumcost = model.comma(0.00)
+      } else {
+        v.sumcost = model.comma(v.qtyPoi * v.unit_price)
+      }
       total = v.sub_total;
       v.total_price = model.comma(v.total_price);
       v.qty = model.commaQty(v.qty);
@@ -2368,7 +2376,11 @@ router.get('/report/getporder/DebaratanaNakhonratchasima/', wrap(async (req, res
     let total: any = 0;
     arrayItems.forEach(v => {
       v.order_date = moment(v.order_date).format('D MMMM ') + (moment(v.order_date).get('year') + 543);
-      v.sumcost = model.comma(v.qtyPoi * v.unit_price)
+      if (v.giveaway == 'Y') {
+        v.sumcost = model.comma(0.00)
+      } else {
+        v.sumcost = model.comma(v.qtyPoi * v.unit_price)
+      }
       if (v.standard_cost <= v.unit_price) {
         v.standard_cost = v.unit_price
       }

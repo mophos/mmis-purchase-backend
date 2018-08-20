@@ -1064,4 +1064,26 @@ export class PurchasingOrderReportModel {
         )`;
         return knex.raw(sql)
     }
+
+    getHudgetHistory(knex: Knex, startDate: any, endDate: any, budgetDetailId: any) {
+        let sql = `SELECT
+        bt.transection_id,
+        bt.bgdetail_id,
+        po.purchase_order_number,
+        po.purchase_order_book_number,
+        bt.incoming_balance,
+        bt.amount,
+        bt.balance,
+        bt.date_time,
+        bt.remark
+    FROM
+        pc_budget_transection as bt
+        JOIN pc_purchasing_order as po ON po.purchase_order_id = bt.purchase_order_id
+        WHERE bt.transaction_status = 'SPEND'
+        AND bt.bgdetail_id = '${budgetDetailId}'
+        AND bt.date_time BETWEEN '${startDate}' AND '${endDate}'
+        ORDER BY 
+		    bt.date_time`
+        return knex.raw(sql)
+    }
 }

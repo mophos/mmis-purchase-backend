@@ -2494,4 +2494,98 @@ router.get('/report/purchasing-list/excel', async (req, res, next) => {
   res.download(filePath, 'รายงานสรุปรายการเวชภัณฑ์ที่สั่งซื้อ ตั้งแต่ ' + startdate + ' ถึง ' + enddate + '.xlsx');
 });
 
+router.get('/report/budget-history', wrap(async (req, res, next) => {
+  let db = req.db;
+  let startDate = req.query.startDate;
+  let endDate = req.query.endDate;
+  let budgetDetailId = req.query.budgetDetailId;
+  let hosdetail = await model.hospital(db);
+  let hospitalName = hosdetail[0].hospname;
+  let hostel = hosdetail[0].telephone;
+  let hosaddress = hosdetail[0].address;
+  moment.locale('th');
+  let sdate = moment(startDate).format('D MMMM ') + (moment(startDate).get('year') + 543);
+  let edate = moment(endDate).format('D MMMM ') + (moment(endDate).get('year') + 543);
+
+  let results: any = await model.getHudgetHistory(db, startDate, endDate, budgetDetailId);
+  results = results[0];
+
+  if (results.length == 0) {
+    res.render('error404')
+  }
+
+  results.forEach(value => {
+    value.date_time = moment(value.date_time).isValid() ? moment(value.date_time).format('DD/MM/') + (moment(value.date_time).get('year') + 543) : '-';
+    value.incoming_balance = model.comma(value.incoming_balance)
+    if (value.amount < 0) {
+      value.amount = value.amount * -1
+    }
+    value.amount = model.comma(value.amount)
+    value.balance = model.comma(value.balance)
+  });
+
+  res.render('budgetHistory', {
+    hospitalName: hospitalName,
+    results: results,
+    sdate: sdate,
+    edate: edate
+  });
+}));
+
+router.get('/report/budget-history/excel', wrap(async (req, res, next) => {
+  let db = req.db;
+  let startDate = req.query.startDate;
+  let endDate = req.query.endDate;
+  let budgetDetailId = req.query.budgetDetailId;
+  let hosdetail = await model.hospital(db);
+  let hospitalName = hosdetail[0].hospname;
+  let hostel = hosdetail[0].telephone;
+  let hosaddress = hosdetail[0].address;
+  moment.locale('th');
+  let sdate = moment(startDate).format('D MMMM ') + (moment(startDate).get('year') + 543);
+  let edate = moment(endDate).format('D MMMM ') + (moment(endDate).get('year') + 543);
+  let json = [];
+
+  let results: any = await model.getHudgetHistory(db, startDate, endDate, budgetDetailId);
+  results = results[0];
+
+  if (results.length == 0) {
+    res.render('error404')
+  }
+
+  results.forEach(value => {
+    value.date_time = moment(value.date_time).isValid() ? moment(value.date_time).format('DD/MM/') + (moment(value.date_time).get('year') + 543) : '-';
+    value.incoming_balance = model.comma(value.incoming_balance)
+    if (value.amount < 0) {
+      value.amount = value.amount * -1
+    }
+    value.amount = model.comma(value.amount)
+    value.balance = model.comma(value.balance)
+  });
+
+  results.forEach(v => {
+    let obj: any = {};
+    obj.date = v.date_time;
+    obj.purchase_order_number = v.purchase_order_book_number || v.purchase_order_number
+    obj.incoming_balance = v.incoming_balance
+    obj.amount = v.amount
+    obj.balance = v.balance
+    if (obj.amount >= 0) {
+      obj.status = 'ตัดงบ'
+    } else {
+      obj.status = 'คืนงบ'
+    }
+    json.push(obj);
+  });
+
+  const xls = json2xls(json);
+  const exportDirectory = path.join(process.env.MMIS_DATA, 'exports');
+  // create directory
+  fse.ensureDirSync(exportDirectory);
+  const filePath = path.join(exportDirectory, 'รายงานประวัติการใช้งบประมาณ ตั้งแต่ ' + sdate + ' ถึง ' + edate + '.xlsx');
+  fs.writeFileSync(filePath, xls, 'binary');
+  // force download
+  res.download(filePath, 'รายงานประวัติการใช้งบประมาณตั้งแต่ ตั้งแต่ ' + sdate + ' ถึง ' + edate + '.xlsx');
+}));
+
 export default router;

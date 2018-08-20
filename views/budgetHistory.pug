@@ -1,0 +1,43 @@
+include css.pug
+doctype html
+html
+  head
+    meta(charset="utf-8")
+    title report
+  body
+    button.btn.btn-sm.btn-success(onclick='window.print()') Print
+    .center(style='font-weight: bold; font-size: 12pt;') #{hospitalName}
+    .center(style='font-weight: bold; font-size: 12pt;') รายงานประวัติการใช้งบประมาณ
+    .center(style='padding-bottom: 7pt; font-size: 12pt;') วันที่ #{sdate} ถึง #{edate}
+    .left(style='padding-bottom: 7pt; font-size: 12pt;') #{printDate} 
+    table(style='font-size: 10pt;')
+      thead
+        tr
+          th(style='font-size: 13pt;') วันที่
+          th(style='font-size: 13pt;') เลขที่สั่งซื้อ
+          th(style='font-size: 13pt;') ยอดคงเหลือยกมา
+          th(style='font-size: 13pt;') ยอดจัดซื้อ
+          th(style='font-size: 13pt;') ยอดคงเหลือ
+          th(style='font-size: 13pt;') สถานะ
+      tbody
+      - var y=0
+        for b in results
+          - y++
+            tr
+              td.center #{b.date_time}
+              td.center(style="padding-left: 5px;")
+                if(b.purchase_order_book_number)
+                  | #{b.purchase_order_book_number}
+                else
+                  | #{b.purchase_order_number}
+              td.right #{b.incoming_balance}
+              td.right #{b.amount}
+              td.right #{b.balance}
+              td.center 
+                if(b.amount >= 0)
+                  | ตัดงบ
+                else
+                  | คืนงบ
+      tfooter
+        tr
+          td.tbfooter(colspan='6' height='10')

@@ -138,6 +138,7 @@ export class PurchasingOrderModel {
       .whereIn('pc_purchasing_order.generic_type_id', genericTypeIds)
 
     // order by
+    console.log('sort', sort.by);
     if (sort.by) {
       let reverse = sort.reverse ? 'DESC' : 'ASC';
       console.log(reverse);
@@ -161,8 +162,9 @@ export class PurchasingOrderModel {
         con.orderBy('pc_purchasing_order.purchase_order_number', reverse);
       }
     } else {
-      con.orderBy('pc_purchasing_order.order_date', 'DESC')
-      con.orderBy('pc_purchasing_order.purchase_order_number', 'DESC');
+      // con.orderBy('pc_purchasing_order.order_date', 'DESC')
+      con.orderByRaw(` ( CASE WHEN pc_purchasing_order.updated_date IS NULL THEN pc_purchasing_order.created_date ELSE pc_purchasing_order.updated_date END ) DESC,
+      pc_purchasing_order.purchase_order_number DESC`);
     }
 
     if (contract === 'T') {

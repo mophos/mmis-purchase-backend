@@ -307,7 +307,18 @@ router.post('/purchase-reorder', async (req, res, next) => {
         let _poItems = [];
 
         for (let v of poItems) {
-          let serial = await serialModel.getSerial(db, 'PO');
+          // let serial
+          if (month >= 10) {
+            year += 1;
+          }
+          let currentNo;
+          const srNo = await serialModel.getSerialNumber(db, year, 1);
+          if (srNo.length) {
+            currentNo = srNo[0].total += 1;
+          } else {
+            currentNo = 1;
+          }
+          let serial = await serialModel.getSerialNew(db, 'PO', year, currentNo);
           let obj: any = {
             purchase_order_id: v.purchase_order_id,
             labeler_id: v.labeler_id,
@@ -397,18 +408,28 @@ router.post('/', async (req, res, next) => {
       } else {
 
         let serial
-        if (summary.generic_type_id === 1) {
-          serial = await serialModel.getSerial(db, 'PO');
-        } else if (summary.generic_type_id === 2) {
-          serial = await serialModel.getSerial(db, 'POA');
-        } else if (summary.generic_type_id === 3) {
-          serial = await serialModel.getSerial(db, 'POB');
-        } else if (summary.generic_type_id === 4) {
-          serial = await serialModel.getSerial(db, 'POC');
-        } else if (summary.generic_type_id === 5) {
-          serial = await serialModel.getSerial(db, 'POD');
+        if (month >= 10) {
+          year += 1;
+        }
+        let currentNo;
+        const srNo = await serialModel.getSerialNumber(db, year, summary.generic_type_id);
+        if (srNo.length) {
+          currentNo = srNo[0].total += 1;
         } else {
-          serial = await serialModel.getSerial(db, 'PO');
+          currentNo = 1;
+        }
+        if (summary.generic_type_id === 1) {
+          serial = await serialModel.getSerialNew(db, 'PO', year, currentNo);
+        } else if (summary.generic_type_id === 2) {
+          serial = await serialModel.getSerialNew(db, 'POA', year, currentNo);
+        } else if (summary.generic_type_id === 3) {
+          serial = await serialModel.getSerialNew(db, 'POB', year, currentNo);
+        } else if (summary.generic_type_id === 4) {
+          serial = await serialModel.getSerialNew(db, 'POC', year, currentNo);
+        } else if (summary.generic_type_id === 5) {
+          serial = await serialModel.getSerialNew(db, 'POD', year, currentNo);
+        } else {
+          serial = await serialModel.getSerialNew(db, 'PO', year, currentNo);
         }
 
         purchase.purchase_order_number = serial;

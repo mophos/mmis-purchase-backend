@@ -194,10 +194,29 @@ router.post('/transaction/balance', async (req, res, next) => {
   let db = req.db;
   let budgetDetailId = req.body.budgetDetailId;
   let purchaseOrderId = req.body.purchaseOrderId;
-
   try {
-    const rs: any = await budgetModel.getTransactionBalance(db, budgetDetailId, purchaseOrderId);
-    res.send({ ok: true, totalPurchase: rs[0].total_purchase });
+    const transectionId: any = await budgetModel.getCurrentAmount(db, purchaseOrderId, budgetDetailId);
+    const _transectionId = transectionId.length ? transectionId[0].transection_id : null;
+    const totalPurchase: any = await budgetModel.getTransactionBalance(db, budgetDetailId, purchaseOrderId, _transectionId);
+    if (purchaseOrderId) {
+      const rs: any = await budgetModel.getCurrentAmount(db, purchaseOrderId, budgetDetailId);
+      if (rs.length) {
+        res.send({ ok: true, rows: rs[0], totalPurchase: totalPurchase[0].total_purchase });
+      } else {
+        res.send({ ok: false });
+      }
+    } else {
+
+      const rs: any = await budgetModel.getBalance(db, budgetDetailId);
+      if (rs.length) {
+        rs[0].incoming_balance = rs[0].balance;
+        res.send({ ok: true, rows: rs[0], totalPurchase: totalPurchase[0].total_purchase });
+      } else {
+        const rs: any = await budgetModel.getBudgetTransaction(db, budgetDetailId);
+        rs[0].incoming_balance = rs[0].amount;
+        res.send({ ok: true, rows: rs[0], totalPurchase: totalPurchase[0].total_purchase });
+      }
+    }
   } catch (error) {
     console.log(error)
     res.send({ ok: false, error: error.messgae });

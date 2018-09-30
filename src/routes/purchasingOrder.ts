@@ -307,7 +307,18 @@ router.post('/purchase-reorder', async (req, res, next) => {
         let _poItems = [];
 
         for (let v of poItems) {
-          let serial = await serialModel.getSerial(db, 'PO');
+          // let serial
+          if (month >= 10) {
+            year += 1;
+          }
+          let currentNo;
+          const srNo = await serialModel.getSerialNumber(db, year, 1);
+          if (srNo.length) {
+            currentNo = srNo[0].total += 1;
+          } else {
+            currentNo = 1;
+          }
+          let serial = await serialModel.getSerialNew(db, 'PO', year, currentNo);
           let obj: any = {
             purchase_order_id: v.purchase_order_id,
             labeler_id: v.labeler_id,
@@ -397,18 +408,28 @@ router.post('/', async (req, res, next) => {
       } else {
 
         let serial
-        if (summary.generic_type_id === 1) {
-          serial = await serialModel.getSerial(db, 'PO');
-        } else if (summary.generic_type_id === 2) {
-          serial = await serialModel.getSerial(db, 'POA');
-        } else if (summary.generic_type_id === 3) {
-          serial = await serialModel.getSerial(db, 'POB');
-        } else if (summary.generic_type_id === 4) {
-          serial = await serialModel.getSerial(db, 'POC');
-        } else if (summary.generic_type_id === 5) {
-          serial = await serialModel.getSerial(db, 'POD');
+        if (month >= 10) {
+          year += 1;
+        }
+        let currentNo;
+        const srNo = await serialModel.getSerialNumber(db, year, summary.generic_type_id);
+        if (srNo.length) {
+          currentNo = srNo[0].total += 1;
         } else {
-          serial = await serialModel.getSerial(db, 'PO');
+          currentNo = 1;
+        }
+        if (summary.generic_type_id === 1) {
+          serial = await serialModel.getSerialNew(db, 'PO', year, currentNo);
+        } else if (summary.generic_type_id === 2) {
+          serial = await serialModel.getSerialNew(db, 'POA', year, currentNo);
+        } else if (summary.generic_type_id === 3) {
+          serial = await serialModel.getSerialNew(db, 'POB', year, currentNo);
+        } else if (summary.generic_type_id === 4) {
+          serial = await serialModel.getSerialNew(db, 'POC', year, currentNo);
+        } else if (summary.generic_type_id === 5) {
+          serial = await serialModel.getSerialNew(db, 'POD', year, currentNo);
+        } else {
+          serial = await serialModel.getSerialNew(db, 'PO', year, currentNo);
         }
 
         purchase.purchase_order_number = serial;
@@ -475,6 +496,7 @@ router.post('/', async (req, res, next) => {
         // save
         await model.save(db, purchase);
         await modelItems.save(db, products);
+        await bgModel.saveLog(db, transactionData);
         await bgModel.save(db, transactionData);
         res.send({ ok: true });
       }
@@ -582,13 +604,36 @@ router.put('/:purchaseOrderId', async (req, res, next) => {
         if (rsAmount.length) {
           if (rsAmount[0].amount !== transaction.totalPurchase) {
             // revoke transaction
-            await bgModel.cancelTransaction(db, purchaseOrderId);
+            await bgModel.cancelTransactionLog(db, purchaseOrderId);
             // save transaction
-            await bgModel.save(db, transactionData);
+            await bgModel.saveLog(db, transactionData);
+            // tan update transaction
+            console.log('update', transactionData.amount);
+
+            await bgModel.update(db, { 'amount': transactionData.amount }, rsAmount[0].transection_id);
+
+            // tan re calculate transection 
+            const ts = await bgModel.getTransaction(db, rsAmount[0].transection_id, transaction.budgetDetailId);
+            console.log(ts);
+            let incomingBalance;
+            for (const v of ts) {
+              if (!incomingBalance) {
+                incomingBalance = v.incoming_balance;
+              }
+              const balance = incomingBalance - v.amount
+              const obj = {
+                incoming_balance: incomingBalance,
+                balance: balance
+              }
+              incomingBalance = balance;
+              await bgModel.update(db, obj, v.transection_id);
+            }
           }
         } else {
-          await bgModel.cancelTransaction(db, purchaseOrderId);
+          await bgModel.cancelTransactionLog(db, purchaseOrderId);
           // save transaction
+          await bgModel.saveLog(db, transactionData);
+          // tan save transaction
           await bgModel.save(db, transactionData);
         }
 
@@ -616,14 +661,14 @@ router.post('/checkApprove', async (req, res, next) => {
     password = crypto.createHash('md5').update(password).digest('hex');
     const isCheck = await model.checkApprove(db, username, password, action);
     console.log(isCheck);
-    
+
     let rights = isCheck[0].access_right.split(',');
     if (_.indexOf(rights, action) > -1) {
       res.send({ ok: true })
     } else {
       res.send({ ok: false });
     }
-    
+
   } catch (error) {
     res.send({ ok: false });
   }
@@ -698,6 +743,7 @@ router.put('/update-purchase/status', async (req, res, next) => {
             };
 
             await model.updateStatusLog(db, statusLog);
+            await bgModel.cancelTransactionLog(db, v.purchase_order_id);
             await bgModel.cancelTransaction(db, v.purchase_order_id);
           }
 

@@ -10,7 +10,14 @@ export class SerialModel {
       .limit(1);
   }
 
-  async getSerial(knex: Knex, srType: string) {
+  getSerialNumber(knex: Knex, year, genericTypeId) {
+    return knex('pc_purchasing_order')
+      .select(knex.raw('count(year(order_date)) as total'))
+      .whereRaw(`( YEAR ( order_date ) = '${year - 1}' AND MONTH ( order_date ) >= '10' )
+      OR ( YEAR ( order_date ) = '${year}' AND MONTH ( order_date ) <= '9' ) and generic_type_id = '${genericTypeId}'`)
+  }
+
+  async getSerial(knex: Knex, srType: string, year, no) {
 
     let serialInfo = await this.getSerialInfo(knex, srType);
 
@@ -33,6 +40,35 @@ export class SerialModel {
 
       // update serial
       await this.updateSerial(knex, srType);
+
+      // return serial
+      return sr;
+
+    } else {
+      return '000000';
+    }
+  }
+
+  async getSerialNew(knex: Knex, srType: string, year, no) {
+
+    let serialInfo = await this.getSerialInfo(knex, srType);
+    if (serialInfo.length) {
+      // let currentNo = serialInfo[0].sr_no;
+      let serialCode = serialInfo[0].serial_code;
+      let serialLength = serialInfo[0].digit_length;
+      let serialPrefix = serialInfo[0].sr_prefix;
+      let currentNo = no;
+      let serialYear = year + 543;
+      let _serialYear = serialYear.toString().substring(2);
+      let newSerialNo = this.paddingNumber(currentNo, serialLength);
+
+      let sr: any = null;
+
+      if (serialInfo[0].is_year_prefix === 'Y') {
+        sr = serialCode.replace('PREFIX', serialPrefix).replace('YY', _serialYear).replace('##', newSerialNo);
+      } else {
+        sr = serialCode.replace('PREFIX', serialPrefix).replace('##', newSerialNo);
+      }
 
       // return serial
       return sr;

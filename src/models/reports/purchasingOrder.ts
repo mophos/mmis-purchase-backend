@@ -36,16 +36,7 @@ export class PurchasingOrderReportModel {
         return knex.raw(sql, [year])
     }
     budgetType(knex: Knex, bgdetail_id: any) {
-        return knex.raw(`SELECT
-        b.bgtype_id,
-        b.bgtype_name,
-        bts.bgtypesub_name,
-        (select sum(amount) from bm_budget_detail as bd1 where bd1.bgtype_id = bd.bgtype_id and bd1.bgtypesub_id = bd.bgtypesub_id  group by bd1.bgtype_id,bd1.bgtypesub_id) as amount,
-        bd.bg_year+543 as bg_year
-        FROM bm_bgtype b
-        JOIN bm_budget_detail bd ON bd.bgtype_id=b.bgtype_id
-        JOIN bm_bgtypesub bts ON bts.bgtypesub_id=bd.bgtypesub_id
-        WHERE bd.bgdetail_id=?`, [bgdetail_id])
+        return knex.raw(`SELECT bgtype_id,bgtype_name,bgtypesub_name,amount,bg_year+543 as bg_year FROM view_budget_subtype WHERE bgdetail_id=?`, [bgdetail_id])
     }
     items(knex: Knex, id: string) {
         return knex('pc_purchasing_order_item as i')

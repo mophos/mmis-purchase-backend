@@ -1041,7 +1041,13 @@ router.get('/report/purchasing/standard', wrap(async (req, res, next) => {
   moment.locale('th');
   let nDate = moment(new Date()).format('D MMMM ') + (moment(new Date()).get('year') + 543)
   let year = moment(new Date).get('year') + 1
-  let budget = await model.budgetType(db, purchasing[0].budget_detail_id)
+  let budget = await model.budgetType(db, purchasing[0].budget_detail_id);
+  let month = moment(budget[0].bg_year, 'YYYY-MM-DD').get('month') + 1;
+
+  if (month >= 10) {
+    budget[0].bg_year += 1;
+  }
+
   budget = budget[0]
   let totalprice = 0
   let net = 0

@@ -196,7 +196,8 @@ router.post('/transaction/balance', async (req, res, next) => {
   let purchaseOrderId = req.body.purchaseOrderId;
   try {
     const transectionId: any = await budgetModel.getCurrentAmount(db, purchaseOrderId, budgetDetailId);
-    const totalPurchase: any = await budgetModel.getTransactionBalance(db, budgetDetailId, purchaseOrderId, transectionId[0].transection_id);
+    const _transectionId = transectionId.length ? transectionId[0].transection_id : null;
+    const totalPurchase: any = await budgetModel.getTransactionBalance(db, budgetDetailId, purchaseOrderId, _transectionId);
     if (purchaseOrderId) {
       const rs: any = await budgetModel.getCurrentAmount(db, purchaseOrderId, budgetDetailId);
       if (rs.length) {

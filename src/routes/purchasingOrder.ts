@@ -475,6 +475,7 @@ router.post('/', async (req, res, next) => {
         // save
         await model.save(db, purchase);
         await modelItems.save(db, products);
+        await bgModel.saveLog(db, transactionData);
         await bgModel.save(db, transactionData);
         res.send({ ok: true });
       }
@@ -582,13 +583,36 @@ router.put('/:purchaseOrderId', async (req, res, next) => {
         if (rsAmount.length) {
           if (rsAmount[0].amount !== transaction.totalPurchase) {
             // revoke transaction
-            await bgModel.cancelTransaction(db, purchaseOrderId);
+            await bgModel.cancelTransactionLog(db, purchaseOrderId);
             // save transaction
-            await bgModel.save(db, transactionData);
+            await bgModel.saveLog(db, transactionData);
+            // tan update transaction
+            console.log('update', transactionData.amount);
+
+            await bgModel.update(db, { 'amount': transactionData.amount }, rsAmount[0].transection_id);
+
+            // tan re calculate transection 
+            const ts = await bgModel.getTransaction(db, rsAmount[0].transection_id, transaction.budgetDetailId);
+            console.log(ts);
+            let incomingBalance;
+            for (const v of ts) {
+              if (!incomingBalance) {
+                incomingBalance = v.incoming_balance;
+              }
+              const balance = incomingBalance - v.amount
+              const obj = {
+                incoming_balance: incomingBalance,
+                balance: balance
+              }
+              incomingBalance = balance;
+              await bgModel.update(db, obj, v.transection_id);
+            }
           }
         } else {
-          await bgModel.cancelTransaction(db, purchaseOrderId);
+          await bgModel.cancelTransactionLog(db, purchaseOrderId);
           // save transaction
+          await bgModel.saveLog(db, transactionData);
+          // tan save transaction
           await bgModel.save(db, transactionData);
         }
 
@@ -616,14 +640,14 @@ router.post('/checkApprove', async (req, res, next) => {
     password = crypto.createHash('md5').update(password).digest('hex');
     const isCheck = await model.checkApprove(db, username, password, action);
     console.log(isCheck);
-    
+
     let rights = isCheck[0].access_right.split(',');
     if (_.indexOf(rights, action) > -1) {
       res.send({ ok: true })
     } else {
       res.send({ ok: false });
     }
-    
+
   } catch (error) {
     res.send({ ok: false });
   }
@@ -698,6 +722,7 @@ router.put('/update-purchase/status', async (req, res, next) => {
             };
 
             await model.updateStatusLog(db, statusLog);
+            await bgModel.cancelTransactionLog(db, v.purchase_order_id);
             await bgModel.cancelTransaction(db, v.purchase_order_id);
           }
 

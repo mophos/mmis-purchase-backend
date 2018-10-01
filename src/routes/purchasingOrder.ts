@@ -987,6 +987,24 @@ router.post('/getGeneric', async (req, res, next) => {
   }
 });
 
+router.post('/generic/history', async (req, res, next) => {
+  let db = req.db;
+  let limit = req.body.limit;
+  let offset = req.body.offset;
+  let generic_type_id = req.decoded.generic_type_id;
+  let sort = req.body.sort;
+
+  try {
+    let rs: any = await model.getGenericHistory(db, generic_type_id, limit, offset, sort);
+    let rsTotal: any = await model.getGenericHistoryTotal(db, generic_type_id);
+    res.send({ ok: true, rows: rs[0], total: rsTotal[0][0].total });
+  } catch (error) {
+    res.send({ ok: false, error: error.message });
+  } finally {
+    db.destroy();
+  }
+});
+
 router.post('/getGeneric/search', async (req, res, next) => {
   let db = req.db;
   let limit = req.body.limit;
@@ -998,6 +1016,25 @@ router.post('/getGeneric/search', async (req, res, next) => {
   try {
     let rs: any = await model.getGenericSearch(db, generic_type_id, limit, offset, query, sort);
     let rsTotal: any = await model.getGenericTotalSearch(db, generic_type_id, query);
+    res.send({ ok: true, rows: rs[0], total: rsTotal[0][0].total });
+  } catch (error) {
+    res.send({ ok: false, error: error.message });
+  } finally {
+    db.destroy();
+  }
+});
+
+router.post('/generic/history/search', async (req, res, next) => {
+  let db = req.db;
+  let limit = req.body.limit;
+  let offset = req.body.offset;
+  let generic_type_id = req.decoded.generic_type_id
+  let query = req.body.query;
+  let sort = req.body.sort;
+
+  try {
+    let rs: any = await model.getGenericHistorySearch(db, generic_type_id, limit, offset, query, sort);
+    let rsTotal: any = await model.getGenericHistoryTotalSearch(db, generic_type_id, query);
     res.send({ ok: true, rows: rs[0], total: rsTotal[0][0].total });
   } catch (error) {
     res.send({ ok: false, error: error.message });

@@ -202,7 +202,7 @@ export class PurchasingOrderReportModel {
             mlv.labeler_name ASC`)
     }
 
-    getSelectOrderPoint(knex: Knex, warehouseId: any, product_id: any) {
+    getSelectOrderPoint(knex: Knex, warehouseId: any, product_id: any, unit_generic_id: any) {
         return knex.raw(`SELECT
             (
         SELECT
@@ -234,11 +234,11 @@ export class PurchasingOrderReportModel {
             LEFT JOIN mm_units AS u ON u.unit_id = mg.primary_unit_id 
             LEFT JOIN mm_products as mp on mp.generic_id = mg.generic_id
             LEFT JOIN wm_products as wp on wp.product_id = mp.product_id
-            LEFT JOIN mm_unit_generics as ug on ug.unit_generic_id = wp.unit_generic_id
+            LEFT JOIN mm_unit_generics as ug on ug.unit_generic_id = ${unit_generic_id}
             LEFT JOIN mm_labelers as mlv on mlv.labeler_id = mp.v_labeler_id
             LEFT JOIN mm_labelers as mlm on mlm.labeler_id = mp.m_labeler_id
         WHERE
-            mp.product_id IN (${product_id}) 
+            mp.product_id = ${product_id}
         GROUP BY wp.product_id
         ORDER BY
             mlv.labeler_name ASC`)

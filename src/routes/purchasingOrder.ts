@@ -306,19 +306,20 @@ router.post('/purchase-reorder', async (req, res, next) => {
       try {
         let _poItems = [];
 
+        if (month >= 10) {
+          year += 1;
+        }
+        let currentNo;
+        const srNo = await serialModel.getSerialNumber(db, year, 1);
+        if (srNo.length) {
+          currentNo = srNo[0].total += 1;
+        } else {
+          currentNo = 1;
+        }
         for (let v of poItems) {
           // let serial
-          if (month >= 10) {
-            year += 1;
-          }
-          let currentNo;
-          const srNo = await serialModel.getSerialNumber(db, year, 1);
-          if (srNo.length) {
-            currentNo = srNo[0].total += 1;
-          } else {
-            currentNo = 1;
-          }
           let serial = await serialModel.getSerialNew(db, 'PO', year, currentNo);
+          currentNo += 1
           let obj: any = {
             purchase_order_id: v.purchase_order_id,
             labeler_id: v.labeler_id,

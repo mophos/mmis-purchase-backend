@@ -478,6 +478,42 @@ export class PurchasingOrderModel {
     return (knex.raw(sql))
   }
 
+  getGenericHistory(knex: Knex, generic_type_id: any, limit: any, offset: any, sort: any) {
+    let sql = `SELECT
+    po.purchase_order_number,
+    mg.generic_id,
+    mg.generic_name,
+    mg.working_code AS generic_code
+  FROM
+    mm_generics AS mg
+  JOIN pc_purchasing_order_item AS pp ON mg.generic_id = pp.generic_id
+  JOIN pc_purchasing_order AS po ON pp.purchase_order_id = po.purchase_order_id
+  join wm_receive_detail wrd on pp.product_id = wrd.product_id
+	join wm_receives wr on wr.receive_id = wrd.receive_id
+	join wm_receive_approve wa on wa.receive_id = wr.receive_id
+  WHERE
+    mg.generic_type_id IN (${generic_type_id})
+  GROUP BY mg.generic_id `;
+
+    if (sort.by) {
+      let reverse = sort.reverse ? 'DESC' : 'ASC';
+
+      if (sort.by === 'generic_name') {
+        sql += ` order by mg.generic_name ${reverse}`;
+      }
+
+      if (sort.by === 'generic_code') {
+        sql += ` order by mg.working_code ${reverse}`;
+      }
+    } else {
+      sql += ` order by mg.generic_name`;
+    }
+
+    sql += ` limit ${limit} offset ${offset}`;
+
+    return (knex.raw(sql))
+  }
+
   getGenericSearch(knex: Knex, generic_type_id: any, limit: any, offset: any, query: any, sort: any = {}) {
     let _query = `%${query}%`;
     let sql = `SELECT
@@ -489,6 +525,47 @@ export class PurchasingOrderModel {
       mm_generics AS mg
     JOIN pc_purchasing_order_item AS pp ON mg.generic_id = pp.generic_id
     JOIN pc_purchasing_order AS po ON pp.purchase_order_id = po.purchase_order_id
+    WHERE
+      mg.generic_type_id IN (${generic_type_id}) and
+      (
+        mg.generic_id = '${query}' or
+        mg.generic_name like '${_query}'
+      )
+    GROUP BY mg.generic_id`;
+
+    if (sort.by) {
+      let reverse = sort.reverse ? 'DESC' : 'ASC';
+
+      if (sort.by === 'generic_name') {
+        sql += ` order by mg.generic_name ${reverse}`;
+      }
+
+      if (sort.by === 'generic_code') {
+        sql += ` order by mg.working_code ${reverse}`;
+      }
+    } else {
+      sql += ` order by mg.generic_name`;
+    }
+
+    sql += ` limit ${limit} offset ${offset}`;
+
+    return (knex.raw(sql))
+  }
+
+  getGenericHistorySearch(knex: Knex, generic_type_id: any, limit: any, offset: any, query: any, sort: any = {}) {
+    let _query = `%${query}%`;
+    let sql = `SELECT
+    po.purchase_order_number,
+    mg.generic_id,
+    mg.generic_name,
+    mg.working_code AS generic_code
+    FROM
+      mm_generics AS mg
+    JOIN pc_purchasing_order_item AS pp ON mg.generic_id = pp.generic_id
+    JOIN pc_purchasing_order AS po ON pp.purchase_order_id = po.purchase_order_id
+    join wm_receive_detail wrd on pp.product_id = wrd.product_id
+	join wm_receives wr on wr.receive_id = wrd.receive_id
+	join wm_receive_approve wa on wa.receive_id = wr.receive_id
     WHERE
       mg.generic_type_id IN (${generic_type_id}) and
       (
@@ -531,6 +608,24 @@ export class PurchasingOrderModel {
     return (knex.raw(sql))
   }
 
+  getGenericHistoryTotal(knex: Knex, generic_type_id: any) {
+    let sql = `
+    select count(a.generic_id) as total from (
+      select mg.generic_id
+        FROM
+          mm_generics AS mg
+        JOIN pc_purchasing_order_item AS pp ON mg.generic_id = pp.generic_id
+        JOIN pc_purchasing_order AS po ON pp.purchase_order_id = po.purchase_order_id
+        join wm_receive_detail wrd on pp.product_id = wrd.product_id
+        join wm_receives wr on wr.receive_id = wrd.receive_id
+        join wm_receive_approve wa on wa.receive_id = wr.receive_id
+        WHERE
+          mg.generic_type_id IN (${generic_type_id})
+        GROUP BY mg.generic_id
+      ) as a`
+    return (knex.raw(sql))
+  }
+
   getGenericTotalSearch(knex: Knex, generic_type_id: any, query) {
     let _query = `%${query}%`;
     let sql = `
@@ -540,6 +635,29 @@ export class PurchasingOrderModel {
           mm_generics AS mg
         JOIN pc_purchasing_order_item AS pp ON mg.generic_id = pp.generic_id
         JOIN pc_purchasing_order AS po ON pp.purchase_order_id = po.purchase_order_id
+        WHERE
+          mg.generic_type_id IN (${generic_type_id}) and
+          (
+            mg.generic_id = '${query}' or
+            mg.generic_name like '${_query}'
+          )
+        GROUP BY mg.generic_id
+      ) as a`
+    return (knex.raw(sql))
+  }
+
+  getGenericHistoryTotalSearch(knex: Knex, generic_type_id: any, query) {
+    let _query = `%${query}%`;
+    let sql = `
+    select count(a.generic_id) as total from (
+      select mg.generic_id
+        FROM
+          mm_generics AS mg
+        JOIN pc_purchasing_order_item AS pp ON mg.generic_id = pp.generic_id
+        JOIN pc_purchasing_order AS po ON pp.purchase_order_id = po.purchase_order_id
+        join wm_receive_detail wrd on pp.product_id = wrd.product_id
+	join wm_receives wr on wr.receive_id = wrd.receive_id
+	join wm_receive_approve wa on wa.receive_id = wr.receive_id
         WHERE
           mg.generic_type_id IN (${generic_type_id}) and
           (
@@ -562,8 +680,8 @@ export class PurchasingOrderModel {
     mu.unit_name AS large_unit_name,
     mug.qty AS conversion_qty,
     mmu.unit_name AS small_large_unit_name,
-    pp.unit_price,
-    pp.total_price,
+    wrd.cost as unit_price,
+    wrd.cost * wrd.receive_qty as total_price,
     po.contract_id,
     pp.giveaway,
     po.order_date
@@ -576,6 +694,9 @@ export class PurchasingOrderModel {
   JOIN mm_unit_generics AS mug ON pp.unit_generic_id = mug.unit_generic_id
   JOIN mm_units AS mu ON mug.from_unit_id = mu.unit_id
   JOIN mm_units AS mmu ON mug.to_unit_id = mmu.unit_id
+  join wm_receives wr on po.purchase_order_id = wr.purchase_order_id
+  join wm_receive_detail wrd on wrd.receive_id = wr.receive_id and wrd.product_id = mp.product_id
+	join wm_receive_approve wra on wr.receive_id = wra.receive_id
   WHERE
     pp.generic_id = '${generic_id}'`
     return (knex.raw(sql))

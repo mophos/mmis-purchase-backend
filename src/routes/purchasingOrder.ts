@@ -140,10 +140,12 @@ router.get('/', async (req, res, next) => {
 
 router.get('/get-list-po', async (req, res, next) => {
   let genericTypeId = req.query.genericTypeId;
+  let startDate = req.query.startDate;
+  let endDate = req.query.endDate;
   let db = req.db;
 
   try {
-    let rs: any = await model.getOrderList(db, genericTypeId);
+    let rs: any = await model.getOrderList(db, genericTypeId, startDate, endDate);
     res.send({ ok: true, rows: rs });
   } catch (error) {
     res.send({ ok: false, error: error.error });

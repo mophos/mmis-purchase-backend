@@ -300,9 +300,7 @@ router.post('/purchase-reorder', async (req, res, next) => {
   if (isClose) {
     res.send({ ok: false, error: 'รอบบัญชีถูกปิดแล้ว' })
   } else {
-
     if (poItems.length && productItems.length) {
-
       try {
         let _poItems = [];
 

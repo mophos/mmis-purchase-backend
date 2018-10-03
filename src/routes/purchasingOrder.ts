@@ -11,7 +11,6 @@ import * as _ from 'lodash';
 import { PeriodModel } from '../models/period';
 import { BudgetTransectionModel } from '../models/budgetTransection';
 import { ProductsModel } from '../models/products';
-
 const serialModel = new SerialModel();
 const router = express.Router();
 const model = new PurchasingOrderModel();
@@ -58,8 +57,10 @@ router.get('/getpoId/:sId/:eId/:genericTypeId/:orderStatus/:yearPO', async (req,
   let genericTypeId = req.params.genericTypeId;
   let orderStatus = req.params.orderStatus;
   let yearPO = req.params.yearPO;
+  let warehouseId = req.decoded.warehouseId;
   try {
-    let rs: any = await model.getPOid(db, sId, eId, genericTypeId, orderStatus, yearPO);
+    const length = await model.getLengthNo(db);
+    let rs: any = await model.getPOid(db, sId, eId, genericTypeId, orderStatus, yearPO, length[0].digit_length, warehouseId);
     res.send({ ok: true, rows: rs[0] });
   } catch (error) {
     res.send({ ok: false, error: error.message });
@@ -143,9 +144,10 @@ router.get('/get-list-po', async (req, res, next) => {
   let startDate = req.query.startDate;
   let endDate = req.query.endDate;
   let db = req.db;
+  let warehouseId = req.decoded.warehouseId;
 
   try {
-    let rs: any = await model.getOrderList(db, genericTypeId, startDate, endDate);
+    let rs: any = await model.getOrderList(db, genericTypeId, startDate, endDate, warehouseId);
     res.send({ ok: true, rows: rs });
   } catch (error) {
     res.send({ ok: false, error: error.error });
@@ -164,7 +166,7 @@ router.post('/by-status', async (req, res, next) => {
   let limit = req.body.limit || 20;
   let offset = req.body.offset || 0;
   let sort = req.body.sort;
-
+  let warehouseId = req.decoded.warehouseId;
   let genericTypeIds = [];
 
   let g = req.decoded.generic_type_id;
@@ -173,8 +175,8 @@ router.post('/by-status', async (req, res, next) => {
   }
 
   try {
-    let rs: any = await model.listByStatus(db, status, contract, query, start_date, end_date, limit, offset, genericTypeIds, sort);
-    let rsTotal: any = await model.listByStatusTotal(db, status, contract, query, start_date, end_date, genericTypeIds);
+    let rs: any = await model.listByStatus(db, status, contract, query, start_date, end_date, limit, offset, genericTypeIds, sort, warehouseId);
+    let rsTotal: any = await model.listByStatusTotal(db, status, contract, query, start_date, end_date, genericTypeIds, warehouseId);
 
     res.send({ ok: true, rows: rs, total: rsTotal[0].total });
   } catch (error) {
@@ -293,7 +295,7 @@ router.post('/purchase-reorder', async (req, res, next) => {
   let db = req.db;
   let poItems = req.body.poItems;
   let productItems = req.body.productItems;
-
+  let warehouseId = req.decoded.warehouseId;
   let year = moment().get('year');
   let month = moment().get('month') + 1;
 
@@ -318,26 +320,59 @@ router.post('/purchase-reorder', async (req, res, next) => {
         }
         for (let v of poItems) {
           // let serial
-          let serial = await serialModel.getSerialNew(db, 'PO', year, currentNo);
+          let serial = await serialModel.getSerialNew(db, 'PO', year, currentNo, warehouseId);
           currentNo += 1
+          const _productItems: any = _.filter(productItems, { 'purchase_order_id': v.purchase_order_id });
+          let amount = 0;
+          for (const p of _productItems) {
+            amount += (p.unit_price * p.qty);
+          }
+          const sub_total = amount / 1.07;
+          const vat = amount - sub_total
           let obj: any = {
             purchase_order_id: v.purchase_order_id,
             labeler_id: v.labeler_id,
             is_contract: v.is_contract,
             contract_id: v.contract_id,
             generic_type_id: v.generic_type_id,
-            // sub_total: v.sub_total,
             delivery: v.delivery,
             vat_rate: v.vat_rate,
-            // vat: v.vat,
-            // is_reorder: v.is_reorder,
+            exclude_vat: 'Y',
             budget_year: v.budget_year,
-            // total_price: v.total_price,
             order_date: v.order_date,
             purchase_order_number: serial,
-            people_user_id: req.decoded.people_user_id
-          };
+            people_user_id: req.decoded.people_user_id,
+            warehouse_id: warehouseId
+          }
+          if (v.budget_detail_id && v.budgettype_id) {
+            obj.budget_detail_id = v.budget_detail_id;
+            obj.budgettype_id = v.budgettype_id;
+            obj.buyer_id = v.buyer_id;
+            obj.chief_id = v.chief_id;
+            obj.verify_committee_id = v.verify_committee_id;
+            obj.sub_total = sub_total;
+            obj.vat = vat;
+            obj.total_price = amount;
+            obj.purchase_order_status = v.purchase_order_status;
+            obj.purchase_method_id = v.purchase_method_id;
+            obj.purchase_type_id = v.purchase_type_id;
+            const totalPurchase: any = await bgModel.getTransactionBalance(db, v.budget_detail_id, null, null);
+            const rs2: any = await bgModel.getBudgetTransaction(db, v.budget_detail_id);
+            const incoming_balance = rs2[0].amount - totalPurchase[0].total_purchase;
+            let transactionData = {
+              purchase_order_id: v.purchase_order_id,
+              bgdetail_id: v.budget_detail_id,
+              incoming_balance: incoming_balance,
+              amount: amount,
+              balance: incoming_balance - amount,
+              date_time: moment().format('YYYY-MM-DD HH:mm:ss'),
+              transaction_status: 'SPEND'
+            }
+            await bgModel.saveLog(db, transactionData);
+            await bgModel.save(db, transactionData);
+          }
           _poItems.push(obj);
+
         }
 
         let reserveIds: any = [];
@@ -389,7 +424,7 @@ router.post('/', async (req, res, next) => {
   const items: any = req.body.items;
   const summary: any = req.body.summary;
   const transaction: any = req.body.budgetTransaction;
-
+  const warehouseId = req.decoded.warehouseId;
   const db = req.db;
 
   let products: any = [];
@@ -419,20 +454,22 @@ router.post('/', async (req, res, next) => {
         } else {
           currentNo = 1;
         }
-        if (summary.generic_type_id === 1) {
-          serial = await serialModel.getSerialNew(db, 'PO', year, currentNo);
-        } else if (summary.generic_type_id === 2) {
-          serial = await serialModel.getSerialNew(db, 'POA', year, currentNo);
-        } else if (summary.generic_type_id === 3) {
-          serial = await serialModel.getSerialNew(db, 'POB', year, currentNo);
-        } else if (summary.generic_type_id === 4) {
-          serial = await serialModel.getSerialNew(db, 'POC', year, currentNo);
-        } else if (summary.generic_type_id === 5) {
-          serial = await serialModel.getSerialNew(db, 'POD', year, currentNo);
-        } else {
-          serial = await serialModel.getSerialNew(db, 'PO', year, currentNo);
-        }
+        serial = await serialModel.getSerialNew(db, 'PO', year, currentNo, warehouseId);
+        // if (summary.generic_type_id === 1) {
+        // serial = await serialModel.getSerialNew(db, 'PO', year, currentNo, warehouseId);
+        // } else if (summary.generic_type_id === 2) {
+        //   serial = await serialModel.getSerialNew(db, 'POA', year, currentNo, warehouseId);
+        // } else if (summary.generic_type_id === 3) {
+        //   serial = await serialModel.getSerialNew(db, 'POB', year, currentNo, warehouseId);
+        // } else if (summary.generic_type_id === 4) {
+        //   serial = await serialModel.getSerialNew(db, 'POC', year, currentNo, warehouseId);
+        // } else if (summary.generic_type_id === 5) {
+        //   serial = await serialModel.getSerialNew(db, 'POD', year, currentNo, warehouseId);
+        // } else {
+        //   serial = await serialModel.getSerialNew(db, 'PO', year, currentNo, warehouseId);
+        // }
 
+        purchase.warehouse_id = warehouseId;
         purchase.purchase_order_number = serial;
         purchase.purchase_order_status = 'PREPARED';
         purchase.purchase_order_id = purchaseOrderId;

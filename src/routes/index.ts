@@ -148,11 +148,51 @@ router.get('/report/list/purchaseSelec', wrap(async (req, res, next) => {
   res.render('listpurchase', { fill: fill, nDate: nDate, hospname: hospname, results: results, sdate: sdate })
 }));
 
+router.get('/report/list/all/purchase-trade-select', wrap(async (req, res, next) => {
+  let product_id = req.query.product_id;
+  let warehouseId = req.decoded.warehouseId;
+  let db = req.db;
+  
+  product_id = Array.isArray(product_id) ? product_id : [product_id]
+  Array.isArray(product_id)
+
+  let array: any = [];
+  for (let i = 0; i < product_id.length; i++) {
+    let results = await model.getSelectOrderPoint(db, warehouseId, product_id[i], null);
+
+    array.push(results[0][0]);
+  }
+  let hospname = await model.hospital(db);
+  if (array[0] === undefined) res.render('error404')
+  hospname = hospname[0].hospname
+  let nDate = model.prettyDate(new Date())
+  let i = 0;
+  let fill = [];
+  array.forEach(value => {
+    fill[i] = ((value.max_qty - value.remain_qty) / value.qty).toFixed(0);
+    fill[i] < 0 ? fill[i] = 1 : fill[i];
+    value.remain_qty = (value.remain_qty / value.qty).toFixed(0);
+    if (value.qty === null) value.qty = 0
+    if (value.min_qty === null) value.min_qty = 0
+    i++;
+  });
+  moment.locale('th');
+  let sdate = moment(new Date()).format('D MMMM ') + (moment(new Date()).get('year') + 543);
+  console.log(array);
+  
+  // res.send(array);
+  res.render('listpurchase', { fill: fill, nDate: nDate, hospname: hospname, results: array, sdate: sdate })
+}));
+
 router.get('/report/list/purchase-trade-select', wrap(async (req, res, next) => {
   let product_id = req.query.product_id;
   let unit_generic_id = req.query.unit_generic_id;
   let warehouseId = req.decoded.warehouseId;
   let db = req.db;
+  product_id = Array.isArray(product_id) ? product_id : [product_id]
+  Array.isArray(product_id)
+  unit_generic_id = Array.isArray(unit_generic_id) ? unit_generic_id : [unit_generic_id]
+  Array.isArray(unit_generic_id)
 
   let array: any = [];
   for (let i = 0; i < product_id.length; i++) {

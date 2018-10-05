@@ -177,9 +177,16 @@ export class PurchasingOrderModel {
     }
 
     if (query !== '') {
+
+      let generic = knex('pc_purchasing_order_item as poi').select('poi.purchase_order_id')
+      .leftJoin('mm_generics as g','g.generic_id','poi.generic_id').where(w => {
+        w.where('g.generic_name', 'like', `%${query}%`)
+          .orWhere('g.working_code', 'like', `%${query}%`)
+      });
       con.where(w => {
         w.where('pc_purchasing_order.purchase_order_number', 'like', `%${query}%`)
           .orWhere('pc_purchasing_order.purchase_order_book_number', 'like', `%${query}%`)
+          .orWhereIn('pc_purchasing_order.purchase_order_id',generic)
       });
     }
 

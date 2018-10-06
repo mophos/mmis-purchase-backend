@@ -94,12 +94,13 @@ export class PurchasingOrderModel {
       .orderBy('pc_purchasing_order.order_date', 'DESC');
   }
 
-  getOrderList(knex: Knex, genericTypeId: any, startDate: any, endDate: any) {
+  getOrderList(knex: Knex, genericTypeId: any, startDate: any, endDate: any, warehouseId) {
     return knex('pc_purchasing_order as po')
       .select('*', knex.raw('ROUND( SUM(poi.total_price), 2 ) as total_price'))
       .join('pc_purchasing_order_item as poi', 'po.purchase_order_id', 'poi.purchase_order_id')
       .join('mm_generics as mg', 'mg.generic_id', 'poi.generic_id')
       .where('po.is_cancel', 'N')
+      .where('po.warehouse_id', warehouseId)
       .where('mg.generic_type_id', genericTypeId)
       .whereBetween('po.order_date', [startDate, endDate])
       .groupBy('po.purchase_order_id')
@@ -111,7 +112,7 @@ export class PurchasingOrderModel {
     contract: string = 'ALL', query: string = '',
     start_date: string = '', end_date: string = '',
     limit: number = 20, offset: number = 0,
-    genericTypeIds: any[], sort: any = {}) {
+    genericTypeIds: any[], sort: any = {}, warehouseId) {
     let sumItems = knex
       .select(knex.raw('sum(po.unit_price*po.qty)'))
       .from('pc_purchasing_order_item as po')
@@ -135,6 +136,7 @@ export class PurchasingOrderModel {
       .leftJoin('bm_budget_detail as bgd', 'bgd.bgdetail_id', 'pc_purchasing_order.budget_detail_id')
       .leftJoin('bm_bgtypesub as bgs', 'bgs.bgtypesub_id', 'bgd.bgtypesub_id')
       .leftJoin('cm_contracts as cm', 'cm.contract_id', 'pc_purchasing_order.contract_id')
+      .where('pc_purchasing_order.warehouse_id', warehouseId)
       .whereIn('pc_purchasing_order.purchase_order_status', status)
       .whereIn('pc_purchasing_order.generic_type_id', genericTypeIds)
 
@@ -204,12 +206,13 @@ export class PurchasingOrderModel {
     knex: Knex, status: Array<any>,
     contract: string = 'ALL', query: string = '',
     start_date: string = '', end_date: string = '',
-    genericTypeIds: any[]) {
+    genericTypeIds: any[], warehouseId) {
 
     let con = knex(this.tableName)
       .select(knex.raw('count(*) as total'))
       // .leftJoin('mm_labelers as l', 'pc_purchasing_order.labeler_id', 'l.labeler_id')
       // .leftJoin('l_bid_process as bp', 'pc_purchasing_order.purchase_method_id', 'bp.id')
+      .where('pc_purchasing_order.warehouse_id', warehouseId)
       .whereIn('pc_purchasing_order.purchase_order_status', status)
       .whereIn('pc_purchasing_order.generic_type_id', genericTypeIds)
     // .orderBy('pc_purchasing_order.order_date', 'DESC')
@@ -379,7 +382,13 @@ export class PurchasingOrderModel {
   getPurchaseCheckHoliday(knex: Knex, date) {
     return knex('sys_holidays').where('date', date);
   }
-  getPOid(knex: Knex, sId: string, eId: string, genericTypeId: string, orderStatus: string, yearPO: any) {
+
+  getLengthNo(knex: Knex) {
+    return knex('sys_serials')
+      .select('digit_length')
+      .where('sr_type', 'PO')
+  }
+  getPOid(knex: Knex, sId: string, eId: string, genericTypeId: string, orderStatus: string, yearPO: any, length: any, warehouseId: any) {
     let sql = `SELECT
     pp.purchase_order_id,
     pp.purchase_order_number AS po_id,
@@ -390,11 +399,12 @@ export class PurchasingOrderModel {
     JOIN mm_generic_types AS mg ON pp.generic_type_id = mg.generic_type_id 
   WHERE
       CAST(
-        RIGHT (pp.purchase_order_number, 6) AS UNSIGNED
+        RIGHT (pp.purchase_order_number, ${length}) AS UNSIGNED
       ) BETWEEN ${sId}
     AND ${eId}
     AND pp.generic_type_id = ${genericTypeId}
-    AND pp.budget_year = ${yearPO}`
+    AND pp.budget_year = ${yearPO}
+    and pp.warehouse_id = ${warehouseId}`
     if (orderStatus !== 'ALL') {
       sql += ` AND pp.purchase_order_status = ${orderStatus}`
     }

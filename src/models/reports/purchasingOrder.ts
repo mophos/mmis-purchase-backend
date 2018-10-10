@@ -203,45 +203,52 @@ export class PurchasingOrderReportModel {
     }
 
     getSelectOrderPoint(knex: Knex, warehouseId: any, product_id: any, unit_generic_id: any) {
-        return knex.raw(`SELECT
-            (
-        SELECT
-            ifnull( sum( wp.qty ), 0 ) 
-        FROM
-            wm_products AS wp
-            INNER JOIN mm_products AS mp ON mp.product_id = wp.product_id 
-        WHERE
-            mp.generic_id = mg.generic_id 
-            AND wp.warehouse_id = ${warehouseId} 
-            ) AS remain_qty,	
-            mlv.labeler_name as vlabeler,
-            mlm.labeler_name as mlabeler,
-            mlv.labeler_name_po as vlabelerpo,
-            mlm.labeler_name_po as mlabelerpo,
-            mp.product_name,
-            ug.qty,	
-            gt.generic_type_name,
-            u.unit_name AS primary_unit_name,
-            mg.working_code,
-            mg.generic_id,
-            mg.generic_name,
-            mg.min_qty,
-            mg.max_qty,
-            ug.cost as unit_cost
-        FROM
-            mm_generics AS mg
-            LEFT JOIN mm_generic_types AS gt ON gt.generic_type_id = mg.generic_type_id
-            LEFT JOIN mm_units AS u ON u.unit_id = mg.primary_unit_id 
-            LEFT JOIN mm_products as mp on mp.generic_id = mg.generic_id
-            LEFT JOIN wm_products as wp on wp.product_id = mp.product_id
-            LEFT JOIN mm_unit_generics as ug on ug.unit_generic_id = ${unit_generic_id}
-            LEFT JOIN mm_labelers as mlv on mlv.labeler_id = mp.v_labeler_id
-            LEFT JOIN mm_labelers as mlm on mlm.labeler_id = mp.m_labeler_id
-        WHERE
-            mp.product_id = ${product_id}
-        GROUP BY wp.product_id
-        ORDER BY
-            mlv.labeler_name ASC`)
+        let sql = `SELECT
+        (
+    SELECT
+        ifnull( sum( wp.qty ), 0 ) 
+    FROM
+        wm_products AS wp
+        INNER JOIN mm_products AS mp ON mp.product_id = wp.product_id 
+    WHERE
+        mp.generic_id = mg.generic_id 
+        AND wp.warehouse_id = ${warehouseId} 
+        ) AS remain_qty,	
+        mlv.labeler_name as vlabeler,
+        mlm.labeler_name as mlabeler,
+        mlv.labeler_name_po as vlabelerpo,
+        mlm.labeler_name_po as mlabelerpo,
+        mp.product_name,
+        ug.qty,	
+        gt.generic_type_name,
+        u.unit_name AS primary_unit_name,
+        mg.working_code,
+        mg.generic_id,
+        mg.generic_name,
+        mg.min_qty,
+        mg.max_qty,
+        ug.cost as unit_cost
+    FROM
+        mm_generics AS mg
+        LEFT JOIN mm_generic_types AS gt ON gt.generic_type_id = mg.generic_type_id
+        LEFT JOIN mm_units AS u ON u.unit_id = mg.primary_unit_id 
+        LEFT JOIN mm_products as mp on mp.generic_id = mg.generic_id
+        LEFT JOIN wm_products as wp on wp.product_id = mp.product_id
+        `;
+        
+        if (unit_generic_id === null) {
+            sql += ` LEFT JOIN mm_unit_generics as ug on ug.unit_generic_id `;
+        } else {
+            sql += `LEFT JOIN mm_unit_generics as ug on ug.unit_generic_id = ${unit_generic_id}`;
+        }
+        sql += ` LEFT JOIN mm_labelers as mlv on mlv.labeler_id = mp.v_labeler_id
+                LEFT JOIN mm_labelers as mlm on mlm.labeler_id = mp.m_labeler_id
+                WHERE
+                    mp.product_id = ${product_id}
+                GROUP BY wp.product_id
+                ORDER BY
+                    mlv.labeler_name ASC`;
+        return knex.raw(sql)
     }
 
     lPurchase(knex: Knex, startdate: any, enddate: any) {
@@ -1076,5 +1083,45 @@ export class PurchasingOrderReportModel {
         ORDER BY 
 		    bt.date_time`
         return knex.raw(sql)
+    }
+
+    PurchasingListByPO(knex: Knex, Sid, Eid, generic_type_id) {
+        return knex.raw(`SELECT
+        mp.product_name,
+        uc.qty AS conversion,
+        u.unit_name AS primary_unit,
+        poi.purchase_order_id,
+        po.purchase_order_number,
+        po.purchase_order_book_number,
+        po.order_date,
+        g.generic_name,
+        poi.qty,
+        uu.unit_name,
+        ROUND( poi.unit_price, 2 ) AS unit_price,
+        ROUND( SUM(poi.total_price), 2 ) AS total_price,
+        l.labeler_name, 
+        l.labeler_name_po,
+        r.delivery_date,
+        r.delivery_code
+    FROM
+        pc_purchasing_order po
+        JOIN pc_purchasing_order_item poi ON poi.purchase_order_id = po.purchase_order_id
+        JOIN mm_products mp ON mp.product_id = poi.product_id
+        JOIN mm_labelers l ON po.labeler_id = l.labeler_id
+        JOIN mm_generics g ON poi.generic_id = g.generic_id
+        LEFT JOIN bm_bgtype b ON b.bgtype_id = po.budgettype_id
+        LEFT JOIN mm_unit_generics uc ON uc.unit_generic_id = poi.unit_generic_id
+        LEFT JOIN mm_units u ON u.unit_id = uc.to_unit_id
+        LEFT JOIN mm_units uu ON uu.unit_id = uc.from_unit_id 
+        LEFT JOIN wm_receives r on po.purchase_order_id = r.purchase_order_id
+    WHERE
+        po.purchase_order_number BETWEEN '${Sid}' 
+        AND '${Eid}' 
+        AND po.is_cancel = 'N' 
+        AND g.generic_type_id = ${generic_type_id}
+    GROUP BY
+        purchase_order_id,poi.product_id
+    ORDER BY
+        po.purchase_order_number`);
     }
 }

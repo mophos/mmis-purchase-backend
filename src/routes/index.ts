@@ -148,11 +148,51 @@ router.get('/report/list/purchaseSelec', wrap(async (req, res, next) => {
   res.render('listpurchase', { fill: fill, nDate: nDate, hospname: hospname, results: results, sdate: sdate })
 }));
 
+router.get('/report/list/all/purchase-trade-select', wrap(async (req, res, next) => {
+  let product_id = req.query.product_id;
+  let warehouseId = req.decoded.warehouseId;
+  let db = req.db;
+  
+  product_id = Array.isArray(product_id) ? product_id : [product_id]
+  Array.isArray(product_id)
+
+  let array: any = [];
+  for (let i = 0; i < product_id.length; i++) {
+    let results = await model.getSelectOrderPoint(db, warehouseId, product_id[i], null);
+
+    array.push(results[0][0]);
+  }
+  let hospname = await model.hospital(db);
+  if (array[0] === undefined) res.render('error404')
+  hospname = hospname[0].hospname
+  let nDate = model.prettyDate(new Date())
+  let i = 0;
+  let fill = [];
+  array.forEach(value => {
+    fill[i] = ((value.max_qty - value.remain_qty) / value.qty).toFixed(0);
+    fill[i] < 0 ? fill[i] = 1 : fill[i];
+    value.remain_qty = (value.remain_qty / value.qty).toFixed(0);
+    if (value.qty === null) value.qty = 0
+    if (value.min_qty === null) value.min_qty = 0
+    i++;
+  });
+  moment.locale('th');
+  let sdate = moment(new Date()).format('D MMMM ') + (moment(new Date()).get('year') + 543);
+  console.log(array);
+  
+  // res.send(array);
+  res.render('listpurchase', { fill: fill, nDate: nDate, hospname: hospname, results: array, sdate: sdate })
+}));
+
 router.get('/report/list/purchase-trade-select', wrap(async (req, res, next) => {
   let product_id = req.query.product_id;
   let unit_generic_id = req.query.unit_generic_id;
   let warehouseId = req.decoded.warehouseId;
   let db = req.db;
+  product_id = Array.isArray(product_id) ? product_id : [product_id]
+  Array.isArray(product_id)
+  unit_generic_id = Array.isArray(unit_generic_id) ? unit_generic_id : [unit_generic_id]
+  Array.isArray(unit_generic_id)
 
   let array: any = [];
   for (let i = 0; i < product_id.length; i++) {
@@ -2599,5 +2639,96 @@ router.get('/report/budget-history/excel', wrap(async (req, res, next) => {
   // force download
   res.download(filePath, 'รายงานประวัติการใช้งบประมาณตั้งแต่ ตั้งแต่ ' + sdate + ' ถึง ' + edate + '.xlsx');
 }));
+
+router.get('/report/purchasing-list/byPO', wrap(async (req, res, next) => {
+  let Sid = req.query.Sid;
+  let Eid = req.query.Eid;
+  let generic_type_id = req.query.genericTypeId;
+  let db = req.db;
+  let results = await model.PurchasingListByPO(db, Sid, Eid, generic_type_id);
+  let hospname = await model.hospital(db);
+  if (!results[0].length) { res.render('error404') };
+  results = results[0]
+  hospname = hospname[0].hospname
+  moment.locale('th');
+  let startPO = Sid;
+  let endPO = Eid;
+
+  let sum: any = 0;
+
+  results.forEach(value => {
+    sum += value.total_price;
+    value.order_date = moment(value.order_date).isValid() ? moment(value.order_date).format('DD/MM/') + (moment(value.order_date).get('year') + 543) : '-';
+    value.delivery_date = moment(value.delivery_date).isValid() ? moment(value.delivery_date).format('DD/MM/') + (moment(value.delivery_date).get('year') + 543) : '-';
+    value.unit_price = model.comma(value.unit_price)
+    value.conversion = model.commaQty(value.conversion)
+    value.qty = model.commaQty(value.qty)
+    value.total_price = model.comma(value.total_price)
+  });
+  sum = model.comma(sum)
+
+  res.render('pPurchasingListByPO', {
+    results: results,
+    hospname: hospname,
+    sum: sum,
+    printDate: printDate(),
+    startPO: startPO,
+    endPO: endPO
+  })
+}));
+
+router.get('/report/purchasing-list/byPO/excel', async (req, res, next) => {
+  let Sid = req.query.Sid;
+  let Eid = req.query.Eid;
+  let generic_type_id = req.query.genericTypeId;
+  let db = req.db;
+  let results = await model.PurchasingListByPO(db, Sid, Eid, generic_type_id);
+  let hospname = await model.hospital(db);
+  if (!results[0].length) { res.render('error404') };
+  results = results[0]
+  hospname = hospname[0].hospname
+  moment.locale('th');
+  let sum: any = 0;
+
+  results.forEach(value => {
+    sum += value.total_price;
+    value.order_date = moment(value.order_date).isValid() ? moment(value.order_date).format('DD/MM/') + (moment(value.order_date).get('year') + 543) : '-';
+    value.delivery_date = moment(value.delivery_date).isValid() ? moment(value.delivery_date).format('DD/MM/') + (moment(value.delivery_date).get('year') + 543) : '-';
+    value.unit_price = model.comma(value.unit_price)
+    value.conversion = model.commaQty(value.conversion)
+    value.qty = model.commaQty(value.qty)
+    value.total_price = model.comma(value.total_price)
+  });
+  sum = model.comma(sum)
+  let json = [];
+
+  results.forEach(v => {
+    let obj: any = {};
+    obj.purchase_order_number = v.purchase_order_number;
+    obj.purchase_order_book_number = v.purchase_order_book_number;
+    obj.order_date = v.order_date;
+    obj.product_name = v.product_name;
+    obj.qty = v.qty;
+    obj.primary_unit = v.primary_unit;
+    obj.conversion = v.conversion;
+    obj.total_price = v.total_price;
+    obj.labeler_name_po = v.labeler_name_po;
+    obj.delivery_date = v.delivery_date;
+    obj.delivery_code = v.delivery_code;
+    obj.sum = ''
+    json.push(obj);
+  });
+
+  json[json.length - 1].sum = sum
+
+  const xls = json2xls(json);
+  const exportDirectory = path.join(process.env.MMIS_DATA, 'exports');
+  // create directory
+  fse.ensureDirSync(exportDirectory);
+  const filePath = path.join(exportDirectory, 'รายงานสรุปรายการเวชภัณฑ์ที่สั่งซื้อ เลขที่ใบสั่งซื้อ ' + Sid + ' ถึง ' + Eid + '.xlsx');
+  fs.writeFileSync(filePath, xls, 'binary');
+  // force download
+  res.download(filePath, 'รายงานสรุปรายการเวชภัณฑ์ที่สั่งซื้อ เลขที่ใบสั่งซื้อ ' + Sid + ' ถึง ' + Eid + '.xlsx');
+});
 
 export default router;

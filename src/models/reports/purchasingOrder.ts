@@ -1084,4 +1084,44 @@ export class PurchasingOrderReportModel {
 		    bt.date_time`
         return knex.raw(sql)
     }
+
+    PurchasingListByPO(knex: Knex, Sid, Eid, generic_type_id) {
+        return knex.raw(`SELECT
+        mp.product_name,
+        uc.qty AS conversion,
+        u.unit_name AS primary_unit,
+        poi.purchase_order_id,
+        po.purchase_order_number,
+        po.purchase_order_book_number,
+        po.order_date,
+        g.generic_name,
+        poi.qty,
+        uu.unit_name,
+        ROUND( poi.unit_price, 2 ) AS unit_price,
+        ROUND( SUM(poi.total_price), 2 ) AS total_price,
+        l.labeler_name, 
+        l.labeler_name_po,
+        r.delivery_date,
+        r.delivery_code
+    FROM
+        pc_purchasing_order po
+        JOIN pc_purchasing_order_item poi ON poi.purchase_order_id = po.purchase_order_id
+        JOIN mm_products mp ON mp.product_id = poi.product_id
+        JOIN mm_labelers l ON po.labeler_id = l.labeler_id
+        JOIN mm_generics g ON poi.generic_id = g.generic_id
+        LEFT JOIN bm_bgtype b ON b.bgtype_id = po.budgettype_id
+        LEFT JOIN mm_unit_generics uc ON uc.unit_generic_id = poi.unit_generic_id
+        LEFT JOIN mm_units u ON u.unit_id = uc.to_unit_id
+        LEFT JOIN mm_units uu ON uu.unit_id = uc.from_unit_id 
+        LEFT JOIN wm_receives r on po.purchase_order_id = r.purchase_order_id
+    WHERE
+        po.purchase_order_number BETWEEN '${Sid}' 
+        AND '${Eid}' 
+        AND po.is_cancel = 'N' 
+        AND g.generic_type_id = ${generic_type_id}
+    GROUP BY
+        purchase_order_id,poi.product_id
+    ORDER BY
+        po.purchase_order_number`);
+    }
 }

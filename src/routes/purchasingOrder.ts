@@ -311,17 +311,9 @@ router.post('/purchase-reorder', async (req, res, next) => {
         if (month >= 10) {
           year += 1;
         }
-        let currentNo;
-        const srNo = await serialModel.getSerialNumber(db, year, 1);
-        if (srNo.length) {
-          currentNo = srNo[0].total += 1;
-        } else {
-          currentNo = 1;
-        }
         for (let v of poItems) {
           // let serial
-          let serial = await serialModel.getSerialNew(db, 'PO', year, currentNo, warehouseId);
-          currentNo += 1
+          let serial = await serialModel.getSerial(db, 'PO', year, warehouseId);
           const _productItems: any = _.filter(productItems, { 'purchase_order_id': v.purchase_order_id });
           let amount = 0;
           for (const p of _productItems) {
@@ -447,26 +439,20 @@ router.post('/', async (req, res, next) => {
         if (month >= 10) {
           year += 1;
         }
-        let currentNo;
-        const srNo = await serialModel.getSerialNumber(db, year, summary.generic_type_id);
-        if (srNo.length) {
-          currentNo = srNo[0].total += 1;
-        } else {
-          currentNo = 1;
-        }
-        serial = await serialModel.getSerialNew(db, 'PO', year, currentNo, warehouseId);
+
+        serial = await serialModel.getSerial(db, 'PO', year, warehouseId);
         // if (summary.generic_type_id === 1) {
-        // serial = await serialModel.getSerialNew(db, 'PO', year, currentNo, warehouseId);
+        // serial = await serialModel.getSerial(db, 'PO', year,warehouseId);
         // } else if (summary.generic_type_id === 2) {
-        //   serial = await serialModel.getSerialNew(db, 'POA', year, currentNo, warehouseId);
+        //   serial = await serialModel.getSerial(db, 'POA', year,warehouseId);
         // } else if (summary.generic_type_id === 3) {
-        //   serial = await serialModel.getSerialNew(db, 'POB', year, currentNo, warehouseId);
+        //   serial = await serialModel.getSerial(db, 'POB', year,warehouseId);
         // } else if (summary.generic_type_id === 4) {
-        //   serial = await serialModel.getSerialNew(db, 'POC', year, currentNo, warehouseId);
+        //   serial = await serialModel.getSerial(db, 'POC', year,warehouseId);
         // } else if (summary.generic_type_id === 5) {
-        //   serial = await serialModel.getSerialNew(db, 'POD', year, currentNo, warehouseId);
+        //   serial = await serialModel.getSerial(db, 'POD', year,warehouseId);
         // } else {
-        //   serial = await serialModel.getSerialNew(db, 'PO', year, currentNo, warehouseId);
+        //   serial = await serialModel.getSerial(db, 'PO', year,warehouseId);
         // }
 
         purchase.warehouse_id = warehouseId;

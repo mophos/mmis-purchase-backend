@@ -34,7 +34,7 @@ export class PurchasingOrderItemModel {
   listByorderid(knex: Knex, orderId: string, limit: number = 10, offset: number = 0) {
     let fullname = knex.raw("concat(p.product_name,' [',gd.generic_name,'] ') as fullname");
     return knex(this.tableName)
-      .select('pc_purchasing_order_item.*', 'p.*', fullname, 'gd.generic_name',
+      .select('pc_purchasing_order_item.*', 'p.*', fullname, 'gd.generic_name','gd.working_code as generic_code',
         knex.raw('ifnull(ug.qty, 0) as small_qty'), 'u1.unit_name as from_unit_name', 'u2.unit_name as to_unit_name',
         knex.raw(`(SELECT qty from pc_purchasing_order_item poi JOIN pc_purchasing_order po ON poi.purchase_order_id = po.purchase_order_id  where poi.purchase_order_id != '${orderId}' and poi.product_id=p.product_id AND po.is_cancel = 'N' 
         AND ( po.purchase_order_status = 'COMPLETED' OR po.purchase_order_status = 'APPROVED' ) ORDER BY purchase_order_item_id desc limit 1) as old_qty`))

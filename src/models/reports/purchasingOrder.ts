@@ -897,8 +897,6 @@ export class PurchasingOrderReportModel {
                 //total_price ของ PO_item
                 'po.total_price',
                 'poi.giveaway',
-                //totalprice ของ PO
-                'po.total_price as totalprice',
                 'mu.unit_name',
                 'po.verify_committee_id',
                 'po.check_price_committee_id',

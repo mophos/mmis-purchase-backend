@@ -895,7 +895,7 @@ export class PurchasingOrderReportModel {
                 'poi.qty AS qtyPoi',
                 'poi.unit_price',
                 //total_price ของ PO_item
-                'poi.total_price',
+                'po.total_price',
                 'poi.giveaway',
                 //totalprice ของ PO
                 'po.total_price as totalprice',

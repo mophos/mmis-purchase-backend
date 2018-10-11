@@ -2024,6 +2024,8 @@ router.get('/report/allpo/egp/singburi', wrap(async (req, res, next) => {
     let total: any = 0;
     arrayItems.forEach(v => {
       v.order_date = moment(v.order_date).format('D MMMM ') + (moment(v.order_date).get('year') + 543);
+      console.log('xxxxxxxxxxxxxxxxxxxxxxxxxxxx',v.total_price);
+      
       total += v.total_price;
       v.total_price = model.comma(v.total_price);
       v.qty = model.commaQty(v.qty);

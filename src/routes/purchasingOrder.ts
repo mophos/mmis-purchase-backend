@@ -378,7 +378,8 @@ router.post('/purchase-reorder', async (req, res, next) => {
             qty: v.qty,
             total_small_qty: v.total_small_qty,
             unit_generic_id: v.unit_generic_id,
-            unit_price: v.unit_price
+            unit_price: v.unit_price,
+            total_price: v.qty * v.unit_price
           }
           _productItems.push(obj);
 

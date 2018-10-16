@@ -21,10 +21,16 @@ let chief = "ปฎิบัติราชการแทนผู้ว่า�
 // moment.locale('th');
 // const printDate = 'วันที่พิมพ์ ' + moment().format('D MMMM ') + (moment().get('year') + 543) + moment().format(', HH:mm:ss น.');
 
-function printDate() {
+
+function printDate(SYS_PRINT_DATE) {
   moment.locale('th');
-  const printDate = 'วันที่พิมพ์ ' + moment().format('D MMMM ') + (moment().get('year') + 543) + moment().format(', HH:mm:ss น.');
-  return printDate
+  let printDate
+  if (SYS_PRINT_DATE === 'Y') {
+    printDate = 'วันที่พิมพ์ ' + moment().format('D MMMM ') + (moment().get('year') + 543) + moment().format(', HH:mm:ss น.');
+  } else {
+    printDate = '';
+  }
+  return printDate;
 }
 
 router.get('/', (req, res, next) => {
@@ -145,14 +151,14 @@ router.get('/report/list/purchaseSelec', wrap(async (req, res, next) => {
   moment.locale('th');
   let sdate = moment(new Date()).format('D MMMM ') + (moment(new Date()).get('year') + 543);
 
-  res.render('listpurchase', { fill: fill, nDate: nDate, hospname: hospname, results: results, sdate: sdate })
+  res.render('listpurchase', { fill: fill, nDate: nDate, hospname: hospname, results: results, printDate: printDate(req.decoded.SYS_PRINT_DATE) })
 }));
 
 router.get('/report/list/all/purchase-trade-select', wrap(async (req, res, next) => {
   let product_id = req.query.product_id;
   let warehouseId = req.decoded.warehouseId;
   let db = req.db;
-  
+
   product_id = Array.isArray(product_id) ? product_id : [product_id]
   Array.isArray(product_id)
 
@@ -179,9 +185,9 @@ router.get('/report/list/all/purchase-trade-select', wrap(async (req, res, next)
   moment.locale('th');
   let sdate = moment(new Date()).format('D MMMM ') + (moment(new Date()).get('year') + 543);
   console.log(array);
-  
+
   // res.send(array);
-  res.render('listpurchase', { fill: fill, nDate: nDate, hospname: hospname, results: array, sdate: sdate })
+  res.render('listpurchase', { fill: fill, nDate: nDate, hospname: hospname, results: array, printDate: printDate(req.decoded.SYS_PRINT_DATE) })
 }));
 
 router.get('/report/list/purchase-trade-select', wrap(async (req, res, next) => {
@@ -217,9 +223,9 @@ router.get('/report/list/purchase-trade-select', wrap(async (req, res, next) => 
   moment.locale('th');
   let sdate = moment(new Date()).format('D MMMM ') + (moment(new Date()).get('year') + 543);
   console.log(array);
-  
+
   // res.send(array);
-  res.render('listpurchase', { fill: fill, nDate: nDate, hospname: hospname, results: array, sdate: sdate })
+  res.render('listpurchase', { fill: fill, nDate: nDate, hospname: hospname, results: array, printDate: printDate(req.decoded.SYS_PRINT_DATE) })
 }));
 
 router.get('/report/list/purchase/:startdate/:enddate', wrap(async (req, res, next) => {
@@ -240,7 +246,7 @@ router.get('/report/list/purchase/:startdate/:enddate', wrap(async (req, res, ne
   let sdate = moment(startdate).format('D MMMM ') + (moment(startdate).get('year') + 543);
   let edate = moment(enddate).format('D MMMM ') + (moment(enddate).get('year') + 543);
 
-  res.render('listpurchase', { nDate: nDate, hospname: hospname, results: results, sdate: sdate, edate: edate })
+  res.render('listpurchase', { nDate: nDate, hospname: hospname, results: results, printDate: printDate(req.decoded.SYS_PRINT_DATE), edate: edate })
 }));
 
 router.get('/report/total/purchase/:createDate', wrap(async (req, res, next) => {
@@ -398,7 +404,7 @@ router.get('/report/purchasing-list', wrap(async (req, res, next) => {
     daten: daten,
     dates: dates,
     sum: sum,
-    printDate: printDate(),
+    printDate: printDate(req.decoded.SYS_PRINT_DATE),
     sdate: sdate,
     edate: edate
   })
@@ -484,7 +490,8 @@ router.get('/report/totalcost/purchase/:month', wrap(async (req, res, next) => {
     nDate: nDate,
     thmonth: thmonth,
     year: year,
-    sum: sum
+    sum: sum,
+    printDate: printDate(req.decoded.SYS_PRINT_DATE)
   })
 }));
 
@@ -2024,7 +2031,7 @@ router.get('/report/allpo/egp/singburi', wrap(async (req, res, next) => {
     let total: any = 0;
     arrayItems.forEach(v => {
       v.order_date = moment(v.order_date).format('D MMMM ') + (moment(v.order_date).get('year') + 543);
-      
+
       total += v.qtyPoi * v.unit_price;
       v.total_price = model.comma(v.qtyPoi * v.unit_price);
       v.qty = model.commaQty(v.qty);
@@ -2347,7 +2354,8 @@ router.get('/report/getProductHistory/:generic_code', wrap(async (req, res, next
   let rs: any = await model.getProductHistory(db, generic_code);
 
   res.render('purchaseHistory', {
-    hospitalName: hospitalName
+    hospitalName: hospitalName,
+    printDate: printDate(req.decoded.SYS_PRINT_DATE)
   });
 }));
 
@@ -2672,7 +2680,7 @@ router.get('/report/purchasing-list/byPO', wrap(async (req, res, next) => {
     results: results,
     hospname: hospname,
     sum: sum,
-    printDate: printDate(),
+    printDate: printDate(req.decoded.SYS_PRINT_DATE),
     startPO: startPO,
     endPO: endPO
   })

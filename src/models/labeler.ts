@@ -14,6 +14,7 @@ export class LabelerModel {
         w.where('labeler_name', 'like', `%${q}%`)
           .orWhere('short_code', 'like', `%${q}%`)
       })
+      .andWhere('is_deleted','N')
       .limit(limit)
       .offset(offset);
   }

@@ -237,7 +237,7 @@ export class ProductsModel {
     //   .where('is_ordered', 'N');
 
     let sql = knex('mm_products as mp')
-      .select(subQuery, 'mg.planning_unit_generic_id','mp.product_id', 'mp.generic_id', 'mp.product_name', 'mg.generic_name', 'gt.generic_type_name', 'ml.labeler_name',
+      .select(subQuery, 'mp.purchase_unit_id','mp.product_id', 'mp.generic_id', 'mp.product_name', 'mg.generic_name', 'gt.generic_type_name', 'ml.labeler_name',
         'mg.min_qty', 'mg.max_qty', 'mg.working_code', 'pcr.reserve_id', 'vcpa.contract_id', 'vcpa.contract_no')
       .innerJoin('mm_generics as mg', 'mg.generic_id', 'mp.generic_id')
       .innerJoin('mm_generic_types as gt', 'gt.generic_type_id', 'mg.generic_type_id')

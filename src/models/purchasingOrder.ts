@@ -355,6 +355,11 @@ export class PurchasingOrderModel {
       .update(datas);
   }
 
+  updateUomPurchas(knex: Knex,product_id,unit_generic_id){
+   return knex('mm_products')
+        .update('purchase_unit_id',unit_generic_id)
+        .where('product_id',product_id)
+  }
   updateStatusLog(knex: Knex, data: any) {
     return knex('pc_status_logs')
       .insert(data);

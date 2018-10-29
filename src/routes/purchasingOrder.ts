@@ -789,8 +789,15 @@ router.put('/update-purchase/status', async (req, res, next) => {
             };
 
             await model.updateStatusLog(db, statusLog);
-          }
 
+            
+            
+           
+          }
+          let products :any = await productModel.getProductOrder(db,v.purchase_order_id)
+            for (const item of products) {
+              await model.updateUomPurchas(db,item.product_id,item.unit_generic_id)
+            }
         }
 
         res.send({ ok: true });

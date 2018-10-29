@@ -18,7 +18,11 @@ export class ProductsModel {
       })
       .groupBy('pn.generic_id', 'pn.package_id')
   }
-
+  getProductOrder(knex:Knex,purchase_order_id){
+    return knex('pc_purchasing_order_item')
+    .select('product_id','unit_generic_id')
+    .where('purchase_order_id',purchase_order_id)
+  }
   orderspointAll(knex: Knex, query: string = '', type = 'all', limit: number = 100, offset: number = 0) {
     let _query = `%${query}%`;
     let nullColumn = knex.raw("null as contract_id");

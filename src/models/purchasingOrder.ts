@@ -306,7 +306,7 @@ export class PurchasingOrderModel {
       .innerJoin('pc_purchasing', 'pc_purchasing_order.purchasing_id', 'pc_purchasing.purchasing_id')
       .innerJoin('mm_labelers', 'pc_purchasing_order.labeler_id', 'mm_labelers.labeler_id')
       .leftJoin('pc_committee', 'pc_purchasing_order.verify_committee_id', 'pc_committee.committee_id')
-      .where('pc_purchasing_order.is_contract', 'Y')
+      .where('pc_purchasing_order.is_contract', 'Y') 
       .where('pc_purchasing.purchasing_status', status);
   }
 

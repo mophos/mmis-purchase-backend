@@ -18,7 +18,11 @@ export class ProductsModel {
       })
       .groupBy('pn.generic_id', 'pn.package_id')
   }
-
+  getProductOrder(knex:Knex,purchase_order_id){
+    return knex('pc_purchasing_order_item')
+    .select('product_id','unit_generic_id')
+    .where('purchase_order_id',purchase_order_id)
+  }
   orderspointAll(knex: Knex, query: string = '', type = 'all', limit: number = 100, offset: number = 0) {
     let _query = `%${query}%`;
     let nullColumn = knex.raw("null as contract_id");
@@ -237,7 +241,7 @@ export class ProductsModel {
     //   .where('is_ordered', 'N');
 
     let sql = knex('mm_products as mp')
-      .select(subQuery, 'mp.product_id', 'mp.generic_id', 'mp.product_name', 'mg.generic_name', 'gt.generic_type_name', 'ml.labeler_name',
+      .select(subQuery, 'mp.purchase_unit_id','mp.product_id', 'mp.generic_id', 'mp.product_name', 'mg.generic_name', 'gt.generic_type_name', 'ml.labeler_name',
         'mg.min_qty', 'mg.max_qty', 'mg.working_code', 'pcr.reserve_id', 'vcpa.contract_id', 'vcpa.contract_no')
       .innerJoin('mm_generics as mg', 'mg.generic_id', 'mp.generic_id')
       .innerJoin('mm_generic_types as gt', 'gt.generic_type_id', 'mg.generic_type_id')

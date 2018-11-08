@@ -153,7 +153,18 @@ router.put('/updatePurchasingOfficer', (req, res, next) => {
       res.send({ ok: false, error: error });
     });
 });
-
+router.put('/updatePurchasingOfficerType', (req, res, next) => {
+  let db = req.db;
+  let data = req.body.data;
+  let typeId = req.body.typeId;
+  officerModel.updatePurchasingOfficerType(db, typeId, data)
+    .then((results: any) => {
+      res.send({ ok: true, rows: results });
+    })
+    .catch(error => {
+      res.send({ ok: false, error: error });
+    });
+});
 router.post('/deletePurchasingOfficer', (req, res, next) => {
   let ref = req.body.ref;
   let db = req.db;

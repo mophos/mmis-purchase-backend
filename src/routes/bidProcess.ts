@@ -54,10 +54,10 @@ router.put('/:id', (req, res, next) => {
   let data = req.body.data;
 
   let db = req.db;
-
+  
   if (id) {
     let datas: any = {
-      name: data.bidname,
+      name: data.name,
       f_amount: data.f_amount
     }
 

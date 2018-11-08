@@ -306,7 +306,7 @@ export class PurchasingOrderModel {
       .innerJoin('pc_purchasing', 'pc_purchasing_order.purchasing_id', 'pc_purchasing.purchasing_id')
       .innerJoin('mm_labelers', 'pc_purchasing_order.labeler_id', 'mm_labelers.labeler_id')
       .leftJoin('pc_committee', 'pc_purchasing_order.verify_committee_id', 'pc_committee.committee_id')
-      .where('pc_purchasing_order.is_contract', 'Y')
+      .where('pc_purchasing_order.is_contract', 'Y') 
       .where('pc_purchasing.purchasing_status', status);
   }
 
@@ -355,6 +355,11 @@ export class PurchasingOrderModel {
       .update(datas);
   }
 
+  updateUomPurchas(knex: Knex,product_id,unit_generic_id){
+   return knex('mm_products')
+        .update('purchase_unit_id',unit_generic_id)
+        .where('product_id',product_id)
+  }
   updateStatusLog(knex: Knex, data: any) {
     return knex('pc_status_logs')
       .insert(data);

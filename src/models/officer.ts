@@ -49,7 +49,11 @@ export class OfficerModel {
       .where('p_id', officerId)
 
   }
+  updatePurchasingOfficerType(knex: Knex, typeId: number, data) {
+    return knex('um_purchasing_officer_type').update(data)
+      .where('type_id', typeId)
 
+  }
   getPurchasingOfficer(knex: Knex) {
     return knex('um_purchasing_officer as pu')
       .select('pu.p_id', 'pu.people_id', 'pu.type_id', 'type.type_name', 'type.type_code', 'pu.isactive', knex.raw('concat(t.title_name,p.fname," ",p.lname) AS fullname'))

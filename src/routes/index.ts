@@ -2008,6 +2008,9 @@ router.get('/report/allpo/egp/singburi', wrap(async (req, res, next) => {
 
     committeesVerify = await model.purchasingCommittee2(db, porder[i]);
     committeesVerify = committeesVerify[0];
+    if (committeesVerify.length == 1) {
+      committeesVerify[0].position = 'ผู้ตรวจรับพัสดุ';
+    }
     arCommittee.push(committeesVerify);
 
     budget = await model.budgetType(db, purchasing[i][0].budget_detail_id);

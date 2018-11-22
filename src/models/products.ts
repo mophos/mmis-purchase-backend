@@ -154,20 +154,21 @@ export class ProductsModel {
         sum( rd.receive_qty * ug.qty ) total_qty 
       FROM
         wm_receives AS rp
-        INNER JOIN wm_receive_approve AS ra ON ra.receive_id = rp.receive_id
+        left JOIN wm_receive_approve AS ra ON ra.receive_id = rp.receive_id
         INNER JOIN wm_receive_detail AS rd ON rp.receive_id = rd.receive_id 
         INNER JOIN mm_unit_generics AS ug ON ug.unit_generic_id = rd.unit_generic_id	
+			WHERE  ra.receive_id IS NULL
       GROUP BY
         rp.purchase_order_id,
         rd.product_id ) AS rq
        `)
     let subQueryPurchased = knex('pc_purchasing_order_item as pci')
-      .select(knex.raw('sum(pci.qty*ug.qty - ifnull( rq.total_qty, 0 )) as total_qty'))
+      .select(knex.raw(`sum(if(pco.purchase_order_status = 'COMPLETED', ifnull( rq.total_qty, 0 ), (pci.qty * ug.qty - ifnull( rq.total_qty, 0 )))) as total_qty`))
       .innerJoin('pc_purchasing_order as pco', 'pco.purchase_order_id', 'pci.purchase_order_id')
       .leftJoin(subQtyReceive,knex.raw(` rq.purchase_order_id = pco.purchase_order_id AND rq.product_id = pci.product_id `))
       .innerJoin('mm_unit_generics as ug', 'ug.unit_generic_id', 'pci.unit_generic_id')
       .innerJoin('mm_products as mp', 'mp.product_id', 'pci.product_id')
-      .whereIn('pco.purchase_order_status', ['ORDERPOINT','PREPARED','CONFIRMED','APPROVED'])
+      .whereIn('pco.purchase_order_status', ['ORDERPOINT','PREPARED','CONFIRMED','APPROVED','COMPLETED'])
       .whereRaw('pco.is_cancel="N"')
       .whereRaw('mp.generic_id=mg.generic_id')
       .whereRaw('pci.product_id=mp.product_id')
@@ -213,7 +214,7 @@ export class ProductsModel {
     } else {
       sql.havingRaw('remain_qty<=mg.min_qty OR remain_qty is NULL');
     }
-
+    sql.havingRaw('total_purchased >= 0')
     // order by
     if (sort.by) {
       let reverse = sort.reverse ? 'DESC' : 'ASC';

@@ -341,6 +341,7 @@ router.post('/purchase-reorder', async (req, res, next) => {
             obj.budgettype_id = v.budgettype_id;
             obj.buyer_id = v.buyer_id;
             obj.chief_id = v.chief_id;
+            obj.supply_id = v.supply_id;
             obj.verify_committee_id = v.verify_committee_id;
             obj.sub_total = sub_total;
             obj.vat = vat;

@@ -166,6 +166,7 @@ router.post('/by-status', async (req, res, next) => {
   let limit = req.body.limit || 20;
   let offset = req.body.offset || 0;
   let sort = req.body.sort;
+  let edi = req.body.edi;
   let warehouseId = req.decoded.warehouseId;
   let genericTypeIds = [];
 
@@ -175,8 +176,8 @@ router.post('/by-status', async (req, res, next) => {
   }
 
   try {
-    let rs: any = await model.listByStatus(db, status, contract, query, start_date, end_date, limit, offset, genericTypeIds, sort, warehouseId);
-    let rsTotal: any = await model.listByStatusTotal(db, status, contract, query, start_date, end_date, genericTypeIds, warehouseId);
+    let rs: any = await model.listByStatus(db, status, contract, query, start_date, end_date, limit, offset, genericTypeIds, sort, warehouseId, edi);
+    let rsTotal: any = await model.listByStatusTotal(db, status, contract, query, start_date, end_date, genericTypeIds, warehouseId, edi);
 
     res.send({ ok: true, rows: rs, total: rsTotal[0].total });
   } catch (error) {
@@ -492,8 +493,9 @@ router.post('/', async (req, res, next) => {
         purchase.is_contract = summary.is_contract ? summary.is_contract : null;
         purchase.purchase_order_book_number = summary.purchase_order_book_number ? summary.purchase_order_book_number : null;
         purchase.contract_id = summary.contract_id;
-
         purchase.people_user_id = req.decoded.people_user_id;
+        purchase.edi = summary.edi;
+
 
         items.forEach(v => {
           let obj: any = {
@@ -596,7 +598,7 @@ router.put('/:purchaseOrderId', async (req, res, next) => {
         purchase.is_contract = summary.is_contract ? summary.is_contract : null;
         purchase.purchase_order_book_number = summary.purchase_order_book_number ? summary.purchase_order_book_number : null;
         purchase.update_people_user_id = req.decoded.people_user_id;
-
+        purchase.edi = summary.edi;
         items.forEach(v => {
           let obj: any = {
             purchase_order_id: purchaseOrderId,
@@ -793,14 +795,14 @@ router.put('/update-purchase/status', async (req, res, next) => {
 
             await model.updateStatusLog(db, statusLog);
 
-            
-            
-           
+
+
+
           }
-          let products :any = await productModel.getProductOrder(db,v.purchase_order_id)
-            for (const item of products) {
-              await model.updateUomPurchas(db,item.product_id,item.unit_generic_id)
-            }
+          let products: any = await productModel.getProductOrder(db, v.purchase_order_id)
+          for (const item of products) {
+            await model.updateUomPurchas(db, item.product_id, item.unit_generic_id)
+          }
         }
 
         res.send({ ok: true });

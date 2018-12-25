@@ -4,7 +4,7 @@ import * as moment from 'moment';
 import * as express from 'express';
 import { log } from 'util';
 import { start } from 'repl';
-
+const request = require("request");
 export class PurchasingOrderReportModel {
 
     detail(knex: Knex, id: string) {
@@ -235,7 +235,7 @@ export class PurchasingOrderReportModel {
         LEFT JOIN mm_products as mp on mp.generic_id = mg.generic_id
         LEFT JOIN wm_products as wp on wp.product_id = mp.product_id
         `;
-        
+
         if (unit_generic_id === null) {
             sql += ` LEFT JOIN mm_unit_generics as ug on ug.unit_generic_id `;
         } else {
@@ -1121,5 +1121,73 @@ export class PurchasingOrderReportModel {
         purchase_order_id,poi.product_id
     ORDER BY
         po.purchase_order_number`);
+    }
+
+    async ediHeader(knex: Knex, purchaOrderId) {
+        const sql = `select 
+        po.purchase_order_id,
+        po.purchase_order_number,
+        po.purchase_order_book_number,
+        if(po.contract_id is null,0,1) as po_type,
+        po.contract_ref,
+        po.order_date,
+        wh.warehouse_name,
+        po.budget_detail_id,
+        po.total_price,
+        concat(up.fname,' ',up.lname) as buyer_name,
+        (select count(*) from pc_purchasing_order_item where purchase_order_id = po.purchase_order_id) as total_records
+         from pc_purchasing_order as po
+         join um_people_users as upu on po.people_user_id = upu.people_user_id
+         join um_people as up on up.people_id = upu.people_id
+         join wm_warehouses as wh on wh.warehouse_id = po.warehouse_id
+
+         where po.purchase_order_id = ${purchaOrderId}`;
+        return knex.raw(sql);
+    }
+
+    async ediDetail(knex: Knex, purchaOrderId) {
+        const sql = `
+        select 
+        mp.working_code,
+        mu1.unit_name as large_unit,
+        mu2.unit_name as small_unit,
+        mug.qty as conversion_qty,
+        poi.* 
+        from pc_purchasing_order_item as poi
+        join mm_products as mp on poi.product_id = mp.product_id
+        join mm_unit_generics as mug on poi.unit_generic_id = mug.unit_generic_id
+        join mm_units as mu1 on mu1.unit_id = mug.from_unit_id
+        join mm_units as mu2 on mu2.unit_id = mug.to_unit_id
+
+         where poi.purchase_order_id = ${purchaOrderId}`;
+        return knex.raw(sql);
+    }
+
+    sendEDI(data: any) {
+        return new Promise((resolve: any, reject: any) => {
+            var options = {
+                method: 'POST',
+                url: 'http://ananddrs.net/edi2018/api/purchase/create.php',
+                agentOptions: {
+                    rejectUnauthorized: false
+                },
+                headers:
+                {
+                    'postman-token': 'c63b4187-f395-a969-dd57-19018273670b',
+                    'cache-control': 'no-cache',
+                    'content-type': 'application/json'
+                },
+                body: data,
+                json: true
+            };
+
+            request(options, function (error, response, body) {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve(body);
+                }
+            });
+        });
     }
 }

@@ -112,7 +112,8 @@ export class PurchasingOrderModel {
     contract: string = 'ALL', query: string = '',
     start_date: string = '', end_date: string = '',
     limit: number = 20, offset: number = 0,
-    genericTypeIds: any[], sort: any = {}, warehouseId) {
+    genericTypeIds: any[], sort: any = {}, warehouseId,
+    edi) {
     let sumItems = knex
       .select(knex.raw('sum(po.unit_price*po.qty)'))
       .from('pc_purchasing_order_item as po')
@@ -140,11 +141,14 @@ export class PurchasingOrderModel {
       .whereIn('pc_purchasing_order.purchase_order_status', status)
       .whereIn('pc_purchasing_order.generic_type_id', genericTypeIds)
 
+    if (edi) {
+      con.where('pc_purchasing_order.edi', 'Y');
+    } else {
+      con.where('pc_purchasing_order.edi', 'N');
+    }
     // order by
-    console.log('sort', sort.by);
     if (sort.by) {
       let reverse = sort.reverse ? 'DESC' : 'ASC';
-      console.log(reverse);
       if (sort.by === 'order_date') {
         con.orderBy('pc_purchasing_order.order_date', reverse);
       }
@@ -181,14 +185,14 @@ export class PurchasingOrderModel {
     if (query !== '') {
 
       let generic = knex('pc_purchasing_order_item as poi').select('poi.purchase_order_id')
-      .leftJoin('mm_generics as g','g.generic_id','poi.generic_id').where(w => {
-        w.where('g.generic_name', 'like', `%${query}%`)
-          .orWhere('g.working_code', 'like', `%${query}%`)
-      });
+        .leftJoin('mm_generics as g', 'g.generic_id', 'poi.generic_id').where(w => {
+          w.where('g.generic_name', 'like', `%${query}%`)
+            .orWhere('g.working_code', 'like', `%${query}%`)
+        });
       con.where(w => {
         w.where('pc_purchasing_order.purchase_order_number', 'like', `%${query}%`)
           .orWhere('pc_purchasing_order.purchase_order_book_number', 'like', `%${query}%`)
-          .orWhereIn('pc_purchasing_order.purchase_order_id',generic)
+          .orWhereIn('pc_purchasing_order.purchase_order_id', generic)
       });
     }
 
@@ -206,7 +210,8 @@ export class PurchasingOrderModel {
     knex: Knex, status: Array<any>,
     contract: string = 'ALL', query: string = '',
     start_date: string = '', end_date: string = '',
-    genericTypeIds: any[], warehouseId) {
+    genericTypeIds: any[], warehouseId,
+    edi) {
 
     let con = knex(this.tableName)
       .select(knex.raw('count(*) as total'))
@@ -224,16 +229,22 @@ export class PurchasingOrderModel {
       con.where('pc_purchasing_order.is_contract', 'N');
     }
 
+    if (edi) {
+      con.where('pc_purchasing_order.edi', 'Y');
+    } else {
+      con.where('pc_purchasing_order.edi', 'N');
+    }
+
     if (query !== '') {
       let generic = knex('pc_purchasing_order_item as poi').select('poi.purchase_order_id')
-      .leftJoin('mm_generics as g','g.generic_id','poi.generic_id').where(w => {
-        w.where('g.generic_name', 'like', `%${query}%`)
-          .orWhere('g.working_code', 'like', `%${query}%`)
-      });
+        .leftJoin('mm_generics as g', 'g.generic_id', 'poi.generic_id').where(w => {
+          w.where('g.generic_name', 'like', `%${query}%`)
+            .orWhere('g.working_code', 'like', `%${query}%`)
+        });
       con.where(w => {
         w.where('pc_purchasing_order.purchase_order_number', 'like', `%${query}%`)
           .orWhere('pc_purchasing_order.purchase_order_book_number', 'like', `%${query}%`)
-          .orWhereIn('pc_purchasing_order.purchase_order_id',generic)
+          .orWhereIn('pc_purchasing_order.purchase_order_id', generic)
       });
     }
 
@@ -306,7 +317,7 @@ export class PurchasingOrderModel {
       .innerJoin('pc_purchasing', 'pc_purchasing_order.purchasing_id', 'pc_purchasing.purchasing_id')
       .innerJoin('mm_labelers', 'pc_purchasing_order.labeler_id', 'mm_labelers.labeler_id')
       .leftJoin('pc_committee', 'pc_purchasing_order.verify_committee_id', 'pc_committee.committee_id')
-      .where('pc_purchasing_order.is_contract', 'Y') 
+      .where('pc_purchasing_order.is_contract', 'Y')
       .where('pc_purchasing.purchasing_status', status);
   }
 
@@ -355,10 +366,10 @@ export class PurchasingOrderModel {
       .update(datas);
   }
 
-  updateUomPurchas(knex: Knex,product_id,unit_generic_id){
-   return knex('mm_products')
-        .update('purchase_unit_id',unit_generic_id)
-        .where('product_id',product_id)
+  updateUomPurchas(knex: Knex, product_id, unit_generic_id) {
+    return knex('mm_products')
+      .update('purchase_unit_id', unit_generic_id)
+      .where('product_id', product_id)
   }
   updateStatusLog(knex: Knex, data: any) {
     return knex('pc_status_logs')

@@ -244,7 +244,7 @@ export class PurchasingOrderReportModel {
         sql += ` LEFT JOIN mm_labelers as mlv on mlv.labeler_id = mp.v_labeler_id
                 LEFT JOIN mm_labelers as mlm on mlm.labeler_id = mp.m_labeler_id
                 WHERE
-                    mp.product_id = ${product_id}
+                    mp.product_id = '${product_id}'
                 GROUP BY wp.product_id
                 ORDER BY
                     mlv.labeler_name ASC`;

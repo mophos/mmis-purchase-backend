@@ -18,10 +18,10 @@ export class ProductsModel {
       })
       .groupBy('pn.generic_id', 'pn.package_id')
   }
-  getProductOrder(knex:Knex,purchase_order_id){
+  getProductOrder(knex: Knex, purchase_order_id) {
     return knex('pc_purchasing_order_item')
-    .select('product_id','unit_generic_id')
-    .where('purchase_order_id',purchase_order_id)
+      .select('product_id', 'unit_generic_id')
+      .where('purchase_order_id', purchase_order_id)
   }
   orderspointAll(knex: Knex, query: string = '', type = 'all', limit: number = 100, offset: number = 0) {
     let _query = `%${query}%`;
@@ -141,7 +141,6 @@ export class ProductsModel {
       .where('wp.warehouse_id', warehouseId)
       .whereRaw('wp.product_id=mp.product_id')
       .whereRaw('mp.generic_id=mg.generic_id')
-      // .groupBy('wp.product_id')
       .as('remain_qty');
 
     let subGenerics = knex('pc_product_reserved')
@@ -162,7 +161,7 @@ export class ProductsModel {
         rp.purchase_order_id,
         rd.product_id ) AS rq
        `)
-       let subQtyReceive2 = knex.raw(`
+    let subQtyReceive2 = knex.raw(`
       (SELECT
         rp.purchase_order_id,
         rd.product_id,
@@ -181,28 +180,21 @@ export class ProductsModel {
       sum( if(pco.purchase_order_status = 'COMPLETED', ifnull( rq.total_qty, 0 ), (pci.qty * ug.qty) - ifnull( rq2.total_qty, 0 ) ) ) AS total_qty
       `))
       .innerJoin('pc_purchasing_order as pco', 'pco.purchase_order_id', 'pci.purchase_order_id')
-      .leftJoin(subQtyReceive,knex.raw(` rq.purchase_order_id = pco.purchase_order_id AND rq.product_id = pci.product_id `))
-      .leftJoin(subQtyReceive2,knex.raw(` rq2.purchase_order_id = pco.purchase_order_id AND rq2.product_id = pci.product_id `))
+      .leftJoin(subQtyReceive, knex.raw(` rq.purchase_order_id = pco.purchase_order_id AND rq.product_id = pci.product_id `))
+      .leftJoin(subQtyReceive2, knex.raw(` rq2.purchase_order_id = pco.purchase_order_id AND rq2.product_id = pci.product_id `))
       .innerJoin('mm_unit_generics as ug', 'ug.unit_generic_id', 'pci.unit_generic_id')
       .innerJoin('mm_products as mp', 'mp.product_id', 'pci.product_id')
-      .whereIn('pco.purchase_order_status', ['ORDERPOINT','PREPARED','CONFIRMED','APPROVED','COMPLETED'])
+      .whereIn('pco.purchase_order_status', ['ORDERPOINT', 'PREPARED', 'CONFIRMED', 'APPROVED', 'COMPLETED'])
       .whereRaw('pco.is_cancel="N"')
       .whereRaw('mp.generic_id=mg.generic_id')
       .whereRaw('pci.product_id=mp.product_id')
-      // .whereRaw(`pco.purchase_order_id not in (
-      //   select purchase_order_id from wm_receives as rp
-      //   inner join wm_receive_approve as ra on ra.receive_id = rp.receive_id
-      // )`)
       .as('total_purchased');
 
     let sql = knex('mm_generics as mg')
       .select(subQuery, 'mg.generic_id', 'mg.generic_name', 'gt.generic_type_name',
         'mg.min_qty', 'mg.max_qty', 'mg.working_code', subQueryPurchased, 'mp.product_id')
-      // .innerJoin('mm_products as mp', 'mp.generic_id', 'mg.generic_id')
       .innerJoin('mm_generic_types as gt', 'gt.generic_type_id', 'mg.generic_type_id')
       .join('mm_products as mp', 'mp.generic_id', 'mg.generic_id')
-      // .innerJoin('mm_labelers as ml', 'ml.labeler_id', 'mp.v_labeler_id')
-      // .leftJoin('view_cm_products_active as vcpa', 'vcpa.product_id', 'mp.product_id')
       .whereRaw('mg.mark_deleted="N"')
       .whereRaw('mg.is_active="Y"')
       .whereNotIn('mg.generic_id', subGenerics);
@@ -217,45 +209,123 @@ export class ProductsModel {
       sql.where(w => {
         w.where('mg.generic_name', 'like', _query)
           .orWhere('mg.generic_name', 'like', _queryAll)
-          // .orWhere('mp.product_name', 'like', _query)
-          // .orWhere('mp.product_name', 'like', _queryAll)
           .orWhere('mg.working_code', 'like', _query)
           .orWhere('mg.keywords', 'like', _queryAll)
-        // .orWhere('ml.labeler_name', 'like', _queryAll)
       })
     }
 
-    // sql.groupBy('mp.product_id');
     if (showNotPurchased === 'N') {
       sql.havingRaw('remain_qty<=mg.min_qty');
     } else {
-      sql.havingRaw('remain_qty<=mg.min_qty OR remain_qty is NULL');
+      sql.havingRaw('(remain_qty<=mg.min_qty OR remain_qty is NULL)');
     }
-    sql.havingRaw('total_purchased >= 0')
-    // order by
+    sql.havingRaw('(total_purchased >= 0  or total_purchased is null)')
+
     if (sort.by) {
       let reverse = sort.reverse ? 'DESC' : 'ASC';
       if (sort.by === 'generic_name') {
         sql.orderBy('mg.generic_name', reverse);
       }
-
-      // if (sort.by === 'labeler_name') {
-      //   sql.orderBy('ml.labeler_name', reverse);
-      // }
-
       if (sort.by === 'generic_type_name') {
         sql.orderBy('gt.generic_type_name', reverse);
       }
-
-      // if (sort.by === 'product_name') {
-      //   sql.orderBy('mp.product_name', reverse);
-      // }
     } else {
       sql.orderByRaw('mg.generic_name');
     }
 
     return sql.groupBy('mg.working_code').limit(limit)
       .offset(offset);
+
+  }
+
+  getReOrderPointGenericTotal(knex: Knex, warehouseId: any, genericTypeIds: string[], query: any = '', showNotPurchased: any = 'N') {
+
+    let subQuery = knex('wm_products as wp')
+      .select(knex.raw('sum(wp.qty)'))
+      .innerJoin('mm_products as mp', 'mp.product_id', 'wp.product_id')
+      .where('wp.warehouse_id', warehouseId)
+      .whereRaw('wp.product_id=mp.product_id')
+      .whereRaw('mp.generic_id=mg.generic_id')
+      .as('remain_qty');
+
+    let subGenerics = knex('pc_product_reserved')
+      .select('generic_id')
+      .whereIn('reserved_status', ['SELECTED', 'CONFIRMED']);
+    let subQtyReceive = knex.raw(`
+      (SELECT
+        rp.purchase_order_id,
+        rd.product_id,
+        sum( rd.receive_qty * ug.qty ) total_qty 
+      FROM
+        wm_receives AS rp
+        left JOIN wm_receive_approve AS ra ON ra.receive_id = rp.receive_id
+        INNER JOIN wm_receive_detail AS rd ON rp.receive_id = rd.receive_id 
+        INNER JOIN mm_unit_generics AS ug ON ug.unit_generic_id = rd.unit_generic_id	
+			WHERE  ra.approve_id IS NULL
+      GROUP BY
+        rp.purchase_order_id,
+        rd.product_id ) AS rq
+       `)
+    let subQtyReceive2 = knex.raw(`
+      (SELECT
+        rp.purchase_order_id,
+        rd.product_id,
+        sum( rd.receive_qty * ug.qty ) total_qty 
+      FROM
+        wm_receives AS rp
+        INNER JOIN wm_receive_approve AS ra ON ra.receive_id = rp.receive_id
+        INNER JOIN wm_receive_detail AS rd ON rp.receive_id = rd.receive_id 
+        INNER JOIN mm_unit_generics AS ug ON ug.unit_generic_id = rd.unit_generic_id	
+      GROUP BY
+        rp.purchase_order_id,
+        rd.product_id ) AS rq2
+       `)
+    let subQueryPurchased = knex('pc_purchasing_order_item as pci')
+      .select(knex.raw(`
+       sum( if(pco.purchase_order_status = 'COMPLETED', ifnull( rq.total_qty, 0 ), (pci.qty * ug.qty) - ifnull( rq2.total_qty, 0 ) ) ) AS total_qty
+       `))
+      .innerJoin('pc_purchasing_order as pco', 'pco.purchase_order_id', 'pci.purchase_order_id')
+      .leftJoin(subQtyReceive, knex.raw(` rq.purchase_order_id = pco.purchase_order_id AND rq.product_id = pci.product_id `))
+      .leftJoin(subQtyReceive2, knex.raw(` rq2.purchase_order_id = pco.purchase_order_id AND rq2.product_id = pci.product_id `))
+      .innerJoin('mm_unit_generics as ug', 'ug.unit_generic_id', 'pci.unit_generic_id')
+      .innerJoin('mm_products as mp', 'mp.product_id', 'pci.product_id')
+      .whereIn('pco.purchase_order_status', ['ORDERPOINT', 'PREPARED', 'CONFIRMED', 'APPROVED', 'COMPLETED'])
+      .whereRaw('pco.is_cancel="N"')
+      .whereRaw('mp.generic_id=mg.generic_id')
+      .whereRaw('pci.product_id=mp.product_id')
+      .as('total_purchased');
+
+
+    let sql = knex('mm_generics as mg')
+      .select(subQuery, 'mg.generic_id', 'mg.generic_name', 'gt.generic_type_name',
+        'mg.min_qty', 'mg.max_qty', 'mg.working_code', subQueryPurchased)
+      .innerJoin('mm_generic_types as gt', 'gt.generic_type_id', 'mg.generic_type_id')
+      .whereRaw('mg.mark_deleted="N"')
+      .whereRaw('mg.is_active="Y"')
+      .whereNotIn('mg.generic_id', subGenerics);
+
+    if (genericTypeIds.length) {
+      sql.whereIn('mg.generic_type_id', genericTypeIds);
+    }
+
+    if (query) {
+      let _query = `${query}%`;
+      let _queryAll = `%${query}%`;
+      sql.where(w => {
+        w.where('mg.generic_name', 'like', _query)
+          .orWhere('mg.generic_name', 'like', _queryAll)
+          .orWhere('mg.working_code', 'like', _query)
+          .orWhere('mg.keywords', 'like', _queryAll)
+      })
+    }
+
+    if (showNotPurchased === 'N') {
+      sql.havingRaw('remain_qty<=mg.min_qty');
+    } else {
+      sql.havingRaw('(remain_qty<=mg.min_qty OR remain_qty is NULL)');
+    }
+    sql.havingRaw('(total_purchased >= 0  or total_purchased is null)')
+    return sql.groupBy('mg.working_code');
 
   }
 
@@ -273,7 +343,7 @@ export class ProductsModel {
     //   .where('is_ordered', 'N');
 
     let sql = knex('mm_products as mp')
-      .select(subQuery, 'mp.purchase_unit_id','mp.product_id', 'mp.generic_id', 'mp.product_name', 'mg.generic_name', 'gt.generic_type_name', 'ml.labeler_name',
+      .select(subQuery, 'mp.purchase_unit_id', 'mp.product_id', 'mp.generic_id', 'mp.product_name', 'mg.generic_name', 'gt.generic_type_name', 'ml.labeler_name',
         'mg.min_qty', 'mg.max_qty', 'mg.working_code', 'pcr.reserve_id', 'vcpa.contract_id', 'vcpa.contract_no')
       .innerJoin('mm_generics as mg', 'mg.generic_id', 'mp.generic_id')
       .innerJoin('mm_generic_types as gt', 'gt.generic_type_id', 'mg.generic_type_id')
@@ -316,69 +386,6 @@ export class ProductsModel {
     // sql.groupBy('mp.product_id');
 
     return sql.limit(limit).offset(offset).orderBy('mg.generic_name');
-  }
-
-  getReOrderPointGenericTotal(knex: Knex, warehouseId: any, genericTypeIds: string[], query: any = '', showNotPurchased: any = 'N') {
-
-    let subQuery = knex('wm_products as wp')
-      .select(knex.raw('sum(wp.qty)'))
-      .innerJoin('mm_products as mp', 'mp.product_id', 'wp.product_id')
-      .where('wp.warehouse_id', warehouseId)
-      .whereRaw('wp.product_id=mp.product_id')
-      .whereRaw('mp.generic_id=mg.generic_id')
-      // .groupBy('wp.product_id')
-      .as('remain_qty');
-
-    let subGenerics = knex('pc_product_reserved')
-      .select('generic_id')
-      .whereIn('reserved_status', ['SELECTED', 'CONFIRMED']);
-
-    let subQueryPurchased = knex('pc_purchasing_order_item as pci')
-      .select(knex.raw('sum(pci.qty*ug.qty) as total_qty'))
-      .innerJoin('pc_purchasing_order as pco', 'pco.purchase_order_id', 'pci.purchase_order_id')
-      .innerJoin('mm_unit_generics as ug', 'ug.unit_generic_id', 'pci.unit_generic_id')
-      .innerJoin('mm_products as mp', 'mp.product_id', 'pci.product_id')
-      .whereIn('pco.purchase_order_status', ['ORDERPOINT','PREPARED','CONFIRMED','APPROVED'])
-      .whereRaw('pco.is_cancel="N"')
-      .whereRaw('mp.generic_id=mg.generic_id')
-      .whereRaw('pci.product_id=mp.product_id')
-      .whereRaw(`pco.purchase_order_id not in (
-      select purchase_order_id from wm_receives as rp
-      inner join wm_receive_approve as ra on ra.receive_id = rp.receive_id
-    )`)
-      .as('total_purchased');
-
-
-    let sql = knex('mm_generics as mg')
-      .select(subQuery, 'mg.generic_id', 'mg.generic_name', 'gt.generic_type_name',
-        'mg.min_qty', 'mg.max_qty', 'mg.working_code', subQueryPurchased)
-      .innerJoin('mm_generic_types as gt', 'gt.generic_type_id', 'mg.generic_type_id')
-      .whereRaw('mg.mark_deleted="N"')
-      .whereRaw('mg.is_active="Y"')
-      .whereNotIn('mg.generic_id', subGenerics);
-
-    if (genericTypeIds.length) {
-      sql.whereIn('mg.generic_type_id', genericTypeIds);
-    }
-
-    if (query) {
-      let _query = `${query}%`;
-      let _queryAll = `%${query}%`;
-      sql.where(w => {
-        w.where('mg.generic_name', 'like', _query)
-          .orWhere('mg.generic_name', 'like', _queryAll)
-          .orWhere('mg.working_code', 'like', _query)
-          .orWhere('mg.keywords', 'like', _queryAll)
-      })
-    }
-
-    if (showNotPurchased === 'N') {
-      sql.havingRaw('remain_qty<=mg.min_qty');
-    } else {
-      sql.havingRaw('remain_qty<=mg.min_qty OR remain_qty is NULL');
-    }
-    return sql.groupBy('mg.working_code');
-
   }
 
   getReOrderPointTradeReservedTotal(knex: Knex, warehouseId: any, genericTypeIds: string[], query: any = '') {

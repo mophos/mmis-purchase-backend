@@ -217,9 +217,9 @@ export class ProductsModel {
     if (showNotPurchased === 'N') {
       sql.havingRaw('remain_qty<=mg.min_qty');
     } else {
-      sql.havingRaw('remain_qty<=mg.min_qty OR remain_qty is NULL');
+      sql.havingRaw('(remain_qty<=mg.min_qty OR remain_qty is NULL)');
     }
-    sql.havingRaw('total_purchased >= 0')
+    sql.havingRaw('(total_purchased >= 0  or total_purchased is null)')
 
     if (sort.by) {
       let reverse = sort.reverse ? 'DESC' : 'ASC';
@@ -322,9 +322,9 @@ export class ProductsModel {
     if (showNotPurchased === 'N') {
       sql.havingRaw('remain_qty<=mg.min_qty');
     } else {
-      sql.havingRaw('remain_qty<=mg.min_qty OR remain_qty is NULL');
+      sql.havingRaw('(remain_qty<=mg.min_qty OR remain_qty is NULL)');
     }
-    sql.havingRaw('total_purchased >= 0')
+    sql.havingRaw('(total_purchased >= 0  or total_purchased is null)')
     return sql.groupBy('mg.working_code');
 
   }

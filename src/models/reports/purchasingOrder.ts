@@ -360,7 +360,7 @@ export class PurchasingOrderReportModel {
         poi.qty,
         uu.unit_name,
         ROUND( poi.unit_price, 2 ) AS unit_price,
-        ROUND( SUM(poi.total_price), 2 ) AS total_price,
+        ROUND( poi.total_price, 2 ) AS total_price,
         l.labeler_name, 
         l.labeler_name_po,
         r.delivery_date,

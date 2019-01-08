@@ -46,7 +46,8 @@ export class ProductsModel {
 
   getOrderProductListByGeneric(knex: Knex, warehouseId: any, genericId: any) {
     let sql = `
-    select mp.generic_id, mp.working_code, mp.product_id, mp.product_name, mp.purchase_cost, mp.is_lot_control,
+    select mp.generic_id, mp.working_code, mp.product_id, mp.product_name, 
+    IF(mp.purchase_cost IS NULL,IF(ug.cost IS NULL,0,ug.cost),mp.purchase_cost) as purchase_cost, mp.is_lot_control,
     mp.primary_unit_id, mp.m_labeler_id, mp.v_labeler_id, mp.purchase_unit_id,
     lm.labeler_name as m_labeler_name, lv.labeler_name as v_labeler_name,
     u.unit_name as primary_unit_name, uf.unit_name as from_unit_name,

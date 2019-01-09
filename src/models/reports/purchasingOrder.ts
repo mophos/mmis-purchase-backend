@@ -1048,7 +1048,7 @@ export class PurchasingOrderReportModel {
         SELECT
             t.transection_id 
         FROM
-            pc_budget_transection_log t
+            pc_budget_transection t
             JOIN pc_purchasing_order p ON p.purchase_order_id = t.purchase_order_id
             JOIN bm_budget_detail b ON b.bgdetail_id = t.bgdetail_id 
         WHERE

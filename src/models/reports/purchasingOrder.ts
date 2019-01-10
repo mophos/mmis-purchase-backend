@@ -1002,7 +1002,7 @@ export class PurchasingOrderReportModel {
     }
 
     pcBudget(knex: Knex, purchaOrderId) {
-        return knex('pc_budget_transection_log')
+        return knex('pc_budget_transection')
             .whereIn('purchase_order_id', [purchaOrderId])
             .andWhere('transaction_status', 'spend')
     }
@@ -1037,7 +1037,7 @@ export class PurchasingOrderReportModel {
         return (knex.raw(sql))
     }
     allAmountTransaction(knex: Knex, bgdetail_id: any, budgetYear: any, pid: any) {
-        let sql = `SELECT SUM( pbt.amount ) AS amount FROM pc_budget_transection_log AS pbt
+        let sql = `SELECT SUM( pbt.amount ) AS amount FROM pc_budget_transection AS pbt
         LEFT JOIN bm_budget_detail AS bbd ON bbd.bgdetail_id = pbt.bgdetail_id
         LEFT JOIN pc_purchasing_order AS po ON po.purchase_order_id = pbt.purchase_order_id 
         WHERE
@@ -1048,7 +1048,7 @@ export class PurchasingOrderReportModel {
         SELECT
             t.transection_id 
         FROM
-            pc_budget_transection_log t
+            pc_budget_transection t
             JOIN pc_purchasing_order p ON p.purchase_order_id = t.purchase_order_id
             JOIN bm_budget_detail b ON b.bgdetail_id = t.bgdetail_id 
         WHERE
@@ -1073,7 +1073,7 @@ export class PurchasingOrderReportModel {
         bt.date_time,
         bt.remark
     FROM
-        pc_budget_transection_log as bt
+        pc_budget_transection as bt
         JOIN pc_purchasing_order as po ON po.purchase_order_id = bt.purchase_order_id
         WHERE bt.transaction_status = 'SPEND'
         AND bt.bgdetail_id = '${budgetDetailId}'

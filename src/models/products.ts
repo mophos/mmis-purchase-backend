@@ -144,7 +144,7 @@ export class ProductsModel {
     .leftJoin('view_purchasing_total_remain as pur','pur.generic_id','mg.generic_id')
     .whereRaw('mg.mark_deleted="N"')
       .whereRaw('mg.is_active="Y"')
-      // .whereNotIn('mg.generic_id', subGenerics);
+      .whereNotIn('mg.generic_id', subGenerics);
       
     if (genericTypeIds.length) {
       sql.whereIn('mg.generic_type_id', genericTypeIds);

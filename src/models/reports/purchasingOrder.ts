@@ -235,7 +235,7 @@ export class PurchasingOrderReportModel {
         LEFT JOIN mm_products as mp on mp.generic_id = mg.generic_id
         LEFT JOIN wm_products as wp on wp.product_id = mp.product_id
         `;
-        
+
         if (unit_generic_id === null) {
             sql += ` LEFT JOIN mm_unit_generics as ug on ug.unit_generic_id `;
         } else {
@@ -1121,5 +1121,10 @@ export class PurchasingOrderReportModel {
         purchase_order_id,poi.product_id
     ORDER BY
         po.purchase_order_number`);
+    }
+    getWarehosue(db: Knex, warehouseId: any) {
+        return db('wm_warehouses')
+            .select('warehouse_name')
+            .where('warehouse_id', warehouseId);
     }
 }

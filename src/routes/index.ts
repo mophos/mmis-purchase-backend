@@ -1465,7 +1465,7 @@ router.get('/report/purchasing/11_2', wrap(async (req, res, next) => {
   let at = await model.at(db)//book_prefix
   at = at[0]
   moment.locale('th');
-  let nDate = moment(purchasing[0].order_date).format('MMMM ') + (moment(purchasing[0].order_date).get('year') + 543)
+  let nDate = moment(purchasing[0].order_date).format('D ') + moment(purchasing[0].order_date).format('MMMM ') + (moment(purchasing[0].order_date).get('year') + 543)
   let dDate = moment(purchasing[0].order_date).format(' MMMM ') + (moment(purchasing[0].order_date).get('year') + 543)
   let year = moment(purchasing[0].order_date).get('year') + 544
 

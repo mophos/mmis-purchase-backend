@@ -146,46 +146,49 @@ html
     br
     br
     br
-    div(style='margin-left: 40%; width: 60%; text-align:center;')
-      | ( #{purchasingChief.buyer_fullname} )
+    div(style="width:100%;float:left;")
+      div(style="width:50%;float:left;text-align:center") ลงชื่อ.................................................เจ้าหน้าที่
+        br
+        | ( #{purchasingChief.buyer_fullname} )
+        br
+        | #{bposition.position_name}
+      div(style="width:50%;float:left;text-align:center") ลงชื่อ.................................................หัวหน้ากลุ่มงาน
+        if(head[0].fname===null)
+          |
+          br
+          |
+          br
+          | 
+        else
+          br 
+          | ( #{head[0].fname} #{head[0].lname} )
+          br
+          | #{head[0].position_name} 
+    div(style="width:100%;float:left;text-align:center")
       br
-      | #{bposition.position_name}
       br
-      | เจ้าหน้าที่ 
-    br
-    br
-    br
-    div(style='margin-left: 40%; width: 60%; text-align:center;')
-      if(cposition=='')
-        |
-        br
-        |
-        br
+      br
+      br
+      | ลงชื่อ.................................................หัวหน้าเจ้าหน้าที่
+      if(purchasing[0].chief_id===null)
         |
         br
         |
         br
         | 
-        br
-        | 
-        br
-        | 
-        br
-        | 
-      else 
+      else
+        br 
         | ( #{purchasingChief.chief_fullname} )
         br
         | #{cposition.position_name}
-        br
-        | หัวหน้าเจ้าหน้าที่ 
-    br
-    .bold(style='margin-left: 68.5%;') อนุมัติ
-    br
-    br
-    br
-    div(style='margin-left: 41%; width: 60%; text-align:center;')
       br
-      | (#{poraor})
+      br
+      br
+      br
+      br
+      | ลงชื่อ............................................................
+      br
+      | ( #{poraor} )
       br
       | ผู้อำนวยการ#{hospitalName}
       br
@@ -195,4 +198,4 @@ html
         | #{chief}#{province}
     hr.hideprint
     div(style='page-break-after: always;')
-  include puchasing11constandard.pug
+  include puchasing11constandard_2.pug

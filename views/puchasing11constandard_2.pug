@@ -26,7 +26,7 @@ html
     br
     br
     hr
-    .enter เรียน ผู้ว่าราชการจังหวัด#{province}
+    .enter เรียน หัวหน้าเจ้าหน้าที่
     .fontspace
     | ขอรายงานผลการพิจารณาซื้อยาจำนวน #{purchasing.length} รายการ โดย#{bidname} ดังนี้
     br
@@ -130,7 +130,9 @@ html
           | ( #{head[0].fname} #{head[0].lname} )
           br
           | #{head[0].position_name} 
+    center(style="font-weight: bold;") อนุมัติ
     div(style="width:100%;float:left;text-align:center")
+      br
       br
       br
       | ลงชื่อ.................................................หัวหน้าเจ้าหน้าที่
@@ -145,16 +147,16 @@ html
         | ( #{purchasingChief.chief_fullname} )
         br
         | #{cposition.position_name}
-      br
-      br
-      br
-      | ลงชื่อ............................................................
-      br
-      | ( #{poraor} )
-      br
-      | ผู้อำนวยการ#{hospitalName}
-      br
-      if(purchasing[0].purchase_method_id==2) 
-        | ปฏิบัติราชการแทนผู้ตรวจกระทรวงเขต 4
-      if(purchasing[0].purchase_method_id!=2) 
-        | #{chief}#{province}
+      //- br
+      //- br
+      //- br
+      //- | ลงชื่อ............................................................
+      //- br
+      //- | ( #{poraor} )
+      //- br
+      //- | ผู้อำนวยการ#{hospitalName}
+      //- br
+      //- if(purchasing[0].purchase_method_id==2) 
+      //-   | ปฏิบัติราชการแทนผู้ตรวจกระทรวงเขต 4
+      //- if(purchasing[0].purchase_method_id!=2) 
+      //-   | #{chief}#{province}

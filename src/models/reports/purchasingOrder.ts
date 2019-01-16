@@ -1127,4 +1127,11 @@ export class PurchasingOrderReportModel {
             .select('warehouse_name')
             .where('warehouse_id', warehouseId);
     }
+
+    checkCancelPo(knex: Knex, purchaOrderId) {
+        return knex('pc_purchasing_order')
+            .select('purchase_order_id')
+            .whereIn('purchase_order_id', purchaOrderId)
+            .andWhere('is_cancel', 'N')
+    }
 }

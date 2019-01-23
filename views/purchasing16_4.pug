@@ -33,7 +33,7 @@ html
                 | &nbsp;#{purchasing[i][0].purchase_order_number}
         tr
             td.left
-            td.left วันที่ 
+            td.left วันที่ #{purchasing[i][0].order_date}
         tr
             td.left 
             td.left ส่วนราชการ#{hospitalName}
@@ -105,25 +105,25 @@ html
   br
   br
   table.table( style='float:right; width:50%; font-size: 15pt;')
+    tr
+      td.center  ลงชื่อ......................................................ผู้สั่งซื้อ
+    if(arrayChief[i][0].chief_id===null)
       tr
-        td.center  ลงชื่อ......................................................ผู้สั่งซื้อ
-      if(arrayChief[i][0].chief_id===null)
-        tr
-          td(height='30px')
-      else
-        tr
-          td.center ( #{arrayChief[i][0].chief_fullname} )
-        tr
-          td.center #{arrayChief[i][0].chief_position} 
-        tr
-          td.center หัวหน้าเจ้าหน้าที่ 
+        td(height='30px')
+    else
       tr
-        td(height='40px')
+        td.center ( #{arrayChief[i][0].chief_fullname} )
       tr
-        td.center  ลงชื่อ......................................................ผู้ขาย
+        td.center #{arrayChief[i][0].chief_position} 
       tr
-        td.center  (......................................................)
-      tr
-        td.center  วันที่รับใบสั่งซื้อ_____/_________/_____
-      tr
-        td.center 
+        td.center หัวหน้าเจ้าหน้าที่ 
+    tr
+      td(height='40px')
+    tr
+      td.center  ลงชื่อ......................................................ผู้ขาย
+    tr
+      td.center  (......................................................)
+    tr
+      td.center  วันที่รับใบสั่งซื้อ_____/_________/_____
+    tr
+      td.center 

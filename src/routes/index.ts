@@ -2211,11 +2211,11 @@ router.get('/report/allpo/egp4', wrap(async (req, res, next) => {
   let poraor = hosdetail[0].managerName;
   let hosaddress = hosdetail[0].address;
   let hostel = hosdetail[0].telephone;
+  let dept = hosdetail[0].dept;
   let province = hosdetail[0].province;
 
   moment.locale('th');
   let nDate = moment(new Date()).format('D MMMM ') + (moment(new Date()).get('year') + 543)
-
   let pcb;
 
   let committeesVerify;
@@ -2297,6 +2297,7 @@ router.get('/report/allpo/egp4', wrap(async (req, res, next) => {
   let head = await model.getChief(db, 4);
 
   res.render('egp4', {
+    dept: dept,
     head: head,
     hosaddress: hosaddress,
     arAllamount: arAllamount,

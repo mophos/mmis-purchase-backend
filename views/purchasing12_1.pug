@@ -1,0 +1,246 @@
+//- include css.pug
+doctype html
+html
+  head
+    meta(charset="utf-8")
+    title report
+  body
+    button.btn.btn-sm.btn-success.btnprint(onclick='window.print()') Print
+    img(src=APIURL+'krut.png', height='60px')
+    .headkut.bold(style="font-size: 24pt;") บันทึกข้อความ
+    p.h2
+      | ส่วนราชการ
+      label.h3(style='margin-top: 5px; font-size: 16pt;')  &nbsp;#{hospitalName} #{dept} โทร. #{hostel}
+    p.h2(style='width:50%;float: left;')
+      | ที่
+      label.h3(style='margin-top: 5px;')  
+        if(purchasing[i][0].purchase_order_book_number)
+          | &nbsp;#{purchasing[i][0].purchase_order_book_number}
+        else
+          | &nbsp;#{purchasing[i][0].purchase_order_number}
+    b.h2(style='width:50%;float: left;')
+      | วันที่ 
+      label.h3(style="font-size: 16pt;") &nbsp;#{purchasing[i][0].order_date}
+    b.h2(style='border: 1px solid white; width:75%; float: left;') เรื่อง
+      |  รายงานขอซื้อขอจ้าง
+    br
+    br
+    hr
+    .enter เรียน ผู้ว่าราชการจังหวัด#{province}
+    .fontspace
+    | อาศัยอำนาจตามพระราชบัญญัติการจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ. 2560 มาตรา 55 (3) มาตรา 56 (2) (ข)  ระเบียบกระทรวงการคลังว่าด้วยการจัดซื้อจัดจ้างภาครัฐ พ.ศ. 2560 ข้อ 22 ข้อ 24 ข้อ 26 ข้อ 28 (3) ข้อ 79 และตามคำสั่งจังหวัด#{province} ที่ 2443/2561 ลงวันที่ 24 ตุลาคม 2561 เรื่องการมอบอำนาจของผู้ว่าราชการจังหวัดให้แก่รองผู้ว่าราชการจังหวัด#{province} หัวหน้าส่วนราชการ นายอำเภอ และหัวหน้าหน่วยงานในจังหวัด#{province} ปฏิบัติราชการแทนและกำกับดูแล 
+    br
+    .fontspace 
+    | #{dept} จึงขอดำเนินการซื้อยา
+    br
+    table
+      thead
+        tr 
+          td(rowspan='2' style='font-size: 13pt; border: 1px solid black; vertical-align: middle; width:4%;').center ลำดับ
+          td(rowspan='2' style='font-size: 13pt; border: 1px solid black; vertical-align: middle;').center รายการยา
+          td(rowspan='2' style='font-size: 13pt; border: 1px solid black; vertical-align: middle;').center ราคา/หน่วย
+          td(colspan='3' style='font-size: 13pt; border: 1px solid black; vertical-align: middle;').center จำนวน
+      tbody
+        - var y=0
+            for b in purchasing[i]
+              - y++
+                tr
+                  td.center(style='border: 1px solid black; font-size:12pt;') #{y}
+                  td(style='border: 1px solid black;font-family:THSarabunNew; font-size:12pt;') #{b.generic_name}
+                  td.center(style='border: 1px solid black; font-size:12pt;') #{b.unit_price}
+                  td.center(style='border: 1px solid black; font-size:12pt;') #{b.qtyPoi} #{b.primary_unit}
+    br
+    | โดย #{arrayBid[i][0].name} ซึ่งมีรายละเอียดดังต่อไปนี้
+    br
+    .fontspace
+    | 1.  เหตุผลและความจำเป็นที่จะต้องจัดซื้อ
+    br
+    .fontspace 
+    | &nbsp;&nbsp; เพื่อใช้ในการรักษาพยาบาลผู้ป่วย
+    br
+    .fontspace 
+    | 2.	รายละเอียดของการจัดซื้อ
+    br
+    .fontspace 
+    | &nbsp;&nbsp; รายละเอียดตามเอกสารแนบ 
+    br
+    .fontspace 
+    | 3.	ราคากลางและรายละเอียดของราคากลาง
+    br
+    .fontspace 
+    | &nbsp;&nbsp; ราคาตามประกาศของกระทรวงสาธารณสุข
+    br
+    .fontspace 
+    | 4.	วงเงินที่จะซื้อ
+    br
+    .fontspace 
+    | &nbsp;&nbsp; เงินนอกงบประมาณจากเงินบำรุง#{hospitalName} ประจำปีงบประมาณ พ.ศ.#{arBudget[i][0].bg_year} จำนวน #{arrayTotal[i]} บาท (#{arrayBahtText[i]})
+    br
+    .fontspace
+    | 5.	กำหนดเวลาที่ต้องการใช้พัสดุนั้น หรือให้งานนั้นแล้วเสร็จ
+    br
+    .fontspace 
+    | &nbsp;&nbsp; กำหนดเวลาการส่งมอบพัสดุ หรือให้งานแล้วเสร็จภายใน #{purchasing[i][0].delivery} วัน
+    br
+    .fontspace
+    | 6.	วิธีที่จะซื้อ และเหตุผลที่ต้องซื้อ
+    br
+    .fontspace
+    | &nbsp;&nbsp; จัดซื้อจัดจ้างโดยวิธี #{arrayBid[i][0].name} เนื่องจากวงเงินไม่เกิน 500,000.00 บาท ตามพระราชบัญญัติการจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ. 2560 มาตรา 56 (2) (ข) การจัดซื้อจัดจ้างพัสดุที่มีการผลิต จำหน่าย ก่อสร้าง หรือให้บริการทั่วไป และมีวงเงินในการจัดซื้อจัดจ้างตามที่กำหนดในกฎกระทรวง
+    br
+    .fontspace 
+    | 7. หลักเกณฑ์การพิจารณาคัดเลือกข้อเสนอ
+    br
+    .fontspace
+    | &nbsp;&nbsp; การพิจารณาคัดเลือกข้อเสนอโดยใช้เกณฑ์ราคา
+    .pagebreak
+    hr.hideprint
+    .break
+    br
+    .fontspace 
+    | 8. การขออนุมัติแต่งตั้งคณะกรรมการต่าง ฯ
+    br
+    .fontspace
+    | &nbsp;&nbsp; เพื่อให้การปฏิบัติไปตามระเบียบกระทรวงการคลังว่าด้วยการจัดซื้อจัดจ้างภาครัฐ พ.ศ. 2560 ข้อ  25 (5) และกฎกระทรวงกำหนดวงเงินการจัดซื้อจัดจ้างพัสดุโดยวิธี#{arrayBid[i][0].name}  ข้อ 5  จึงขอใช้บันทึกนี้แทนการออกคำสั่งแต่งตั้งผู้ตรวจรับพัสดุ โดยแต่งตั้งผู้ตรวจรับพัสดุดังนี้
+    br
+    .fontspace
+    table(style='margin-left: 5.5%; width: 100%;')
+      tbody
+        tr
+          td &nbsp;&nbsp; #{arCommittee[i][0].fullname} #{arCommittee[i][0].position_name} เป็นผู้ตรวจรับพัสดุ  
+    br
+    br
+    .fontspace
+    | จึงเรียนมาเพื่อโปรดพิจารณาหากเห็นชอบ ได้โปรดอนุมัติให้ดำเนินการตามรายละเอียดในการซื้อยา
+    table
+      thead
+        tr 
+          td(rowspan='2' style='font-size: 13pt; border: 1px solid black; vertical-align: middle; width:4%;').center ลำดับ
+          td(rowspan='2' style='font-size: 13pt; border: 1px solid black; vertical-align: middle;').center รายการยา
+          td(rowspan='2' style='font-size: 13pt; border: 1px solid black; vertical-align: middle;').center ราคา/หน่วย
+          td(colspan='3' style='font-size: 13pt; border: 1px solid black; vertical-align: middle;').center จำนวน
+      tbody
+        - var y=0
+            for b in purchasing[i]
+              - y++
+                tr
+                  td.center(style='border: 1px solid black; font-size:12pt;') #{y}
+                  td(style='border: 1px solid black;font-family:THSarabunNew; font-size:12pt;') #{b.generic_name}
+                  td.center(style='border: 1px solid black; font-size:12pt;') #{b.unit_price}
+                  td.center(style='border: 1px solid black; font-size:12pt;') #{b.qtyPoi} #{b.primary_unit}
+    .fontspace
+    | ดังกล่าวข้างต้น รวมเป็นเงินทั้งสิ้น #{arrayTotal[i]} บาท (#{arrayBahtText[i]})
+    br
+    br
+    br
+    br
+    div(style='margin-left: 40%; width: 60%; text-align:center;')
+      | ลงชื่อ.................................................หัวหน้าเจ้าหน้าที่
+      if(arrayChief[i][0].chief_id===null)
+        |
+        br
+        |
+        br
+        | 
+      else
+        br
+        | ( #{arrayChief[i][0].chief_fullname} )
+        br 
+        | #{arrayChief[i][0].chief_position}
+    div(style='margin-left: -7%; margin-top: -7%; width: 60%; text-align:center;')
+      | ลงชื่อ.................................................เจ้าหน้าที่
+      if(arrayChief[i][0].buyer_id===null)
+        |
+        br
+        |
+        br
+        | 
+      else
+        br
+        | ( #{arrayChief[i][0].buyer_fullname} )
+        br 
+        | #{arrayChief[i][0].buyer_position}
+    br
+    div(style='margin-left: 40%; width: 60%; text-align:center;')
+      | เห็นควรอนุมัติ
+      br
+      br
+      br
+      | ลงชื่อ.................................................หัวหน้ากลุ่มงาน
+      if(head[0].fname===null)
+        |
+        br
+        |
+        br
+        | 
+      else
+        br 
+        | ( #{head[0].fname} #{head[0].lname} )
+        br
+        | #{head[0].position_name}
+    br
+    .bold(style='margin-left: 20%;') อนุมัติ
+    br
+    br
+    br
+    div(style='margin-left: -7%; width: 60%; text-align:center;')
+      br
+      | (#{poraor})
+      br
+      | ผู้อำนวยการ#{hospitalName}
+      br
+      if(purchasing[0].purchase_method_id==2) 
+        | ปฏิบัติราชการแทนผู้ตรวจกระทรวงเขต 4
+      if(purchasing[0].purchase_method_id!=2) 
+        | #{chief}#{province}
+    .pagebreak
+    hr.hideprint
+    .break
+    .center.bold เอกสารแบบรายละเอียดของการจัดซื้อยาจำนวน #{y} รายการ โดยวิธี#{arrayBid[i][0].name} ดังนี้
+    br
+    table
+      thead
+        tr 
+          td(rowspan='2' style='font-size: 13pt; border: 1px solid black; vertical-align: middle; width:4%;').center ลำดับ
+          td(rowspan='2' style='font-size: 13pt; border: 1px solid black; vertical-align: middle;').center รหัส/รายการยา
+          td(rowspan='2' style='font-size: 13pt; border: 1px solid black; vertical-align: middle;').center คงเหลือ
+          td(colspan='3' style='font-size: 13pt; border: 1px solid black; vertical-align: middle;').center ความต้องการซื้อครั้งนี้
+          td(rowspan='2' style='font-size: 13pt; border: 1px solid black; vertical-align: middle;').center ราคากลาง
+          td(rowspan='2' style='font-size: 13pt; border: 1px solid black; vertical-align: middle;').center ราคาซื้อหลังสุด
+        tr
+          td(style='border: 1px solid black; font-size: 13pt;').center จำนวน
+          td(style='border: 1px solid black; font-size: 13pt;').center ราคา @
+          td(style='border: 1px solid black; font-size: 13pt;').center ราคารวม
+      tbody
+        - var y=0
+            for b in purchasing[i]
+              - y++
+                tr
+                  td.center(style='border: 1px solid black; font-size:12pt;') #{y}
+                  td(style='border: 1px solid black;font-family:THSarabunNew; font-size:12pt;') #{b.generic_id} : #{b.generic_name}
+                  td.center(style='border: 1px solid black; font-size:12pt;') #{b.qty} x #{b.conversion} #{b.primary_unit}
+                  td.center(style='border: 1px solid black; font-size:12pt;') #{b.qtyPoi} x #{b.conversion} #{b.primary_unit}
+                  td.right(style='border: 1px solid black; font-size:12pt;') #{b.unit_price}
+                  td.right(style='border: 1px solid black; font-size:12pt;') #{b.total_price}
+                  td.right(style='border: 1px solid black; font-size:12pt;') #{b.standard_cost} / #{b.primary_unit}
+                  td.right(style='border: 1px solid black; font-size:12pt;') #{b.cost}
+      tr
+        td
+        td(colspan='7').right รวม #{y} รายการ รวมเป็นเงิน #{arrayTotal[i]} บาท
+      tr
+        td
+        td(colspan='7').right (ตัวอักษร) (#{arrayBahtText[i]})
+    br
+    .enter ในการจัดซื้อในครั้งนี้ ซึ่งมีรายละเอียดการใช้เงินดังนี้
+    br
+    table(style="width: 70%;")
+      tbody
+        tr 
+          td(style='border: 1px solid black;') ยอดเงินที่ได้รับจัดสรร
+          td(style='border: 1px solid black;') #{arBudget[i][0].amount} บาท
+        tr 
+          td(style='border: 1px solid black;') ยอดจัดซื้อสะสมจากครั้งก่อน
+          td(style='border: 1px solid black;') #{arAllamount[i]} บาท
+        tr 
+          td(style='border: 1px solid black;') ยอดเงินคงเหลือจากการซื้อครั้งนี้
+          td(style='border: 1px solid black;') #{arPcb[i][0].balance} บาท

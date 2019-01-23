@@ -107,7 +107,7 @@ html
     table(style='margin-left: 5.5%; width: 100%;')
       tbody
         tr
-          td &nbsp;&nbsp; #{arCommittee[i][0].fullname} #{arCommittee[i][0].position} #{arCommittee[i][0].position_name} เป็นผู้ตรวจรับพัสดุ  
+          td &nbsp;&nbsp; #{arCommittee[i][0].fullname} #{arCommittee[i][0].position_name} เป็นผู้ตรวจรับพัสดุ  
     br
     br
     .fontspace
@@ -135,6 +135,19 @@ html
     br
     br
     div(style='margin-left: 40%; width: 60%; text-align:center;')
+      | ลงชื่อ.................................................หัวหน้าเจ้าหน้าที่
+      if(arrayChief[i][0].chief_id===null)
+        |
+        br
+        |
+        br
+        | 
+      else
+        br
+        | ( #{arrayChief[i][0].chief_fullname} )
+        br 
+        | #{arrayChief[i][0].chief_position}
+    div(style='margin-left: -7%; margin-top: -7%; width: 60%; text-align:center;')
       | ลงชื่อ.................................................เจ้าหน้าที่
       if(arrayChief[i][0].buyer_id===null)
         |
@@ -153,7 +166,7 @@ html
       br
       br
       br
-      | ลงชื่อ.................................................หัวหน้าเจ้าหหน้าที่
+      | ลงชื่อ.................................................หัวหน้ากลุ่มงาน
       if(head[0].fname===null)
         |
         br

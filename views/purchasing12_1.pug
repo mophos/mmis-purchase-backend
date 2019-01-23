@@ -134,50 +134,57 @@ html
     br
     br
     br
-    div(style='margin-left: 40%; width: 60%; text-align:center;')
-      | ลงชื่อ.................................................หัวหน้าเจ้าหน้าที่
-      if(arrayChief[i][0].chief_id===null)
-        |
+    div(style='width: 100%; text-align:center;')
+      div(style='float:left; width: 50%; text-align:center;')
+        | ลงชื่อ.................................................หัวหน้าเจ้าหน้าที่
+        if(arrayChief[i][0].chief_id===null)
+          |
+          br
+          |
+          br
+          | 
+        else
+          br
+          | ( #{arrayChief[i][0].chief_fullname} )
+          br 
+          | #{arrayChief[i][0].chief_position}
+      div(style='float:left; width: 50%; text-align:center;')
+        | ลงชื่อ.................................................เจ้าหน้าที่
+        if(arrayChief[i][0].buyer_id===null)
+          |
+          br
+          |
+          br
+          | 
+        else
+          br
+          | ( #{arrayChief[i][0].buyer_fullname} )
+          br 
+          | #{arrayChief[i][0].buyer_position}
         br
-        |
         br
-        | 
-      else
         br
-        | ( #{arrayChief[i][0].chief_fullname} )
-        br 
-        | #{arrayChief[i][0].chief_position}
-    div(style='margin-left: -7%; margin-top: -7%; width: 60%; text-align:center;')
-      | ลงชื่อ.................................................เจ้าหน้าที่
-      if(arrayChief[i][0].buyer_id===null)
-        |
         br
-        |
         br
-        | 
-      else
+        | เห็นควรอนุมัติ
         br
-        | ( #{arrayChief[i][0].buyer_fullname} )
-        br 
-        | #{arrayChief[i][0].buyer_position}
-    br
-    div(style='margin-left: 40%; width: 60%; text-align:center;')
-      | เห็นควรอนุมัติ
-      br
-      br
-      br
-      | ลงชื่อ.................................................หัวหน้ากลุ่มงาน
-      if(head[0].fname===null)
-        |
         br
-        |
         br
-        | 
-      else
-        br 
-        | ( #{head[0].fname} #{head[0].lname} )
         br
-        | #{head[0].position_name}
+        br
+        br
+        | ลงชื่อ.................................................หัวหน้ากลุ่มงาน
+        if(head[0].fname===null)
+          |
+          br
+          |
+          br
+          | 
+        else
+          br 
+          | ( #{head[0].fname} #{head[0].lname} )
+          br
+          | #{head[0].position_name}
     br
     .bold(style='margin-left: 20%;') อนุมัติ
     br

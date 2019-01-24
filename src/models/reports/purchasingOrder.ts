@@ -871,6 +871,11 @@ export class PurchasingOrderReportModel {
                 'cbt.bid_id',
                 'ml.labeler_name',
                 'ml.labeler_name_po',
+                'ml.zipcode',
+                'lm.tambon_name',
+                'la.ampur_name',
+                'lp.province_name',
+                 'lp.province_code',
                 'mg.generic_id',
                 'mg.generic_name',
                 'po.include_vat',
@@ -909,6 +914,9 @@ export class PurchasingOrderReportModel {
             .leftJoin('mm_units as muu', 'muu.unit_id', 'mg.primary_unit_id')
             .leftJoin('mm_units as mu', 'mu.unit_id', 'mup.from_unit_id')
             .leftJoin('mm_labelers as ml', 'ml.labeler_id', 'po.labeler_id')
+            .leftJoin(knex.raw('l_tambon as lm on lm.tambon_code = ml.tambon_code and lm.ampur_code = ml.ampur_code and lm.province_code = ml.province_code'))
+            .leftJoin(knex.raw('l_ampur as la on la.ampur_code = ml.ampur_code and la.province_code = ml.province_code'))
+            .leftJoin(knex.raw('l_province as lp on lp.province_code = ml.province_code'))
             .leftJoin('l_bid_process as cbp', 'cbp.id', 'po.purchase_method_id')
             .leftJoin('l_bid_type as cbt', 'cbt.bid_id', 'po.purchase_type_id')
             .where('po.purchase_order_id', porder)

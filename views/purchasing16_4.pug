@@ -27,21 +27,18 @@ html
         tr
             td.left(style='width:50%;') ผู้ขาย #{purchasing[i][0].labeler_name_po}
             td.left(style='width:50%;') เลขที่
-              if(purchasing[i][0].purchase_order_book_number)
-                | &nbsp;#{purchasing[i][0].purchase_order_book_number}
-              else
-                | &nbsp;#{purchasing[i][0].purchase_order_number}
+              | &nbsp;#{purchasing[i][0].purchase_order_number}
         tr
-            td.left
+            td.left ที่อยู่ #{purchasing[i][0].address}
             td.left วันที่ #{purchasing[i][0].order_date}
         tr
-            td.left 
+            td.left #{purchasing[i][0].tambon_name} #{purchasing[i][0].ampur_name}
             td.left ส่วนราชการ#{hospitalName}
         tr
-            td.left
+            td.left #{purchasing[i][0].province_name} #{purchasing[i][0].zipcode}
             td.left ที่อยู่ #{hosaddress}
         tr
-            td.left 
+            td.left โทรศัพท์ #{purchasing[i][0].phone}
             td.left
         tr
             td.left 

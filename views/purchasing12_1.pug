@@ -48,7 +48,7 @@ html
                   td.center(style='border: 1px solid black; font-size:12pt;') #{y}
                   td(style='border: 1px solid black;font-family:THSarabunNew; font-size:12pt;') #{b.generic_name}
                   td.center(style='border: 1px solid black; font-size:12pt;') #{b.unit_price}
-                  td.center(style='border: 1px solid black; font-size:12pt;') #{b.qtyPoi} #{b.primary_unit}
+                  td.center(style='border: 1px solid black; font-size:12pt;') #{b.qtyPoi} x #{b.conversion} #{b.primary_unit}
     br
     | โดย #{arrayBid[i][0].name} ซึ่งมีรายละเอียดดังต่อไปนี้
     br
@@ -127,7 +127,7 @@ html
                   td.center(style='border: 1px solid black; font-size:12pt;') #{y}
                   td(style='border: 1px solid black;font-family:THSarabunNew; font-size:12pt;') #{b.generic_name}
                   td.center(style='border: 1px solid black; font-size:12pt;') #{b.unit_price}
-                  td.center(style='border: 1px solid black; font-size:12pt;') #{b.qtyPoi} #{b.primary_unit}
+                  td.center(style='border: 1px solid black; font-size:12pt;') #{b.qtyPoi} x #{b.conversion} #{b.primary_unit}
     .fontspace
     | ดังกล่าวข้างต้น รวมเป็นเงินทั้งสิ้น #{arrayTotal[i]} บาท (#{arrayBahtText[i]})
     br
@@ -135,19 +135,6 @@ html
     br
     br
     div(style='width: 100%; text-align:center;')
-      div(style='float:left; width: 50%; text-align:center;')
-        | ลงชื่อ.................................................หัวหน้าเจ้าหน้าที่
-        if(arrayChief[i][0].chief_id===null)
-          |
-          br
-          |
-          br
-          | 
-        else
-          br
-          | ( #{arrayChief[i][0].chief_fullname} )
-          br 
-          | #{arrayChief[i][0].chief_position}
       div(style='float:left; width: 50%; text-align:center;')
         | ลงชื่อ.................................................เจ้าหน้าที่
         if(arrayChief[i][0].buyer_id===null)
@@ -161,6 +148,19 @@ html
           | ( #{arrayChief[i][0].buyer_fullname} )
           br 
           | #{arrayChief[i][0].buyer_position}
+      div(style='float:left; width: 50%; text-align:center;')
+        | ลงชื่อ.................................................หัวหน้ากลุ่มงาน
+        if(head[0].fname===null)
+          |
+          br
+          |
+          br
+          | 
+        else
+          br
+          | ( #{head[0].fname} #{head[0].lname} )
+          br 
+          | #{head[0].position_name}
         br
         br
         br
@@ -173,8 +173,8 @@ html
         br
         br
         br
-        | ลงชื่อ.................................................หัวหน้ากลุ่มงาน
-        if(head[0].fname===null)
+        | ลงชื่อ.................................................หัวหน้าเจ้าหน้าที่
+        if(arrayChief[i][0].chief_id===null)
           |
           br
           |
@@ -182,9 +182,9 @@ html
           | 
         else
           br 
-          | ( #{head[0].fname} #{head[0].lname} )
+          | ( #{arrayChief[i][0].chief_fullname} )
           br
-          | #{head[0].position_name}
+          | #{arrayChief[i][0].chief_position}
     br
     .bold(style='margin-left: 20%;') อนุมัติ
     br

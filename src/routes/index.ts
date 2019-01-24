@@ -2283,6 +2283,9 @@ router.get('/report/allpo/egp4', wrap(async (req, res, next) => {
       v.qtyPoi = model.commaQty(v.qtyPoi);
       v.standard_cost = model.comma(v.standard_cost);
       v.cost = model.comma(v.cost);
+      v.tambon_name = (!v.tambon_name || +v.province_code == 10) ? v.tambon_name : 'ต.' + v.tambon_name;
+      v.ampur_name = (!v.ampur_name || +v.province_code == 10) ? v.ampur_name : 'อ.' + v.ampur_name;
+      v.province_name = (!v.province_name || +v.province_code == 10) ? v.province_name : 'จ.' + v.province_name;
     });
 
     bahtText = model.bahtText(total);

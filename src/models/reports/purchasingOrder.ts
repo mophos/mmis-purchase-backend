@@ -852,8 +852,7 @@ export class PurchasingOrderReportModel {
 
     purchasingEgp(knex: Knex, porder: any, warehouseId: any) {
         return knex('pc_purchasing_order as po')
-            .select('mg.standard_cost',
-                'po.vat',
+            .select('po.vat',
                 'mup.cost',
                 'mp.product_name',
                 'mup.qty AS conversion',
@@ -875,7 +874,7 @@ export class PurchasingOrderReportModel {
                 'lm.tambon_name',
                 'la.ampur_name',
                 'lp.province_name',
-                 'lp.province_code',
+                'lp.province_code',
                 'mg.generic_id',
                 'mg.generic_name',
                 'po.include_vat',

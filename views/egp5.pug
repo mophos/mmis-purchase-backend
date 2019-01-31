@@ -1,0 +1,23 @@
+include css.pug
+style.
+    @media print {
+        body {
+            margin: -20px;
+        }
+    }
+- for(var i = 0 ; i < porder.length ; i++)
+    include purchasing12.pug
+    hr.hideprint
+    .break
+    include purchasing13.pug
+    hr.hideprint
+    .break
+    //- include purchasing14.pug
+    //- hr.hideprint
+    //- .break
+    include purchasing15.pug
+    hr.hideprint
+    .break
+    include purchasing16_2.pug
+    hr.hideprint
+    .break

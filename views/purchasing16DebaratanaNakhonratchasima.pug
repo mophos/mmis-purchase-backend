@@ -60,9 +60,9 @@ include css.pug
         thead
           tr 
             td(style='font-size: 11pt; border: 1px solid black; vertical-align: middle; width:4%;').center ลำดับ
-            td(style='font-size: 11pt; border: 1px solid black; vertical-align: middle;').center รายการ
+            td(colspan='2' style='font-size: 11pt; border: 1px solid black; vertical-align: middle;').center รายการ
             td(style='font-size: 11pt; border: 1px solid black; vertical-align: middle;').center จำนวน
-            td(style='font-size: 11pt; border: 1px solid black; vertical-align: middle;').center หน่วย
+            //- td(style='font-size: 11pt; border: 1px solid black; vertical-align: middle;').center หน่วย
             td(style='font-size: 11pt; border: 1px solid black; vertical-align: middle;').center ราคาต่อหน่วย(บาท)
             td(style='font-size: 11pt; border: 1px solid black; vertical-align: middle;').center จำนวนเงิน(บาท)
             td(style='font-size: 11pt; border: 1px solid black; vertical-align: middle;').center ราคากลาง(บาท)
@@ -72,9 +72,9 @@ include css.pug
                 - y++
                   tr
                     td.center(style='border: 1px solid black;') #{y}
-                    td(style='border: 1px solid black;font-family:THSarabunNew;') #{b.generic_id} : #{b.generic_name}
-                    td.center(style='border: 1px solid black;') #{b.qtyPoi}
-                    td.center(style='border: 1px solid black;') #{b.unit_name}
+                    td(colspan='2' style='border: 1px solid black;font-family:THSarabunNew;') #{b.generic_id} : #{b.generic_name}
+                    td.center(style='border: 1px solid black;') #{b.qtyPoi} x #{b.conversion} #{b.primary_unit}
+                    //- td.center(style='border: 1px solid black;') #{b.unit_name}
                     td.right(style='border: 1px solid black;') #{b.unit_price}
                     td.right(style='border: 1px solid black;') #{b.sumcost}
                     td.right(style='border: 1px solid black;') #{b.standard_cost}

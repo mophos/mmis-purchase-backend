@@ -22,7 +22,13 @@ html
       br
       label(style='margin-top: 5px; font-size: 16pt; font-weight: bold;')  &nbsp;#{hospitalName}
       br
-      label(style='margin-top: 5px; font-size: 16pt; font-weight: bold;')  ใบอนุมัติสั่งซื้อ
+      label(style='margin-top: 5px; font-size: 16pt; font-weight: bold;')  
+        | ใบ
+        if(purchasing[0].purchase_order_book_number)
+          | &nbsp;#{purchasing[0].purchase_order_book_number}
+        else
+          | &nbsp;#{purchasing[0].purchase_order_number}
+        | &nbsp;อนุมัติสั่งซื้อ
       br
     .right 
       div(style='margin-right: 10%;')
@@ -38,86 +44,87 @@ html
     table(style='font-size: 13pt;')
       thead
         tr 
-          td(style='font-size: 13pt; border: 1px solid black; vertical-align: middle;').center รายการยา
-          td(style='font-size: 13pt; border: 1px solid black; vertical-align: middle;').center 
-            | คงเหลือ
-            br
-            | (อัตราการใช้/เดือน)
-          td(style='border: 1px solid black; font-size: 13pt;').center จำนวนสั่งซื้อ
-          td(style='border: 1px solid black; font-size: 13pt;').center หน่วย
-          td(style='border: 1px solid black; font-size: 13pt;').center ราคา/หน่วย
-          td(style='border: 1px solid black; font-size: 13pt;').center จำนวนเงิน
-          td(style='border: 1px solid black; font-size: 13pt;').center ราคากลาง
-          td(style='border: 1px solid black; font-size: 13pt;').center ราคาล่าสุด
+          td(rowspan='2' style='font-size: 11pt; border: 1px solid black; vertical-align: middle; width:4%;').center ลำดับ
+          td(rowspan='2' style='font-size: 11pt; border: 1px solid black; vertical-align: middle;').center รหัส/รายการยา
+          td(rowspan='2' style='font-size: 11pt; border: 1px solid black; vertical-align: middle;').center คงเหลือ
+          td(colspan='3' style='font-size: 11pt; border: 1px solid black; vertical-align: middle;').center ความต้องการซื้อครั้งนี้
+          td(rowspan='2' style='font-size: 11pt; border: 1px solid black; vertical-align: middle;').center ราคากลาง
+          td(rowspan='2' style='font-size: 11pt; border: 1px solid black; vertical-align: middle;').center ราคาซื้อหลังสุด
+        tr
+          td(style='border: 1px solid black; font-size: 11pt;').center จำนวน
+          td(style='border: 1px solid black; font-size: 11pt;').center ราคา @
+          td(style='border: 1px solid black; font-size: 11pt;').center ราคารวม
       tbody
         - var y=0
             for b in purchasing
               - y++
                 tr
+                  td.center(style='border: 1px solid black;') #{y}
                   td(style='border: 1px solid black;font-family:THSarabunNew; font-size:11pt;') #{b.generic_id} : #{b.generic_name}
-                  td.center(style='border: 1px solid black;') #{b.qty}
-                  td.center(style='border: 1px solid black;') #{b.qtyPoi}
-                  td.center(style='border: 1px solid black;') #{b.primary_unit}
+                  td.center(style='border: 1px solid black;') #{b.qty} x #{b.conversion} #{b.primary_unit}
+                  td.center(style='border: 1px solid black;') #{b.qtyPoi} x #{b.conversion} #{b.primary_unit}
                   td.right(style='border: 1px solid black;') #{b.unit_price}  
                   td.right(style='border: 1px solid black;') #{b.total_price}
-                  td.right(style='border: 1px solid black;') #{b.standard_cost}
-                  td.right(style='border: 1px solid black;') #{b.unit_price}
+                  td.right(style='border: 1px solid black;') #{b.standard_cost} /
+                    label(style = 'font-size: 11pt;')   #{b.primary_unit}
+                  td.right(style='border: 1px solid black;') #{b.unit_price} /
+                    label(style = 'font-size: 11pt;')   #{b.primary_unit}
         tr
-          td(style='border: 1px solid black;').left รวม
-          td(colspan=4 style='border: 1px solid black;').right จำนวนเงินเป็นตัวอักษร (#{bahtText}) 
-          td(style='border: 1px solid black;').right #{total}
+          td
+          td(colspan='7').right รวม #{y} รายการ รวมเป็นเงิน #{total} บาท
+        tr
+          td
+          td(colspan='7').right (ตัวอักษร) (#{bahtText})
     br
     div(style='width: 50%; float: left; font-size: 14pt;')
       .left.bold(style='text-decoration: underline;') การสั่งซื้อ / จ้าง อยู่ภายใต้เงื่อนไขดังต่อไปนี้
-      .left กำหนดส่งมอบภายใน #{purchasing[0].delivery} วันทำการ 
+      .left 1.กำหนดส่งมอบภายใน #{purchasing[0].delivery} วันทำการ 
       .left นับถัดจากวันที่ผู้ขาย/ผู้รับจ้าง 
-      .left สถานที่ส่งมอบ ณ #{hospitalName} 
-      .left ระยะเวลาประกัน 12 เดือน 
-      .left สงวนสิทธิค่าปรับกรณีส่งมอบเกินกำหนดเวลา
+      .left 2.สถานที่ส่งมอบ ณ #{hospitalName} 
+      .left 3.ระยะเวลาประกัน 12 เดือน 
+      .left 4.สงวนสิทธิค่าปรับกรณีส่งมอบเกินกำหนดเวลา
       .left โดยคิดค่าปรับเป็นรายวันดังนี้ 
       .left &nbsp;&nbsp;&nbsp; ซื้อในอัตราร้อยละ 0.20 ของราคาพัสดุ
       .left ที่ยังไม่ได้รับมอบ 
       .left &nbsp;&nbsp;&nbsp; จ้างในอัตราร้อยละ 0.10 ของราคางานจ้างนั้น 
       .left แต่จะต้องไม่ต่ำกว่าวันละ 100 บาท 
-      .left ราคาต่อหน่วยต้องเป็นราคาที่ได้รวมภาษีมูลค่าเพิ่มไว้แล้ว
+      .left 5.ราคาต่อหน่วยต้องเป็นราคาที่ได้รวมภาษีมูลค่าเพิ่มไว้แล้ว
     br
     div(style='width: 50%; float: left;')
       table.table
         tr 
-          td.right ลงชื่อ
-          td.center ...................................................
-          td.left ผู้ออกใบสั่งซื้อ/จ้าง
+          td(style='font-size:14pt;').right ลงชื่อ
+          td(style='font-size:14pt;').center ...................................................
+          td(style='font-size:14pt;').left ผู้ออกใบสั่งซื้อ/จ้าง
         tr
-          td.right
-          td.center #{purchasingChief.buyer_fullname}
-          td.left #{bposition.position_name}
-      br
-      br
-      table.table
+          td(style='font-size:14pt;').right
+          td(style='font-size:14pt;').center #{purchasingChief.buyer_fullname}
+          td(style='font-size:14pt;').left #{bposition.position_name}
+        tr
+          td(colspan=3 height='30px')
+        tr  
+          td(style='font-size:14pt;').right ลงชื่อ
+          td(style='font-size:14pt;').center ...................................................
+          td(style='font-size:14pt;').left ผู้รับใบสั่งซื้อ/จ้าง
+        tr
+          td(style='font-size:14pt;').right
+          td(style='font-size:14pt;').center
+          td(style='font-size:14pt;').left ตัวแทนกิจการ
+        tr
+          td(colspan=3 height='30px')
         tr 
-          td.right ลงชื่อ
-          td.center ...................................................
-          td.left ผู้รับใบสั่งซื้อ/จ้าง
+          td(style='font-size:14pt;').right ลงชื่อ
+          td(style='font-size:14pt;').center ...................................................
+          td(style='font-size:14pt;').left ผู้สั่งซื้อ/จ้าง
         tr
-          td.right
-          td.center
-          td.left ตัวแทนกิจการ
-      br
-      br
-      table.table
-        tr 
-          td.right ลงชื่อ
-          td.center ...................................................
-          td.left ผู้สั่งซื้อ/จ้าง
-        tr
-          td.right
-          td.center 
+          td(style='font-size:14pt;').right
+          td(style='font-size:14pt;').center 
            | #{poraor}
            br
            | นายแพทย์เชี่ยวชาญ (ด้านเวชกกรรม)
            br
            | ผู้อำนวยการ#{hospitalName}
-          td.left
+          td(style='font-size:14pt;').left
           //- td.left ผู้อำนวยการ#{hospitalName}
     //- div(style="width:100%;float:left;text-align:center") อนุมัติ
     //-   br

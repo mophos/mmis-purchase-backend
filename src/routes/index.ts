@@ -2378,7 +2378,7 @@ router.get('/report/allpo/egp4', wrap(async (req, res, next) => {
     }
     arCommittee.push(committeesVerify);
 
-    budget = await model.budgetType(db, purchasing[i][0].budget_detail_id);
+    budget = await model.budgetTypeRemark(db, purchasing[i][0].budget_detail_id);
     budget = budget[0];
     arBudget.push(budget);
     arBudget[i][0].amount = model.comma(arBudget[i][0].amount);

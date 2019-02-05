@@ -833,6 +833,7 @@ export class ProductsModel {
     ORDER BY
       mp.product_name ASC
     LIMIT 10) as a) as s`;
+    console.log('xxxxxasdfasdfdsaf',sql);
     return knex.raw(sql);
   }
 

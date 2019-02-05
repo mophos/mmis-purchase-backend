@@ -2321,7 +2321,7 @@ router.get('/report/allpo/egp/singburi', wrap(async (req, res, next) => {
   });
 }));
 
-router.get('/report/allpo/egp4', wrap(async (req, res, next) => {
+router.get('/report/allpo/egp/4', wrap(async (req, res, next) => {
   let porder = req.query.porder;
 
   porder = Array.isArray(porder) ? porder : [porder];

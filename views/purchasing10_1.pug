@@ -22,14 +22,7 @@ html
       br
       label(style='margin-top: 5px; font-size: 16pt; font-weight: bold;')  &nbsp;#{hospitalName}
       br
-      label(style='margin-top: 5px; font-size: 16pt; font-weight: bold;')  
-        | ใบ
-        if(purchasing[0].purchase_order_book_number)
-          | &nbsp;#{purchasing[0].purchase_order_book_number}
-        else
-          | &nbsp;#{purchasing[0].purchase_order_number}
-        | &nbsp;อนุมัติสั่งซื้อ
-      br
+      label(style='margin-top: 5px; font-size: 16pt; font-weight: bold;')  ใบขออนุมัติสั่งซื้อ
     .right 
       div(style='margin-right: 10%;')
         | เลขที่

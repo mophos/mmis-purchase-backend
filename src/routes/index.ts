@@ -1106,7 +1106,7 @@ router.get('/report/purchasing/10_1/', wrap(async (req, res, next) => {
   });
 
   purchasing.forEach(value => {
-    value.standard_cost = value.standard_cost === 0 ? value.unit_price : value.standard_cost;
+    // value.standard_cost = value.standard_cost === 0 ? value.unit_price : value.standard_cost;
     totalprice += value.total_price;
     if (value.qty == null) value.qty = 0;
     value.qty = model.commaQty(value.qty);

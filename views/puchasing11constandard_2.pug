@@ -20,13 +20,13 @@ html
           | &nbsp;#{purchasing[0].purchase_order_number}
     b.h2(style='width:50%;float: left;')
       | วันที่ 
-      label.h3(style="font-size: 16pt;") &nbsp;#{nDate}
+      label.h3(style="font-size: 16pt;") &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#{nDate}
     b.h2(style='border: 1px solid white; width:75%; float: left;') เรื่อง
       |  รายงานผลการพิจารณาและขออนุมัติสั่งซื้อยา/เวชภัณฑ์มิใช่ยา
     br
     br
     hr
-    .enter เรียน ผู้ว่าราชการจังหวัด#{province}
+    .enter เรียน หัวหน้าเจ้าหน้าที่
     .fontspace
     | ขอรายงานผลการพิจารณาซื้อยาจำนวน #{purchasing.length} รายการ โดย#{bidname} ดังนี้
     br
@@ -56,9 +56,16 @@ html
                   td.right(style='border: 1px solid black; font-size:12pt;') #{b.total_price}
                   td.right(style='border: 1px solid black; font-size:12pt;') #{b.standard_cost} / #{b.primary_unit}
                   td.right(style='border: 1px solid black; font-size:12pt;') #{b.cost}
+      if(vat > 0)
+        tr
+          td
+          td(colspan='7').right รวมเป็นเงิน #{total} บาท
+        tr
+          td
+          td(colspan='7').right ภาษีมูลค่าเพิ่ม #{vat} บาท
       tr
         td
-        td(colspan='7').right รวม #{y} รายการ รวมเป็นเงิน #{total} บาท
+        td(colspan='7').right รวม #{y} รายการ รวมเป็นเงินสุทธิ #{net} บาท
       tr
         td
         td(colspan='7').right (ตัวอักษร) (#{bahtText})
@@ -86,8 +93,11 @@ html
           td ยอดเงินที่ได้รับจัดสรร
           td #{budget[0].amount} บาท
         tr 
-          td ยอดจัดซื้อสะสมจากครั้งก่อน
+          td ยอดเงินคงเหลือหลังจากการซื้อครั้งก่อน
           td #{allAmount} บาท
+        tr 
+          td ยอดการจัดซื้อครั้งนี้
+          td #{net} บาท
         tr 
           td ยอดเงินคงเหลือจากการซื้อครั้งนี้
           td #{pcb.balance} บาท
@@ -97,6 +107,9 @@ html
     .fontspace
     | #{hospitalName}พิจารณาแล้ว เห็นสมควรจัดซื้อจากผู้เสนอราคาดังกล่าว
     br
+    .fontspace
+    | จึงเรียนมาเพื่อโปรดพิจารณา หากเห็นชอบขอได้โปรดอนุมัติให้สั่งซื้อสั่งจ้างจากผู้เสนอราคาดังกล่าว
+    br
     br
     br
     div(style="width:100%;float:left;")
@@ -105,8 +118,8 @@ html
         | ( #{purchasingChief.buyer_fullname} )
         br
         | #{bposition.position_name}
-      div(style="width:50%;float:left;text-align:center") ลงชื่อ.................................................หัวหน้าเจ้าหน้าที่
-        if(purchasing[0].chief_id===null)
+      div(style="width:50%;float:left;text-align:center") ลงชื่อ.................................................หัวหน้ากลุ่มงาน
+        if(head[0].fname===null)
           |
           br
           |
@@ -114,23 +127,36 @@ html
           | 
         else
           br 
-          | ( #{purchasingChief.chief_fullname} )
+          | ( #{head[0].fname} #{head[0].lname} )
           br
-          | #{cposition.position_name} 
+          | #{head[0].position_name} 
+    center(style="font-weight: bold;") อนุมัติ
     div(style="width:100%;float:left;text-align:center")
       br
       br
       br
-      br
-      br
-      br
-      | ลงชื่อ............................................................
-      br
-      | ( #{poraor} )
-      br
-      | ผู้อำนวยการ#{hospitalName}
-      br
-      if(purchasing[0].purchase_method_id==2) 
-        | ปฏิบัติราชการแทนผู้ตรวจกระทรวงเขต 4
-      if(purchasing[0].purchase_method_id!=2) 
-        | #{chief}#{province}
+      | ลงชื่อ.................................................หัวหน้าเจ้าหน้าที่
+      if(purchasing[0].chief_id===null)
+        |
+        br
+        |
+        br
+        | 
+      else
+        br 
+        | ( #{purchasingChief.chief_fullname} )
+        br
+        | #{cposition.position_name}
+      //- br
+      //- br
+      //- br
+      //- | ลงชื่อ............................................................
+      //- br
+      //- | ( #{poraor} )
+      //- br
+      //- | ผู้อำนวยการ#{hospitalName}
+      //- br
+      //- if(purchasing[0].purchase_method_id==2) 
+      //-   | ปฏิบัติราชการแทนผู้ตรวจกระทรวงเขต 4
+      //- if(purchasing[0].purchase_method_id!=2) 
+      //-   | #{chief}#{province}

@@ -106,8 +106,9 @@ html
     .fontspace
     table(style='margin-left: 5.5%; width: 100%;')
       tbody
-        tr
-          td &nbsp;&nbsp; #{arCommittee[i][0].fullname} #{arCommittee[i][0].position_name} เป็นผู้ตรวจรับพัสดุ  
+        for _arCommittee in arCommittee[i]
+          tr                     
+            td &nbsp;&nbsp; #{_arCommittee.fullname} #{_arCommittee.position_name} #{_arCommittee.position}
     br
     br
     .fontspace

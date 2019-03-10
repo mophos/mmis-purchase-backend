@@ -3176,6 +3176,7 @@ router.get('/report/purchasing-list/excel', async (req, res, next) => {
     obj.order_date = v.order_date;
     obj.product_name = v.product_name;
     obj.qty = v.qty;
+    obj.unit_price = v.unit_price;
     obj.primary_unit = v.primary_unit;
     obj.conversion = v.conversion;
     obj.total_price = v.total_price;

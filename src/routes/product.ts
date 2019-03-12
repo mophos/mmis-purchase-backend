@@ -101,12 +101,11 @@ router.put('/reorderpoint/trade/reserved-update', async (req, res, next) => {
 
 });
 
-router.get('/reorderpoint/trade/reserved/confirmed', async (req, res, next) => {
+router.post('/reorderpoint/trade/reserved/confirmed', async (req, res, next) => {
   let db = req.db;
-  let reserveId = req.params.reserveId;
-
+  let genericTypeIds = req.body.productGroup;
   try {
-    let rs: any = await model.getReservedOrdered(db);
+    let rs: any = await model.getReservedOrdered(db, genericTypeIds);
     res.send({ ok: true, rows: rs });
   } catch (error) {
     console.log(error);

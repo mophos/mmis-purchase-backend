@@ -494,7 +494,7 @@ router.post('/', async (req, res, next) => {
         purchase.purchase_order_book_number = summary.purchase_order_book_number ? summary.purchase_order_book_number : null;
         purchase.contract_id = summary.contract_id;
         purchase.people_user_id = req.decoded.people_user_id;
-        purchase.edi = summary.edi;
+        purchase.is_edi = summary.is_edi;
 
 
         items.forEach(v => {
@@ -598,7 +598,7 @@ router.put('/:purchaseOrderId', async (req, res, next) => {
         purchase.is_contract = summary.is_contract ? summary.is_contract : null;
         purchase.purchase_order_book_number = summary.purchase_order_book_number ? summary.purchase_order_book_number : null;
         purchase.update_people_user_id = req.decoded.people_user_id;
-        purchase.edi = summary.edi;
+        purchase.is_edi = summary.is_edi;
         items.forEach(v => {
           let obj: any = {
             purchase_order_id: purchaseOrderId,
@@ -687,10 +687,9 @@ router.post('/checkApprove', async (req, res, next) => {
     let username = req.body.username;
     let password = req.body.password;
     let action = req.body.action;
-    console.log(action, password, username);
     password = crypto.createHash('md5').update(password).digest('hex');
     const isCheck = await model.checkApprove(db, username, password, action);
-    console.log(isCheck);
+
 
     let rights = isCheck[0].access_right.split(',');
     if (_.indexOf(rights, action) > -1) {

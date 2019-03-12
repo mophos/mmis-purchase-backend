@@ -142,9 +142,9 @@ export class PurchasingOrderModel {
       .whereIn('pc_purchasing_order.generic_type_id', genericTypeIds)
 
     if (edi) {
-      con.where('pc_purchasing_order.edi', 'Y');
+      con.where('pc_purchasing_order.is_edi', 'Y');
     } else {
-      con.where('pc_purchasing_order.edi', 'N');
+      con.where('pc_purchasing_order.is_edi', 'N');
     }
     // order by
     if (sort.by) {
@@ -230,9 +230,9 @@ export class PurchasingOrderModel {
     }
 
     if (edi) {
-      con.where('pc_purchasing_order.edi', 'Y');
+      con.where('pc_purchasing_order.is_edi', 'Y');
     } else {
-      con.where('pc_purchasing_order.edi', 'N');
+      con.where('pc_purchasing_order.is_edi', 'N');
     }
 
     if (query !== '') {

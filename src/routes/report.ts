@@ -65,8 +65,8 @@ router.get('/getProductHistory', wrap(async (req, res, next) => {
       tradingList.push(rs[0])
     }
   }
-  _.forEach(tradingList,values=>{
-    _.forEach(values,value=>{
+  _.forEach(tradingList, values => {
+    _.forEach(values, value => {
       value.amount_qty = model.commaQty(value.qty * value.conversion_qty)
       value.qty = model.commaQty(value.qty)
       value.conversion_qty = model.commaQty(value.conversion_qty)
@@ -75,9 +75,6 @@ router.get('/getProductHistory', wrap(async (req, res, next) => {
 
     })
   })
-  // console.log('++++++++++++++++++++++++' + JSON.stringify(rs) + '++++++++++++++++++++++++')
-  // console.log(rs[0])
-  // res.send(tradingList)
   res.render('purchaseHistory', {
     hospitalName: hospitalName,
     date: nDate,

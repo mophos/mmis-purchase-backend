@@ -138,14 +138,14 @@ export class ProductsModel {
       .select('generic_id')
       .whereIn('reserved_status', ['SELECTED', 'CONFIRMED']);
     let sql = knex('mm_generics as mg')
-    .select(knex.raw(`mg.generic_id,mg.working_code,mg.generic_name,mg.min_qty,mg.max_qty,sum(rq.remain_qty) remain_qty,
+      .select(knex.raw(`mg.generic_id,mg.working_code,mg.generic_name,mg.min_qty,mg.max_qty,sum(rq.remain_qty) remain_qty,
     ifnull( pur.total, 0 ) AS total_purchased `))
-    .joinRaw(`left JOIN (select generic_id,sum(remain_qty) remain_qty from view_product_reserve where warehouse_id = ${warehouseId} group by generic_id, warehouse_id) AS rq ON rq.generic_id = mg.generic_id `)
-    .leftJoin('view_purchasing_total_remain as pur','pur.generic_id','mg.generic_id')
-    .whereRaw('mg.mark_deleted="N"')
+      .joinRaw(`left JOIN (select generic_id,sum(remain_qty) remain_qty from view_product_reserve where warehouse_id = ${warehouseId} group by generic_id, warehouse_id) AS rq ON rq.generic_id = mg.generic_id `)
+      .leftJoin('view_purchasing_total_remain as pur', 'pur.generic_id', 'mg.generic_id')
+      .whereRaw('mg.mark_deleted="N"')
       .whereRaw('mg.is_active="Y"')
       .whereNotIn('mg.generic_id', subGenerics);
-      
+
     if (genericTypeIds.length) {
       sql.whereIn('mg.generic_type_id', genericTypeIds);
     }
@@ -296,14 +296,14 @@ export class ProductsModel {
       .select('generic_id')
       .whereIn('reserved_status', ['SELECTED', 'CONFIRMED']);
     let sql = knex('mm_generics as mg')
-    .select(knex.raw(`mg.generic_id,mg.working_code,mg.generic_name,mg.min_qty,mg.max_qty,sum(rq.remain_qty) remain_qty,
+      .select(knex.raw(`mg.generic_id,mg.working_code,mg.generic_name,mg.min_qty,mg.max_qty,sum(rq.remain_qty) remain_qty,
     ifnull( pur.total, 0 ) AS total_purchased `))
-    .joinRaw(`left JOIN view_product_reserve AS rq ON rq.generic_id = mg.generic_id and rq.warehouse_id = ${warehouseId}`)
-    .leftJoin('view_purchasing_total_remain as pur','pur.generic_id','mg.generic_id')
-    .whereRaw('mg.mark_deleted="N"')
+      .joinRaw(`left JOIN view_product_reserve AS rq ON rq.generic_id = mg.generic_id and rq.warehouse_id = ${warehouseId}`)
+      .leftJoin('view_purchasing_total_remain as pur', 'pur.generic_id', 'mg.generic_id')
+      .whereRaw('mg.mark_deleted="N"')
       .whereRaw('mg.is_active="Y"')
       .whereNotIn('mg.generic_id', subGenerics);
-      
+
     if (genericTypeIds.length) {
       sql.whereIn('mg.generic_type_id', genericTypeIds);
     }
@@ -468,8 +468,8 @@ export class ProductsModel {
       .whereIn('reserve_id', reserveIds);
   }
 
-  getReservedOrdered(db: Knex) {
-    return db('pc_product_reserved as rv')
+  getReservedOrdered(db: Knex, genericTypeIds) {
+    let sql = db('pc_product_reserved as rv')
       .select('mg.working_code', 'mp.product_name', 'mg.generic_id', 'rv.contract_id',
         'mg.generic_name', 'rv.cost as purchase_cost', 'rv.purchase_qty as order_qty',
         'rv.unit_generic_id', 'gt.generic_type_id', 'rv.product_id', 'rv.reserve_id',
@@ -485,7 +485,11 @@ export class ProductsModel {
       .leftJoin('view_cm_products_active as vcpa', 'vcpa.product_id', 'mp.product_id')
       .whereRaw('mg.mark_deleted="N"')
       .where('rv.reserved_status', 'CONFIRMED')
-      .orderBy('ml.labeler_name');
+    if (genericTypeIds.length) {
+      sql.whereIn('mg.generic_type_id', genericTypeIds);
+    }
+    sql.orderBy('ml.labeler_name');
+    return sql;
   }
 
   orderspoint(knex: Knex, query: string = '', contract: string = 'all', minmaxFilter: string = 'min', generictype: string = null, count: boolean = false, limit: number = 100, offset: number = 0) {
@@ -833,7 +837,6 @@ export class ProductsModel {
     ORDER BY
       mp.product_name ASC
     LIMIT 10) as a) as s`;
-    console.log('xxxxxasdfasdfdsaf',sql);
     return knex.raw(sql);
   }
 

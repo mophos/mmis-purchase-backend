@@ -2397,9 +2397,25 @@ router.get('/report/allpo/egp/4', wrap(async (req, res, next) => {
     arAllamount.push(allAmount);
 
     let total: any = 0;
-    arrayItems.forEach(v => {
+    for (const v of arrayItems) {   
+      let rsRemain = await model.getRemainStock(db, v.purchase_order_item_id);
+      console.log(rsRemain, 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
+      
+      let remainQty = 0;
+      let qty = 0;
+      if (rsRemain.length === 0) {
+        remainQty = 0;
+        qty = 0;
+      } else {
+        remainQty = rsRemain[0].balance_qty;
+        qty = rsRemain[0].qty;
+      }
+      if (qty === 0) {
+        v.remainQty = 0;
+      } else {
+        v.remainQty = model.commaQty(remainQty / qty);
+      }
       v.order_date = moment(v.order_date).format('D MMMM ') + (moment(v.order_date).get('year') + 543);
-
       total += v.qtyPoi * v.unit_price;
       v.total_price = model.comma(v.qtyPoi * v.unit_price);
       v.qty = model.commaQty(v.qty);
@@ -2410,7 +2426,7 @@ router.get('/report/allpo/egp/4', wrap(async (req, res, next) => {
       v.tambon_name = (!v.tambon_name || +v.province_code == 10) ? v.tambon_name : 'ต.' + v.tambon_name;
       v.ampur_name = (!v.ampur_name || +v.province_code == 10) ? v.ampur_name : 'อ.' + v.ampur_name;
       v.province_name = (!v.province_name || +v.province_code == 10) ? v.province_name : 'จ.' + v.province_name;
-    });
+    }
 
     bahtText = model.bahtText(total);
     total = model.comma(total);

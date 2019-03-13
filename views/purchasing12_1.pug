@@ -106,8 +106,9 @@ html
     .fontspace
     table(style='margin-left: 5.5%; width: 100%;')
       tbody
-        tr
-          td &nbsp;&nbsp; #{arCommittee[i][0].fullname} #{arCommittee[i][0].position_name} เป็นผู้ตรวจรับพัสดุ  
+        for _arCommittee in arCommittee[i]
+          tr                     
+            td &nbsp;&nbsp; #{_arCommittee.fullname} #{_arCommittee.position_name} #{_arCommittee.position}
     br
     br
     .fontspace
@@ -225,7 +226,7 @@ html
                 tr
                   td.center(style='border: 1px solid black; font-size:12pt;') #{y}
                   td(style='border: 1px solid black;font-family:THSarabunNew; font-size:12pt;') #{b.generic_id} : #{b.generic_name}
-                  td.center(style='border: 1px solid black; font-size:12pt;') #{b.qty} x #{b.conversion} #{b.primary_unit}
+                  td.center(style='border: 1px solid black; font-size:12pt;') #{b.remainQty} x #{b.conversion} #{b.primary_unit}
                   td.center(style='border: 1px solid black; font-size:12pt;') #{b.qtyPoi} x #{b.conversion} #{b.primary_unit}
                   td.right(style='border: 1px solid black; font-size:12pt;') #{b.unit_price}
                   td.right(style='border: 1px solid black; font-size:12pt;') #{b.total_price}

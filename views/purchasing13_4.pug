@@ -60,37 +60,56 @@ html
     | โดยเกณฑ์การพิจารณาผลการยื่นข้อเสนอครั้งนี้ จะพิจารณาตัดสินโดยใช้หลักเกณฑ์ราคา โรงพยาบาลบางระจันพิจารณาแล้ว เห็นสมควรจัดซื้อจากผู้เสนอราคาดังกล่าว จึงเรียนมาเพื่อโปรดพิจารณา หากเห็นชอบขอได้โปรดอนุมัติให้สั่งซื้อสั่งจ้างจากผู้เสนอราคาดังกล่าว
     br
     br
-    div(style='margin-left: 40%; width: 60%; text-align:center;')
-      | ลงชื่อ.................................................เจ้าหน้าที่
-      if(arrayChief[i][0].buyer_id===null)
-        |
-        br
-        |
-        br
-        | 
-      else
-        br
-        | ( #{arrayChief[i][0].buyer_fullname} )
-        br 
-        | #{arrayChief[i][0].buyer_position}
     br
     br
-    br
-    div(style='margin-left: 40%; width: 60%; text-align:center;')
-      | อนุมัติ
-      br
-      br
-      br
-      br
-      | ลงชื่อ.................................................หัวหน้าเจ้าหน้าที่
-      if(arrayChief[i][0].chief_id===null)
-        |
+    div(style='width: 100%; text-align:center;')
+      div(style='float:left; width: 50%; text-align:center;')
+        | ลงชื่อ.................................................เจ้าหน้าที่
+        if(arrayChief[i][0].buyer_id===null)
+          |
+          br
+          |
+          br
+          | 
+        else
+          br
+          | ( #{arrayChief[i][0].buyer_fullname} )
+          br 
+          | #{arrayChief[i][0].buyer_position}
+      div(style='float:left; width: 50%; text-align:center;')
+        | ลงชื่อ.................................................หัวหน้ากลุ่มงาน
+        if(head[0].fname===null)
+          |
+          br
+          |
+          br
+          | 
+        else
+          br
+          | ( #{head[0].fname} #{head[0].lname} )
+          br 
+          | #{head[0].position_name}
         br
-        |
         br
-        | 
-      else
         br
-        | ( #{arrayChief[i][0].chief_fullname} )
-        br 
-        | #{arrayChief[i][0].chief_position}
+        br
+        br
+        | อนุมัติ
+        br
+        br
+        br
+        br
+        br
+        br
+        | ลงชื่อ.................................................หัวหน้าเจ้าหน้าที่
+        if(arrayChief[i][0].chief_id===null)
+          |
+          br
+          |
+          br
+          | 
+        else
+          br 
+          | ( #{arrayChief[i][0].chief_fullname} )
+          br
+          | #{arrayChief[i][0].chief_position}

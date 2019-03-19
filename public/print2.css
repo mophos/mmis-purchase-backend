@@ -1,0 +1,18 @@
+button, .btn, .btn-sm, .btn-success, .btnprint{
+    display:none;
+}
+
+@page{
+    margin-top: 2cm;
+    margin-left: 0.8cm;
+    margin-right: 1.3cm;
+    margin-bottom: 2cm;
+ }
+ 
+html, body {
+  padding: 0;
+}
+
+.pagebreak{
+    page-break-after: always;
+}

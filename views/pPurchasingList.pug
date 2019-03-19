@@ -1,4 +1,10 @@
-include css.pug
+include css2.pug
+style(type='text/css' media='print').
+ @page{
+    margin-top: 1.5cm;
+    margin-left: 1.0cm;
+    margin-right: 1.0cm;
+  }
 doctype html
 html
   head
@@ -9,38 +15,38 @@ html
     .center(style='font-weight: bold; font-size: 12pt;') #{hospname}
     .center(style='font-weight: bold; font-size: 12pt;') รายงานสรุปรายการเวชภัณฑ์ที่สั่งซื้อ
     .center(style='padding-bottom: 7pt; font-size: 12pt;') วันที่ #{sdate} ถึง #{edate}
-    .left(style='padding-bottom: 7pt; font-size: 12pt;') #{printDate} 
+    .left(style='padding-bottom: 7pt; font-size: 12pt;') #{printDate}
+    - var y=0
     table(style='font-size: 10pt;')
       thead
-        tr
-          th(style='font-size: 13pt;') เลขที่สั่งซื้อ
-          th(style='font-size: 13pt;') วันที่สั่งซื้อ
-          th(style='font-size: 13pt;') รายการเวชภัณฑ์
-          th(style='font-size: 13pt;').right จำนวน
-          th(style='font-size: 13pt;').right ราคารวม
-          th(style='font-size: 13pt;').center ชื่อบริษัท
-          th(style='font-size: 13pt;').center วันที่ส่ง
-          th(style='font-size: 13pt;').center เลขที่ส่ง
+        tr(style='font-size: 13pt;')
+          th(style='width:100px') เลขที่สั่งซื้อ
+          th วันที่สั่งซื้อ
+          th(style='width:280px;') รายการเวชภัณฑ์
+          th.right จำนวน
+          th.right ราคารวม
+          th.center ชื่อบริษัท
+          th.center วันที่ส่ง
+          th.center เลขที่ส่ง
       tbody
-      - var y=0
         for b in results
           - y++
-            tr
-              td.center(style="padding-left: 5px;")
-                if(b.purchase_order_book_number)
-                  | #{b.purchase_order_book_number}
-                else
-                  | #{b.purchase_order_number}
-              td.center #{b.order_date}
-              td(style='width:280px; font-size:11pt; padding-left: 5px;') #{b.product_name}
-              td.right(style='font-size:10pt;') #{b.qty} x #{b.conversion} #{b.primary_unit}  
-              td.right #{b.total_price}
-              td(style='padding-left:5px; font-size:12pt;') &nbsp;&nbsp;#{b.labeler_name_po}
-              td.center #{b.delivery_date}
-              td.center #{b.delivery_code}
-      tfooter          
+          tr(style='font-size: 10pt;')
+            td.center(style="padding-left: 5px;")
+              if(b.purchase_order_book_number)
+                | #{b.purchase_order_book_number}
+              else
+                | #{b.purchase_order_number}
+            td.center #{b.order_date}
+            td(style='padding-left: 5px;') #{b.product_name}
+            td.right #{b.qty} x #{b.conversion} #{b.primary_unit}  
+            td.right #{b.total_price}
+            td(style='padding-left:5px;') &nbsp;&nbsp;#{b.labeler_name_po}
+            td.center #{b.delivery_date}
+            td.center #{b.delivery_code}
+            //- .pagebreak  
         tr
-          td.tbfooter(colspan='8' height='10')
+          td.tbfooter(colspan='8')
         tr
           td(colspan='2')
           td(colspan='2')

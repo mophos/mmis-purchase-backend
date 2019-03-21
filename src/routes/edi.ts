@@ -43,9 +43,10 @@ router.post('/settings', async (req, res, next) => {
 router.post('/create', async (req, res, next) => {
   try {
     const db = req.db;
-    const sys = await poModel.hospital(db)
-    const hospname = sys[0].hospname;
-    const hospcode = sys[0].hospcode;
+    let sys_hospital = req.decoded.SYS_HOSPITAL;
+    const hospcode = JSON.parse(sys_hospital).hospcode;
+    const hospname = JSON.parse(sys_hospital).hospname;
+
 
     const purchasingOrderId = req.body.purchasingOrderId;
     const settings: any = await ediModel.getSetting(db, 'TOKEN');
@@ -109,10 +110,10 @@ router.post('/create', async (req, res, next) => {
           line.comment = '';
           obj.line.push(line);
         }
-        console.log('---edi');
-
         console.log(obj);
-        await ediModel.sendEDI(obj);
+        const rs = await ediModel.sendEDI(obj);
+        console.log(rs);
+
       }
       res.send({ ok: true });
     } else {
@@ -120,6 +121,7 @@ router.post('/create', async (req, res, next) => {
     }
 
   } catch (error) {
+    console.log(error);
     res.send({ ok: false, error: error });
   }
 });

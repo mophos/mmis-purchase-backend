@@ -152,8 +152,8 @@ app.use('/setting', settingRoute);
 app.use('/docs', poReportRoute);
 app.use('/budget-transection', budgetTransectionRoute);
 app.use('/std', stdRoute);
-app.use('/officer', officerRoute);
-app.use('/edi', ediRoute);
+app.use('/officer', checkAuth, officerRoute);
+app.use('/edi', checkAuth, ediRoute);
 
 // app.use('/', checkAuth, indexRoute);
 app.use('/', checkAuth, indexRoute);

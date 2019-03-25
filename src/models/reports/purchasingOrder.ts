@@ -38,6 +38,9 @@ export class PurchasingOrderReportModel {
     budgetType(knex: Knex, bgdetail_id: any) {
         return knex.raw(`SELECT bgtype_id,bgtype_name,bgtypesub_name,amount,bg_year+543 as bg_year FROM view_budget_subtype WHERE bgdetail_id=?`, [bgdetail_id])
     }
+    budgetTypeRemark(knex: Knex, bgdetail_id: any) {
+        return knex.raw(`SELECT remark,bgtype_id,bgtype_name,bgtypesub_name,amount,bg_year+543 as bg_year FROM view_budget_subtype WHERE bgdetail_id=?`, [bgdetail_id])
+    }
     items(knex: Knex, id: string) {
         return knex('pc_purchasing_order_item as i')
             .innerJoin('mm_products as p', 'i.product_id', 'p.product_id')
@@ -244,7 +247,7 @@ export class PurchasingOrderReportModel {
         sql += ` LEFT JOIN mm_labelers as mlv on mlv.labeler_id = mp.v_labeler_id
                 LEFT JOIN mm_labelers as mlm on mlm.labeler_id = mp.m_labeler_id
                 WHERE
-                    mp.product_id = ${product_id}
+                    mp.product_id = '${product_id}'
                 GROUP BY wp.product_id
                 ORDER BY
                     mlv.labeler_name ASC`;
@@ -360,7 +363,7 @@ export class PurchasingOrderReportModel {
         poi.qty,
         uu.unit_name,
         ROUND( poi.unit_price, 2 ) AS unit_price,
-        ROUND( SUM(poi.total_price), 2 ) AS total_price,
+        ROUND( poi.total_price, 2 ) AS total_price,
         l.labeler_name, 
         l.labeler_name_po,
         r.delivery_date,
@@ -852,8 +855,7 @@ export class PurchasingOrderReportModel {
 
     purchasingEgp(knex: Knex, porder: any, warehouseId: any) {
         return knex('pc_purchasing_order as po')
-            .select('mg.standard_cost',
-                'po.vat',
+            .select('po.vat',
                 'mup.cost',
                 'mp.product_name',
                 'mup.qty AS conversion',
@@ -866,11 +868,17 @@ export class PurchasingOrderReportModel {
                 'po.purchase_order_number',
                 'po.purchase_method_id',
                 'po.purchase_order_book_number',
+                'poi.purchase_order_item_id',
                 'cbp.NAME AS bname',
                 'cbt.bid_name',
                 'cbt.bid_id',
                 'ml.labeler_name',
                 'ml.labeler_name_po',
+                'ml.zipcode',
+                'lm.tambon_name',
+                'la.ampur_name',
+                'lp.province_name',
+                'lp.province_code',
                 'mg.generic_id',
                 'mg.generic_name',
                 'po.include_vat',
@@ -909,6 +917,9 @@ export class PurchasingOrderReportModel {
             .leftJoin('mm_units as muu', 'muu.unit_id', 'mg.primary_unit_id')
             .leftJoin('mm_units as mu', 'mu.unit_id', 'mup.from_unit_id')
             .leftJoin('mm_labelers as ml', 'ml.labeler_id', 'po.labeler_id')
+            .leftJoin(knex.raw('l_tambon as lm on lm.tambon_code = ml.tambon_code and lm.ampur_code = ml.ampur_code and lm.province_code = ml.province_code'))
+            .leftJoin(knex.raw('l_ampur as la on la.ampur_code = ml.ampur_code and la.province_code = ml.province_code'))
+            .leftJoin(knex.raw('l_province as lp on lp.province_code = ml.province_code'))
             .leftJoin('l_bid_process as cbp', 'cbp.id', 'po.purchase_method_id')
             .leftJoin('l_bid_type as cbt', 'cbt.bid_id', 'po.purchase_type_id')
             .where('po.purchase_order_id', porder)
@@ -1002,7 +1013,7 @@ export class PurchasingOrderReportModel {
     }
 
     pcBudget(knex: Knex, purchaOrderId) {
-        return knex('pc_budget_transection_log')
+        return knex('pc_budget_transection')
             .whereIn('purchase_order_id', [purchaOrderId])
             .andWhere('transaction_status', 'spend')
     }
@@ -1037,7 +1048,7 @@ export class PurchasingOrderReportModel {
         return (knex.raw(sql))
     }
     allAmountTransaction(knex: Knex, bgdetail_id: any, budgetYear: any, pid: any) {
-        let sql = `SELECT SUM( pbt.amount ) AS amount FROM pc_budget_transection_log AS pbt
+        let sql = `SELECT SUM( pbt.amount ) AS amount FROM pc_budget_transection AS pbt
         LEFT JOIN bm_budget_detail AS bbd ON bbd.bgdetail_id = pbt.bgdetail_id
         LEFT JOIN pc_purchasing_order AS po ON po.purchase_order_id = pbt.purchase_order_id 
         WHERE
@@ -1048,7 +1059,7 @@ export class PurchasingOrderReportModel {
         SELECT
             t.transection_id 
         FROM
-            pc_budget_transection_log t
+            pc_budget_transection t
             JOIN pc_purchasing_order p ON p.purchase_order_id = t.purchase_order_id
             JOIN bm_budget_detail b ON b.bgdetail_id = t.bgdetail_id 
         WHERE
@@ -1073,7 +1084,7 @@ export class PurchasingOrderReportModel {
         bt.date_time,
         bt.remark
     FROM
-        pc_budget_transection_log as bt
+        pc_budget_transection as bt
         JOIN pc_purchasing_order as po ON po.purchase_order_id = bt.purchase_order_id
         WHERE bt.transaction_status = 'SPEND'
         AND bt.bgdetail_id = '${budgetDetailId}'
@@ -1123,4 +1134,30 @@ export class PurchasingOrderReportModel {
         po.purchase_order_number`);
     }
 
+    getWarehosue(db: Knex, warehouseId: any) {
+        return db('wm_warehouses')
+            .select('warehouse_name')
+            .where('warehouse_id', warehouseId);
+    }
+
+    checkCancelPo(knex: Knex, purchaOrderId) {
+        return knex('pc_purchasing_order')
+            .select('purchase_order_id')
+            .whereIn('purchase_order_id', purchaOrderId)
+            .andWhere('is_cancel', 'N')
+    }
+
+    getRemainStock(knex: Knex, purchaseOrderItemId){
+        return knex('pc_purchasing_order as po')
+            .select('vs.balance_qty','mug.qty')
+            .join('pc_purchasing_order_item as poi', 'poi.purchase_order_id', 'po.purchase_order_id')
+            .join('view_stock_card_warehouse as vs', 'vs.product_id', 'poi.product_id')
+            .join('mm_unit_generics as mug', 'mug.unit_generic_id', 'poi.unit_generic_id')
+            .where('poi.purchase_order_item_id', purchaseOrderItemId)
+            .whereRaw('vs.stock_date < po.order_date')
+            .orderBy('vs.stock_card_id', 'DESC')
+            .limit(1)
+    }
+
 }
+

@@ -81,7 +81,7 @@ router.put('/:id', (req, res, next) => {
         db.destroy();
       });
   } else {
-    res.send({ ok: false, error: 'ข้อมูลไม่สมบูรณ์' }) ;
+    res.send({ ok: false, error: 'ข้อมูลไม่สมบูรณ์' });
   }
 });
 
@@ -121,7 +121,6 @@ router.get('/search', async (req, res, next) => {
 
   let db = req.db;
   let query = req.query.query;
-  console.log('mmmmmmmmmmmm', query)
   try {
     let rs: any = await model.search(db, query);
     if (rs.length) {

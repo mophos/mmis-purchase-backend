@@ -728,6 +728,8 @@ export class ProductsModel {
         ")"
       ) AS fullname,
       mp.product_id,
+      IFNULL(mg.standard_cost,0) AS standard_cost,
+      IFNULL(mg.standard_pack_cost,0) AS standard_pack_cost,
       mp.product_name,
       mp.primary_unit_id,
       mp.working_code,
@@ -765,6 +767,8 @@ export class ProductsModel {
       ")"
     ) AS fullname,
     mp.product_id,
+    IFNULL(mg.standard_cost,0) AS standard_cost,
+    IFNULL(mg.standard_pack_cost,0) AS standard_pack_cost,
     mp.product_name,
       mp.primary_unit_id,
       mp.working_code,
@@ -805,6 +809,8 @@ export class ProductsModel {
       ")"
     ) AS fullname,
     mp.product_id,
+    IFNULL(mg.standard_cost,0) AS standard_cost,
+    IFNULL(mg.standard_pack_cost,0) AS standard_pack_cost,
     mp.product_name,
       mp.primary_unit_id,
       mp.working_code,

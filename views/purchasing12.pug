@@ -71,7 +71,8 @@ html
     br 
     | หรือให้บริการทั่วไปและมีวงเงินในการจัดซื้อจัดจ้างครั้งหนึ่งไม่เกินวงเงินตามที่กำหนดในกฎกระทรวง
     br
-    .pagebreak
+    if(purchasing[i].length > 10) 
+      .pagebreak
     .fontspace
     | 7.	หลักเกณฑ์การพิจารณาคัดเลือกข้อเสนอ
     br
@@ -101,12 +102,10 @@ html
     .fontspace 
     | &nbsp;&nbsp;&nbsp;&nbsp; ทำการตรวจรับพัสดุให้เป็นไปตามเงื่อนไขของสัญญาหรือข้อตกลงนั้น 
     br
-    br
     .fontspace 
     | จึงเรียนมาเพื่อโปรดพิจารณา หากเห็นชอบขอได้โปรด อนุมัติให้ดำเนินการ ตามรายละเอียดในรายงานขอซื้อดังกล่าวข้างต้น
     br
     .fontspace 
-    br
     br
     br
     br
@@ -136,9 +135,6 @@ html
           br
           | #{arrayChief[i][0].chief_position}  
     div(style="width:100%;float:left;text-align:center")
-      br
-      br
-      br
       br
       br
       br

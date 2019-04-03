@@ -714,7 +714,7 @@ export class ProductsModel {
       .offset(offset);
   }
 
-  productsByLabeler(knex: Knex, labelerId: string, query: string = "") {
+  productsByLabeler(knex: Knex, labelerId: string, query: string = "", genericTypeId = []) {
     if (query === '*') {
       let sql = `
       select DISTINCT * from (
@@ -749,6 +749,7 @@ export class ProductsModel {
         mp.is_active = 'Y'
         AND mp.mark_deleted = 'N'
         AND l.labeler_id = '${labelerId}'
+        AND mg.generic_type_id in (${genericTypeId})
       UNION ALL
       SELECT * from (
       SELECT
@@ -782,6 +783,7 @@ export class ProductsModel {
         mp.is_active = 'Y'
         AND mp.mark_deleted = 'N'
         AND l.labeler_id = '${labelerId}'
+        AND mg.generic_type_id in (${genericTypeId})
       ORDER BY
         mp.product_name ASC
       LIMIT 5) as a
@@ -818,12 +820,12 @@ export class ProductsModel {
         mp.is_active = 'Y'
         AND mp.mark_deleted = 'N'
         AND l.labeler_id = '${labelerId}'
+        AND mg.generic_type_id in (${genericTypeId})
       ORDER BY
         mp.product_name ASC
       LIMIT 10) as a) as s`;
       return knex.raw(sql);
     } else {
-      let concat = knex.raw("concat(p.product_name,' [',gd.generic_name,'] ') as fullname");
       let q_ = `${query}%`;
       let _q_ = `%${query}%`;
       let sql = `
@@ -863,6 +865,7 @@ export class ProductsModel {
       AND mp.is_active = 'Y'
       AND mp.mark_deleted = 'N'
       AND l.labeler_id = '${labelerId}'
+      AND mg.generic_type_id in (${genericTypeId})
       UNION ALL
       SELECT * from (
       SELECT
@@ -900,6 +903,7 @@ export class ProductsModel {
       AND mp.is_active = 'Y'
       AND mp.mark_deleted = 'N'
       AND l.labeler_id = '${labelerId}'
+      AND mg.generic_type_id in (${genericTypeId})
       ORDER BY
         mp.product_name ASC
       LIMIT 5) as a
@@ -942,6 +946,7 @@ export class ProductsModel {
       AND mp.is_active = 'Y'
       AND mp.mark_deleted = 'N'
       AND l.labeler_id = '${labelerId}'
+      AND mg.generic_type_id in (${genericTypeId})
       ORDER BY
         mp.product_name ASC
       LIMIT 10) as a) as s`;

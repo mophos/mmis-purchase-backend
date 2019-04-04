@@ -2820,6 +2820,7 @@ router.get('/report/allpo/egp/', wrap(async (req, res, next) => {
       }
       total = v.sub_total;
       v.total_price = model.comma(v.total_price);
+      v.total_price_item = model.comma(v.total_price_item);
       v.qty = model.commaQty(v.qty);
       v.unit_price = model.comma(v.unit_price);
       v.qtyPoi = model.commaQty(v.qtyPoi);

@@ -21,7 +21,7 @@ html
     - var y=0
           for b in purchasing[i]
             - y++
-             | #{y}. #{b.generic_name}&nbsp;จำนวน #{b.qtyPoi} #{b.unit_name}(#{b.conversion} #{b.primary_unit}) ผู้ได้รับคัดเลือกได้แก่ บริษัท #{b.labeler_name_po} (ส่งออก,ขายส่ง,ขายปลีก,ให้บริการ,ผู้ผลิต) โดยเสนอราคา เป็นเงินทั้งสิ้น #{b.total_price} บาท (#{arrayBahtText[i]}) รวมภาษีมูลค่าเพิ่มและภาษีอื่น ค่าขนส่ง ค่าจดทะเบียน และค่าใช้จ่ายอื่นๆทั้งปวง
+             | #{y}. #{b.generic_name}&nbsp;จำนวน #{b.qtyPoi} #{b.unit_name}(#{b.conversion} #{b.primary_unit}) ผู้ได้รับคัดเลือกได้แก่ บริษัท #{b.labeler_name_po} (ส่งออก,ขายส่ง,ขายปลีก,ให้บริการ,ผู้ผลิต) โดยเสนอราคา เป็นเงินทั้งสิ้น #{b.total_price_item} บาท (#{b.total_price_item_text}) รวมภาษีมูลค่าเพิ่มและภาษีอื่น ค่าขนส่ง ค่าจดทะเบียน และค่าใช้จ่ายอื่นๆทั้งปวง
              br
              .fontspace
     br

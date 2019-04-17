@@ -714,13 +714,45 @@ export class ProductsModel {
       .offset(offset);
   }
 
-  productsByLabeler(knex: Knex, labelerId: string, query: string = "") {
-    let concat = knex.raw("concat(p.product_name,' [',gd.generic_name,'] ') as fullname");
-    let q_ = `${query}%`;
-    let _q_ = `%${query}%`;
-    let sql = `
-    select DISTINCT * from (
-    SELECT
+  productsByLabeler(knex: Knex, labelerId: string, query: string = "", genericTypeId = []) {
+    if (query === '*') {
+      let sql = `
+      select DISTINCT * from (
+      SELECT
+        concat(
+          mp.product_name,
+          " (",
+          mg.generic_name,
+          ")"
+        ) AS fullname,
+        mp.product_id,
+        mp.product_name,
+        mp.primary_unit_id,
+        mp.working_code,
+        mg.working_code AS generic_workign_code,
+        mp.is_lot_control,
+        mu.unit_name AS primary_unit_name,
+        mg.generic_name,
+        mp.generic_id,
+        ge.num_days AS expire_num_days,
+        vcm.contract_id, vcm.contract_no, vcm.contract_status,
+        ifnull((SELECT qty from pc_purchasing_order_item poi JOIN pc_purchasing_order po ON poi.purchase_order_id = po.purchase_order_id  where poi.product_id=mp.product_id AND po.is_cancel = 'N' 
+    AND ( po.purchase_order_status = 'COMPLETED' OR po.purchase_order_status = 'APPROVED' ) ORDER BY purchase_order_item_id desc limit 1),0) as old_qty
+      FROM
+        mm_products AS mp
+      LEFT JOIN mm_generics AS mg ON mg.generic_id = mp.generic_id
+      LEFT JOIN mm_units AS mu ON mu.unit_id = mp.primary_unit_id
+      LEFT JOIN mm_labelers AS l ON l.labeler_id = mp.v_labeler_id
+      LEFT JOIN view_cm_products_active as vcm on vcm.product_id=mp.product_id
+      LEFT JOIN wm_generic_expired_alert AS ge ON ge.generic_id = mp.generic_id
+      WHERE
+        mp.is_active = 'Y'
+        AND mp.mark_deleted = 'N'
+        AND l.labeler_id = '${labelerId}'
+        AND mg.generic_type_id in (${genericTypeId})
+      UNION ALL
+      SELECT * from (
+      SELECT
       concat(
         mp.product_name,
         " (",
@@ -729,115 +761,197 @@ export class ProductsModel {
       ) AS fullname,
       mp.product_id,
       mp.product_name,
-      mp.primary_unit_id,
-      mp.working_code,
-      mg.working_code AS generic_workign_code,
-      mp.is_lot_control,
-      mu.unit_name AS primary_unit_name,
-      mg.generic_name,
-      mp.generic_id,
-      ge.num_days AS expire_num_days,
-      vcm.contract_id, vcm.contract_no, vcm.contract_status,
-      ifnull((SELECT qty from pc_purchasing_order_item poi JOIN pc_purchasing_order po ON poi.purchase_order_id = po.purchase_order_id  where poi.product_id=mp.product_id AND po.is_cancel = 'N' 
-	AND ( po.purchase_order_status = 'COMPLETED' OR po.purchase_order_status = 'APPROVED' ) ORDER BY purchase_order_item_id desc limit 1),0) as old_qty
-    FROM
-      mm_products AS mp
-    LEFT JOIN mm_generics AS mg ON mg.generic_id = mp.generic_id
-    LEFT JOIN mm_units AS mu ON mu.unit_id = mp.primary_unit_id
-    LEFT JOIN mm_labelers AS l ON l.labeler_id = mp.v_labeler_id
-    LEFT JOIN view_cm_products_active as vcm on vcm.product_id=mp.product_id
-    LEFT JOIN wm_generic_expired_alert AS ge ON ge.generic_id = mp.generic_id
-    WHERE
-      (
-        mg.working_code = '${query}'
-        OR mp.working_code = '${query}'
-      )
-    AND mp.is_active = 'Y'
-    AND mp.mark_deleted = 'N'
-    AND l.labeler_id = '${labelerId}'
-    UNION ALL
-    SELECT * from (
-    SELECT
-    concat(
+        mp.primary_unit_id,
+        mp.working_code,
+        mg.working_code AS generic_workign_code,
+        mp.is_lot_control,
+        mu.unit_name AS primary_unit_name,
+        mg.generic_name,
+        mp.generic_id,
+        ge.num_days AS expire_num_days,
+        vcm.contract_id, vcm.contract_no, vcm.contract_status,
+        ifnull((SELECT qty from pc_purchasing_order_item poi JOIN pc_purchasing_order po ON poi.purchase_order_id = po.purchase_order_id  where poi.product_id=mp.product_id AND po.is_cancel = 'N' 
+    AND ( po.purchase_order_status = 'COMPLETED' OR po.purchase_order_status = 'APPROVED' ) ORDER BY purchase_order_item_id desc limit 1),0) as old_qty
+      FROM
+        mm_products AS mp
+      LEFT JOIN mm_generics AS mg ON mg.generic_id = mp.generic_id
+      LEFT JOIN mm_units AS mu ON mu.unit_id = mp.primary_unit_id
+      LEFT JOIN mm_labelers AS l ON l.labeler_id = mp.v_labeler_id
+      LEFT JOIN view_cm_products_active as vcm on vcm.product_id=mp.product_id
+      LEFT JOIN wm_generic_expired_alert AS ge ON ge.generic_id = mp.generic_id
+      WHERE
+        mp.is_active = 'Y'
+        AND mp.mark_deleted = 'N'
+        AND l.labeler_id = '${labelerId}'
+        AND mg.generic_type_id in (${genericTypeId})
+      ORDER BY
+        mp.product_name ASC
+      LIMIT 5) as a
+      UNION ALL
+      SELECT * from (
+      SELECT
+      concat(
+        mp.product_name,
+        " (",
+        mg.generic_name,
+        ")"
+      ) AS fullname,
+      mp.product_id,
       mp.product_name,
-      " (",
-      mg.generic_name,
-      ")"
-    ) AS fullname,
-    mp.product_id,
-    mp.product_name,
-      mp.primary_unit_id,
-      mp.working_code,
-      mg.working_code AS generic_workign_code,
-      mp.is_lot_control,
-      mu.unit_name AS primary_unit_name,
-      mg.generic_name,
-      mp.generic_id,
-      ge.num_days AS expire_num_days,
-      vcm.contract_id, vcm.contract_no, vcm.contract_status,
-      ifnull((SELECT qty from pc_purchasing_order_item poi JOIN pc_purchasing_order po ON poi.purchase_order_id = po.purchase_order_id  where poi.product_id=mp.product_id AND po.is_cancel = 'N' 
-	AND ( po.purchase_order_status = 'COMPLETED' OR po.purchase_order_status = 'APPROVED' ) ORDER BY purchase_order_item_id desc limit 1),0) as old_qty
-    FROM
-      mm_products AS mp
-    LEFT JOIN mm_generics AS mg ON mg.generic_id = mp.generic_id
-    LEFT JOIN mm_units AS mu ON mu.unit_id = mp.primary_unit_id
-    LEFT JOIN mm_labelers AS l ON l.labeler_id = mp.v_labeler_id
-    LEFT JOIN view_cm_products_active as vcm on vcm.product_id=mp.product_id
-    LEFT JOIN wm_generic_expired_alert AS ge ON ge.generic_id = mp.generic_id
-    WHERE
-      (
-        mp.product_name LIKE '${q_}'
-        OR mg.generic_name LIKE '${q_}'
-      )
-    AND mp.is_active = 'Y'
-    AND mp.mark_deleted = 'N'
-    AND l.labeler_id = '${labelerId}'
-    ORDER BY
-      mp.product_name ASC
-    LIMIT 5) as a
-    UNION ALL
-    SELECT * from (
-    SELECT
-    concat(
+        mp.primary_unit_id,
+        mp.working_code,
+        mg.working_code AS generic_workign_code,
+        mp.is_lot_control,
+        mu.unit_name AS primary_unit_name,
+        mg.generic_name,
+        mp.generic_id,
+        ge.num_days AS expire_num_days,
+        vcm.contract_id, vcm.contract_no, vcm.contract_status,
+        ifnull((SELECT qty from pc_purchasing_order_item poi JOIN pc_purchasing_order po ON poi.purchase_order_id = po.purchase_order_id  where poi.product_id=mp.product_id AND po.is_cancel = 'N' 
+      AND ( po.purchase_order_status = 'COMPLETED' OR po.purchase_order_status = 'APPROVED' ) ORDER BY purchase_order_item_id desc limit 1),0) as old_qty
+      FROM
+        mm_products AS mp
+      LEFT JOIN mm_generics AS mg ON mg.generic_id = mp.generic_id
+      LEFT JOIN mm_units AS mu ON mu.unit_id = mp.primary_unit_id
+      LEFT JOIN mm_labelers AS l ON l.labeler_id = mp.v_labeler_id
+      LEFT JOIN wm_generic_expired_alert AS ge ON ge.generic_id = mp.generic_id
+      LEFT JOIN view_cm_products_active as vcm on vcm.product_id=mp.product_id
+      WHERE
+        mp.is_active = 'Y'
+        AND mp.mark_deleted = 'N'
+        AND l.labeler_id = '${labelerId}'
+        AND mg.generic_type_id in (${genericTypeId})
+      ORDER BY
+        mp.product_name ASC
+      LIMIT 10) as a) as s`;
+      return knex.raw(sql);
+    } else {
+      let q_ = `${query}%`;
+      let _q_ = `%${query}%`;
+      let sql = `
+      select DISTINCT * from (
+      SELECT
+        concat(
+          mp.product_name,
+          " (",
+          mg.generic_name,
+          ")"
+        ) AS fullname,
+        mp.product_id,
+        mp.product_name,
+        mp.primary_unit_id,
+        mp.working_code,
+        mg.working_code AS generic_workign_code,
+        mp.is_lot_control,
+        mu.unit_name AS primary_unit_name,
+        mg.generic_name,
+        mp.generic_id,
+        ge.num_days AS expire_num_days,
+        vcm.contract_id, vcm.contract_no, vcm.contract_status,
+        ifnull((SELECT qty from pc_purchasing_order_item poi JOIN pc_purchasing_order po ON poi.purchase_order_id = po.purchase_order_id  where poi.product_id=mp.product_id AND po.is_cancel = 'N' 
+    AND ( po.purchase_order_status = 'COMPLETED' OR po.purchase_order_status = 'APPROVED' ) ORDER BY purchase_order_item_id desc limit 1),0) as old_qty
+      FROM
+        mm_products AS mp
+      LEFT JOIN mm_generics AS mg ON mg.generic_id = mp.generic_id
+      LEFT JOIN mm_units AS mu ON mu.unit_id = mp.primary_unit_id
+      LEFT JOIN mm_labelers AS l ON l.labeler_id = mp.v_labeler_id
+      LEFT JOIN view_cm_products_active as vcm on vcm.product_id=mp.product_id
+      LEFT JOIN wm_generic_expired_alert AS ge ON ge.generic_id = mp.generic_id
+      WHERE
+        (
+          mg.working_code = '${query}'
+          OR mp.working_code = '${query}'
+        )
+      AND mp.is_active = 'Y'
+      AND mp.mark_deleted = 'N'
+      AND l.labeler_id = '${labelerId}'
+      AND mg.generic_type_id in (${genericTypeId})
+      UNION ALL
+      SELECT * from (
+      SELECT
+      concat(
+        mp.product_name,
+        " (",
+        mg.generic_name,
+        ")"
+      ) AS fullname,
+      mp.product_id,
       mp.product_name,
-      " (",
-      mg.generic_name,
-      ")"
-    ) AS fullname,
-    mp.product_id,
-    mp.product_name,
-      mp.primary_unit_id,
-      mp.working_code,
-      mg.working_code AS generic_workign_code,
-      mp.is_lot_control,
-      mu.unit_name AS primary_unit_name,
-      mg.generic_name,
-      mp.generic_id,
-      ge.num_days AS expire_num_days,
-      vcm.contract_id, vcm.contract_no, vcm.contract_status,
-      ifnull((SELECT qty from pc_purchasing_order_item poi JOIN pc_purchasing_order po ON poi.purchase_order_id = po.purchase_order_id  where poi.product_id=mp.product_id AND po.is_cancel = 'N' 
-	AND ( po.purchase_order_status = 'COMPLETED' OR po.purchase_order_status = 'APPROVED' ) ORDER BY purchase_order_item_id desc limit 1),0) as old_qty
-    FROM
-      mm_products AS mp
-    LEFT JOIN mm_generics AS mg ON mg.generic_id = mp.generic_id
-    LEFT JOIN mm_units AS mu ON mu.unit_id = mp.primary_unit_id
-    LEFT JOIN mm_labelers AS l ON l.labeler_id = mp.v_labeler_id
-    LEFT JOIN wm_generic_expired_alert AS ge ON ge.generic_id = mp.generic_id
-    LEFT JOIN view_cm_products_active as vcm on vcm.product_id=mp.product_id
-    WHERE
-      (
-        mp.product_name LIKE '${_q_}'
-        OR mg.generic_name LIKE '${_q_}'
-    or mp.keywords LIKE '${_q_}'
-    or mg.keywords like  '${_q_}'
-      )
-    AND mp.is_active = 'Y'
-    AND mp.mark_deleted = 'N'
-    AND l.labeler_id = '${labelerId}'
-    ORDER BY
-      mp.product_name ASC
-    LIMIT 10) as a) as s`;
-    return knex.raw(sql);
+        mp.primary_unit_id,
+        mp.working_code,
+        mg.working_code AS generic_workign_code,
+        mp.is_lot_control,
+        mu.unit_name AS primary_unit_name,
+        mg.generic_name,
+        mp.generic_id,
+        ge.num_days AS expire_num_days,
+        vcm.contract_id, vcm.contract_no, vcm.contract_status,
+        ifnull((SELECT qty from pc_purchasing_order_item poi JOIN pc_purchasing_order po ON poi.purchase_order_id = po.purchase_order_id  where poi.product_id=mp.product_id AND po.is_cancel = 'N' 
+    AND ( po.purchase_order_status = 'COMPLETED' OR po.purchase_order_status = 'APPROVED' ) ORDER BY purchase_order_item_id desc limit 1),0) as old_qty
+      FROM
+        mm_products AS mp
+      LEFT JOIN mm_generics AS mg ON mg.generic_id = mp.generic_id
+      LEFT JOIN mm_units AS mu ON mu.unit_id = mp.primary_unit_id
+      LEFT JOIN mm_labelers AS l ON l.labeler_id = mp.v_labeler_id
+      LEFT JOIN view_cm_products_active as vcm on vcm.product_id=mp.product_id
+      LEFT JOIN wm_generic_expired_alert AS ge ON ge.generic_id = mp.generic_id
+      WHERE
+        (
+          mp.product_name LIKE '${q_}'
+          OR mg.generic_name LIKE '${q_}'
+        )
+      AND mp.is_active = 'Y'
+      AND mp.mark_deleted = 'N'
+      AND l.labeler_id = '${labelerId}'
+      AND mg.generic_type_id in (${genericTypeId})
+      ORDER BY
+        mp.product_name ASC
+      LIMIT 5) as a
+      UNION ALL
+      SELECT * from (
+      SELECT
+      concat(
+        mp.product_name,
+        " (",
+        mg.generic_name,
+        ")"
+      ) AS fullname,
+      mp.product_id,
+      mp.product_name,
+        mp.primary_unit_id,
+        mp.working_code,
+        mg.working_code AS generic_workign_code,
+        mp.is_lot_control,
+        mu.unit_name AS primary_unit_name,
+        mg.generic_name,
+        mp.generic_id,
+        ge.num_days AS expire_num_days,
+        vcm.contract_id, vcm.contract_no, vcm.contract_status,
+        ifnull((SELECT qty from pc_purchasing_order_item poi JOIN pc_purchasing_order po ON poi.purchase_order_id = po.purchase_order_id  where poi.product_id=mp.product_id AND po.is_cancel = 'N' 
+    AND ( po.purchase_order_status = 'COMPLETED' OR po.purchase_order_status = 'APPROVED' ) ORDER BY purchase_order_item_id desc limit 1),0) as old_qty
+      FROM
+        mm_products AS mp
+      LEFT JOIN mm_generics AS mg ON mg.generic_id = mp.generic_id
+      LEFT JOIN mm_units AS mu ON mu.unit_id = mp.primary_unit_id
+      LEFT JOIN mm_labelers AS l ON l.labeler_id = mp.v_labeler_id
+      LEFT JOIN wm_generic_expired_alert AS ge ON ge.generic_id = mp.generic_id
+      LEFT JOIN view_cm_products_active as vcm on vcm.product_id=mp.product_id
+      WHERE
+        (
+          mp.product_name LIKE '${_q_}'
+          OR mg.generic_name LIKE '${_q_}'
+      or mp.keywords LIKE '${_q_}'
+      or mg.keywords like  '${_q_}'
+        )
+      AND mp.is_active = 'Y'
+      AND mp.mark_deleted = 'N'
+      AND l.labeler_id = '${labelerId}'
+      AND mg.generic_type_id in (${genericTypeId})
+      ORDER BY
+        mp.product_name ASC
+      LIMIT 10) as a) as s`;
+      return knex.raw(sql);
+    }
   }
 
   list(knex: Knex) {

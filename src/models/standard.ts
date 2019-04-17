@@ -5,7 +5,7 @@ export class StandardModel {
 
   getUnitPackages(db: Knex, genericId: any) {
     return db('mm_unit_generics as mu')
-      .select('mu.unit_generic_id', 'mu.from_unit_id', 'mu.to_unit_id', 'mu.qty',
+      .select('mu.standard_cost','mu.unit_generic_id', 'mu.from_unit_id', 'mu.to_unit_id', 'mu.qty',
         'mu.cost', 'mu.cost as old_cost', 'mu1.unit_name as from_unit_name', 'mu2.unit_name as to_unit_name')
       .innerJoin('mm_units as mu1', 'mu1.unit_id', 'mu.from_unit_id')
       .innerJoin('mm_units as mu2', 'mu2.unit_id', 'mu.to_unit_id')

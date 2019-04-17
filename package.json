@@ -27,6 +27,7 @@
         "mysql": "^2.15.0",
         "pug": "^2.0.0-rc.4",
         "random-js": "^1.0.8",
+        "request": "^2.88.0",
         "rimraf": "^2.6.2",
         "serve-favicon": "^2.4.5",
         "ts-node": "^6.0.3",

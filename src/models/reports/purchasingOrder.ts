@@ -4,7 +4,7 @@ import * as moment from 'moment';
 import * as express from 'express';
 import { log } from 'util';
 import { start } from 'repl';
-
+const request = require("request");
 export class PurchasingOrderReportModel {
 
     detail(knex: Knex, id: string) {
@@ -1134,6 +1134,7 @@ export class PurchasingOrderReportModel {
     ORDER BY
         po.purchase_order_number`);
     }
+
     getWarehosue(db: Knex, warehouseId: any) {
         return db('wm_warehouses')
             .select('warehouse_name')
@@ -1160,3 +1161,4 @@ export class PurchasingOrderReportModel {
     }
 
 }
+

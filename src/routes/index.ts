@@ -2820,6 +2820,8 @@ router.get('/report/allpo/egp/', wrap(async (req, res, next) => {
       }
       total = v.sub_total;
       v.total_price = model.comma(v.total_price);
+      v.total_price_item_text = model.bahtText(v.total_price_item);
+      v.total_price_item = model.comma(v.total_price_item);
       v.qty = model.commaQty(v.qty);
       v.unit_price = model.comma(v.unit_price);
       v.qtyPoi = model.commaQty(v.qtyPoi);
@@ -3399,5 +3401,6 @@ router.get('/report/purchasing-list/byPO/excel', async (req, res, next) => {
   // force download
   res.download(filePath, 'รายงานสรุปรายการเวชภัณฑ์ที่สั่งซื้อ เลขที่ใบสั่งซื้อ ' + Sid + ' ถึง ' + Eid + '.xlsx');
 });
+
 
 export default router;

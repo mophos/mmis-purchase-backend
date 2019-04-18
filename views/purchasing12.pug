@@ -44,13 +44,13 @@ html
     | &nbsp;&nbsp; รายละเอียดตามเอกสารแนบ
     br
     .fontspace
-    | 3.  ราคากลางและรายระเอียดของราคากลางจำนวน #{arrayTotal[i]} บาท (#{arrayBahtText[i]})
+    | 3.  ราคากลางและรายระเอียดของราคากลางจำนวน #{purchasing[i][0].total_price} บาท (#{arrayBahtText[i]})
     br
     .fontspace 
     | 4.  วงเงินที่จะซื้อ
     br
     .fontspace 
-    | &nbsp;&nbsp; เงินนอกงบประมาณจาก จำนวน #{arrayTotal[i]} บาท (#{arrayBahtText[i]})
+    | &nbsp;&nbsp; เงินงบประมาณจาก จำนวน #{purchasing[i][0].total_price} บาท (#{arrayBahtText[i]})
     br
     | 5.	กำหนดเวลาที่ต้องการใช้พัสดุนั้น หรือให้งานแล้วเสร็จ
     - var y=0
@@ -71,7 +71,8 @@ html
     br 
     | หรือให้บริการทั่วไปและมีวงเงินในการจัดซื้อจัดจ้างครั้งหนึ่งไม่เกินวงเงินตามที่กำหนดในกฎกระทรวง
     br
-    .pagebreak
+    if(purchasing[i].length > 10) 
+      .pagebreak
     .fontspace
     | 7.	หลักเกณฑ์การพิจารณาคัดเลือกข้อเสนอ
     br
@@ -101,12 +102,10 @@ html
     .fontspace 
     | &nbsp;&nbsp;&nbsp;&nbsp; ทำการตรวจรับพัสดุให้เป็นไปตามเงื่อนไขของสัญญาหรือข้อตกลงนั้น 
     br
-    br
     .fontspace 
     | จึงเรียนมาเพื่อโปรดพิจารณา หากเห็นชอบขอได้โปรด อนุมัติให้ดำเนินการ ตามรายละเอียดในรายงานขอซื้อดังกล่าวข้างต้น
     br
     .fontspace 
-    br
     br
     br
     br
@@ -136,9 +135,6 @@ html
           br
           | #{arrayChief[i][0].chief_position}  
     div(style="width:100%;float:left;text-align:center")
-      br
-      br
-      br
       br
       br
       br

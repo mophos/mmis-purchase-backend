@@ -277,9 +277,10 @@ router.get('/search/autocomplete-labeler', async (req, res, next) => {
   let db = req.db;
   let id = req.query.labelerId;
   let q = req.query.q;
+  let genericTypeId = req.decoded.generic_type_id;
 
   try {
-    let rs: any = await model.productsByLabeler(db, id, q);
+    let rs: any = await model.productsByLabeler(db, id, q, genericTypeId);
     if (rs[0].length) {
       res.send(rs[0]);
     } else {

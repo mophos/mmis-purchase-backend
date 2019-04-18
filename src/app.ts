@@ -48,7 +48,7 @@ import budgetTransectionRoute from './routes/budgetTransection';
 import userRoute from './routes/users';
 import stdRoute from './routes/standard';
 import officerRoute from './routes/officer'
-
+import ediRoute from './routes/edi';
 const app: express.Express = express();
 
 //view engine setup
@@ -153,7 +153,8 @@ app.use('/setting', settingRoute);
 app.use('/docs', poReportRoute);
 app.use('/budget-transection', budgetTransectionRoute);
 app.use('/std', stdRoute);
-app.use('/officer', officerRoute);
+app.use('/officer', checkAuth, officerRoute);
+app.use('/edi', checkAuth, ediRoute);
 
 // app.use('/', checkAuth, indexRoute);
 app.use('/', checkAuth, indexRoute);

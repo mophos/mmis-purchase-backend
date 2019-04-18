@@ -112,7 +112,8 @@ export class PurchasingOrderModel {
     contract: string = 'ALL', query: string = '',
     start_date: string = '', end_date: string = '',
     limit: number = 20, offset: number = 0,
-    genericTypeIds: any[], sort: any = {}, warehouseId) {
+    genericTypeIds: any[], sort: any = {}, warehouseId,
+    edi) {
     let sumItems = knex
       .select(knex.raw('sum(po.unit_price*po.qty)'))
       .from('pc_purchasing_order_item as po')
@@ -140,10 +141,14 @@ export class PurchasingOrderModel {
       .whereIn('pc_purchasing_order.purchase_order_status', status)
       .whereIn('pc_purchasing_order.generic_type_id', genericTypeIds)
 
+    if (edi) {
+      con.where('pc_purchasing_order.is_edi', 'Y');
+    } else {
+      con.where('pc_purchasing_order.is_edi', 'N');
+    }
     // order by
     if (sort.by) {
       let reverse = sort.reverse ? 'DESC' : 'ASC';
-      console.log(reverse);
       if (sort.by === 'order_date') {
         con.orderBy('pc_purchasing_order.order_date', reverse);
       }
@@ -205,7 +210,8 @@ export class PurchasingOrderModel {
     knex: Knex, status: Array<any>,
     contract: string = 'ALL', query: string = '',
     start_date: string = '', end_date: string = '',
-    genericTypeIds: any[], warehouseId) {
+    genericTypeIds: any[], warehouseId,
+    edi) {
 
     let con = knex(this.tableName)
       .select(knex.raw('count(*) as total'))
@@ -221,6 +227,12 @@ export class PurchasingOrderModel {
       con.where('pc_purchasing_order.is_contract', 'Y');
     } else if (contract === 'N') {
       con.where('pc_purchasing_order.is_contract', 'N');
+    }
+
+    if (edi) {
+      con.where('pc_purchasing_order.is_edi', 'Y');
+    } else {
+      con.where('pc_purchasing_order.is_edi', 'N');
     }
 
     if (query !== '') {

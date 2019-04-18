@@ -4,7 +4,6 @@ import * as moment from 'moment';
 import * as express from 'express';
 import { log } from 'util';
 import { start } from 'repl';
-const request = require("request");
 export class PurchasingOrderReportModel {
 
     detail(knex: Knex, id: string) {
@@ -1148,9 +1147,9 @@ export class PurchasingOrderReportModel {
             .andWhere('is_cancel', 'N')
     }
 
-    getRemainStock(knex: Knex, purchaseOrderItemId){
+    getRemainStock(knex: Knex, purchaseOrderItemId) {
         return knex('pc_purchasing_order as po')
-            .select('vs.balance_qty','mug.qty')
+            .select('vs.balance_qty', 'mug.qty')
             .join('pc_purchasing_order_item as poi', 'poi.purchase_order_id', 'po.purchase_order_id')
             .join('view_stock_card_warehouse as vs', 'vs.product_id', 'poi.product_id')
             .join('mm_unit_generics as mug', 'mug.unit_generic_id', 'poi.unit_generic_id')

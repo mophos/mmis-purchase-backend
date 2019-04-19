@@ -2563,7 +2563,8 @@ router.get('/report/allpo/egp5', wrap(async (req, res, next) => {
       v.province_name = (!v.province_name || +v.province_code == 10) ? v.province_name : 'จ.' + v.province_name;
     });
 
-    limitDate.push(moment().add(purchasing[i][0].delivery, 'days').format('D MMMM ') + (moment(purchasing[i][0].order_date).get('year') + 543));
+    let deliveryDate = moment(purchasing[i][0].order_date).add(purchasing[i][0].delivery, 'days');
+    limitDate.push(moment(deliveryDate).format('D MMMM ') + (moment(deliveryDate).get('year') + 543));
 
     let net = purchasing[i][0].vat + total;
     bahtText = model.bahtText(net);
@@ -2684,7 +2685,8 @@ router.get('/report/allpo/egp3', wrap(async (req, res, next) => {
 
     allAmount = model.comma(arAtransection[i][0].amount);
     arAllamount.push(allAmount);
-    limitDate.push(moment().add(purchasing[i][0].delivery, 'days').format('D MMMM ') + (moment(purchasing[i][0].order_date).get('year') + 543));
+    let deliveryDate = moment(purchasing[i][0].order_date).add(purchasing[i][0].delivery, 'days');   
+    limitDate.push(moment(deliveryDate).format('D MMMM ') + (moment(deliveryDate).get('year') + 543));
 
     let total: any = 0;
     arrayItems.forEach(v => {
@@ -2808,7 +2810,8 @@ router.get('/report/allpo/egp/', wrap(async (req, res, next) => {
 
     allAmount = model.comma(arAtransection[i][0].amount);
     arAllamount.push(allAmount);
-    limitDate.push(moment().add(purchasing[i][0].delivery, 'days').format('D MMMM ') + (moment(purchasing[i][0].order_date).get('year') + 543));
+    let deliveryDate = moment(purchasing[i][0].order_date).add(purchasing[i][0].delivery, 'days');
+    limitDate.push(moment(deliveryDate).format('D MMMM ') + (moment(deliveryDate).get('year') + 543));
 
     let total: any = 0;
     arrayItems.forEach(v => {
@@ -2944,7 +2947,8 @@ router.get('/report/getporder/standard/', wrap(async (req, res, next) => {
     }
     allAmount = model.comma(arAtransection[i][0].amount);
     arAllamount.push(allAmount);
-    limitDate.push(moment().add(purchasing[i][0].delivery, 'days').format('D MMMM ') + (moment(purchasing[i][0].order_date).get('year') + 543));
+    let deliveryDate = moment(purchasing[i][0].order_date).add(purchasing[i][0].delivery, 'days');     
+    limitDate.push(moment(deliveryDate).format('D MMMM ') + (moment(deliveryDate).get('year') + 543));
 
     let total: any = 0;
     arrayItems.forEach(v => {
@@ -3094,7 +3098,8 @@ router.get('/report/getporder/DebaratanaNakhonratchasima/', wrap(async (req, res
     }
     allAmount = model.comma(arAtransection[i][0].amount);
     arAllamount.push(allAmount);
-    limitDate.push(moment().add(purchasing[i][0].delivery, 'days').format('D MMMM ') + (moment(purchasing[i][0].order_date).get('year') + 543));
+    let deliveryDate = moment(purchasing[i][0].order_date).add(purchasing[i][0].delivery, 'days');
+    limitDate.push(moment(deliveryDate).format('D MMMM ') + (moment(deliveryDate).get('year') + 543));
 
     let total: any = 0;
     arrayItems.forEach(v => {

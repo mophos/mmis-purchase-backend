@@ -166,7 +166,6 @@ router.post('/by-status', async (req, res, next) => {
   let limit = req.body.limit || 20;
   let offset = req.body.offset || 0;
   let sort = req.body.sort;
-  let edi = req.body.edi;
   let warehouseId = req.decoded.warehouseId;
   let genericTypeIds = [];
 
@@ -176,8 +175,8 @@ router.post('/by-status', async (req, res, next) => {
   }
 
   try {
-    let rs: any = await model.listByStatus(db, status, contract, query, start_date, end_date, limit, offset, genericTypeIds, sort, warehouseId, edi);
-    let rsTotal: any = await model.listByStatusTotal(db, status, contract, query, start_date, end_date, genericTypeIds, warehouseId, edi);
+    let rs: any = await model.listByStatus(db, status, contract, query, start_date, end_date, limit, offset, genericTypeIds, sort, warehouseId);
+    let rsTotal: any = await model.listByStatusTotal(db, status, contract, query, start_date, end_date, genericTypeIds, warehouseId);
 
     res.send({ ok: true, rows: rs, total: rsTotal[0].total });
   } catch (error) {

@@ -95,7 +95,10 @@ html
                 td &nbsp;&nbsp; #{b}. #{c.fullname}  
                 td #{c.position}
               tr  
-                td(colspan='2') &nbsp;&nbsp; #{c.position_name}  
+                if(arCommittee[i].length > 1)
+                  td(colspan='2') &nbsp;&nbsp; #{c.position_name}  
+                else 
+                  td(colspan='2') &nbsp;&nbsp; ผู้ตรวจรับพัสดุ
     .fontspace
     | &nbsp;&nbsp; อำนาจและหน้าที่
     br

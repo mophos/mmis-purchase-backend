@@ -787,7 +787,12 @@ export class PurchasingOrderReportModel {
     }
     purchasing10(knex: Knex, purchaOrderId, warehouseId: any) {
         let sql = `SELECT
-            mg.standard_cost,
+        IF
+            (
+                ( SELECT standard_cost FROM mm_unit_generics WHERE unit_generic_id = poi.unit_generic_id ) = 0,
+                mg.standard_cost,
+                ( SELECT standard_cost FROM mm_unit_generics WHERE unit_generic_id = poi.unit_generic_id ) 
+            ) AS standard_cost,
             mup.cost,
             mp.product_name,
             mup.qty AS conversion,
@@ -883,7 +888,12 @@ export class PurchasingOrderReportModel {
                 'po.include_vat',
                 'po.exclude_vat',
                 'po.sub_total',
-                'mg.standard_cost',
+                knex.raw(`IF
+                (
+                    ( SELECT standard_cost FROM mm_unit_generics WHERE unit_generic_id = poi.unit_generic_id ) = 0,
+                    mg.standard_cost,
+                    ( SELECT standard_cost FROM mm_unit_generics WHERE unit_generic_id = poi.unit_generic_id ) 
+                ) AS standard_cost`),
                 knex.raw(`IFNULL(
                     (
                 SELECT

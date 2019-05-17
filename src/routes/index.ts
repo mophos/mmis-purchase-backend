@@ -2399,8 +2399,6 @@ router.get('/report/allpo/egp/4', wrap(async (req, res, next) => {
     let total: any = 0;
     for (const v of arrayItems) {   
       let rsRemain = await model.getRemainStock(db, v.purchase_order_item_id);
-      console.log(rsRemain, 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
-      
       let remainQty = 0;
       let qty = 0;
       if (rsRemain.length === 0) {

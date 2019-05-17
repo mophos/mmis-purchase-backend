@@ -540,6 +540,18 @@ router.post('/', async (req, res, next) => {
 
 });
 
+router.put('/other', async (req, res, next) => {
+  try {
+    const data: any = req.body.data;
+    const purchaseOrderId: any = req.body.purchaseOrderId;
+    const db = req.db;
+    await model.update(db, purchaseOrderId, data);
+    res.send({ ok: true })
+  } catch (error) {
+    res.send({ ok: false, error: error })
+  }
+});
+
 router.put('/:purchaseOrderId', async (req, res, next) => {
   const items: any = req.body.items;
   const summary: any = req.body.summary;

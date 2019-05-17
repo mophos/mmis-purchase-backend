@@ -191,8 +191,8 @@ router.get('/report/list/all/purchase-trade-select', wrap(async (req, res, next)
 }));
 
 router.get('/report/list/purchase-trade-select', wrap(async (req, res, next) => {
-  let product_id = req.query.product_id;
-  let unit_generic_id = req.query.unit_generic_id;
+  let product_id = req.query.p;
+  let unit_generic_id = req.query.u;
   let warehouseId = req.decoded.warehouseId;
   let db = req.db;
   product_id = Array.isArray(product_id) ? product_id : [product_id]

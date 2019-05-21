@@ -1170,4 +1170,26 @@ router.get('/view-contract', async (req, res, next) => {
   }
 });
 
+router.get('/generic-issue', async (req, res, next) => {
+  let db = req.db;
+  let genericId = req.query.genericId
+  let day = req.query.day
+  try {
+    let rs: any = await model.getGenericIssue(db, genericId, day);
+    console.log('----');
+    
+    console.log(rs[0]);
+    
+    if (rs[0]) {
+      res.send({ ok: true, rows: rs[0] });
+    } else {
+      res.send({ ok: true, rows: { out_qty: 0 } });
+    }
+  } catch (error) {
+    res.send({ ok: false, error: error.message });
+  } finally {
+    db.destroy();
+  }
+});
+
 export default router;

@@ -2397,7 +2397,7 @@ router.get('/report/allpo/egp/4', wrap(async (req, res, next) => {
     arAllamount.push(allAmount);
 
     let total: any = 0;
-    for (const v of arrayItems) {   
+    for (const v of arrayItems) {
       let rsRemain = await model.getRemainStock(db, v.purchase_order_item_id);
       let remainQty = 0;
       let qty = 0;
@@ -2683,7 +2683,7 @@ router.get('/report/allpo/egp3', wrap(async (req, res, next) => {
 
     allAmount = model.comma(arAtransection[i][0].amount);
     arAllamount.push(allAmount);
-    let deliveryDate = moment(purchasing[i][0].order_date).add(purchasing[i][0].delivery, 'days');   
+    let deliveryDate = moment(purchasing[i][0].order_date).add(purchasing[i][0].delivery, 'days');
     limitDate.push(moment(deliveryDate).format('D MMMM ') + (moment(deliveryDate).get('year') + 543));
 
     let total: any = 0;
@@ -2945,7 +2945,7 @@ router.get('/report/getporder/standard/', wrap(async (req, res, next) => {
     }
     allAmount = model.comma(arAtransection[i][0].amount);
     arAllamount.push(allAmount);
-    let deliveryDate = moment(purchasing[i][0].order_date).add(purchasing[i][0].delivery, 'days');     
+    let deliveryDate = moment(purchasing[i][0].order_date).add(purchasing[i][0].delivery, 'days');
     limitDate.push(moment(deliveryDate).format('D MMMM ') + (moment(deliveryDate).get('year') + 543));
 
     let total: any = 0;
@@ -3405,5 +3405,32 @@ router.get('/report/purchasing-list/byPO/excel', async (req, res, next) => {
   res.download(filePath, 'รายงานสรุปรายการเวชภัณฑ์ที่สั่งซื้อ เลขที่ใบสั่งซื้อ ' + Sid + ' ถึง ' + Eid + '.xlsx');
 });
 
+router.get('/account/payable', wrap(async (req, res, next) => {
+  try {
+    const db = req.db;
+    const purchaseOrderId = typeof req.query.purchaseOrderId == "string" ? [req.query.purchaseOrderId] : req.query.purchaseOrderId;
+    const sys_hospital = req.decoded.SYS_HOSPITAL;
+    const hospname = JSON.parse(sys_hospital).hospname;
+    const rs: any = await model.accountPayable(db, purchaseOrderId);
+    if (rs.length > 0) {
+      for (const i of rs) {
+        i.cost = model.comma(i.cost);
+      }
+      const sum = _.sumBy(rs, function (o: any) { return o.cost; });
+      res.render('account_payable', {
+        hospname: hospname,
+        details: rs,
+        sumCost: sum,
+        printDate: printDate(req.decoded.SYS_PRINT_DATE)
+      });
+    } else {
+      res.render('error404')
+    }
 
+  } catch (error) {
+    res.render('error404', {
+      title: error
+    })
+  }
+}));
 export default router;

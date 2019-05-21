@@ -771,4 +771,13 @@ export class PurchasingOrderModel {
       .whereNot('purchase_order_book_number', null)
   }
 
+  getGenericIssue(db: Knex, genericId, day) {
+    return db('view_stock_card_new')
+      .select(db.raw('ifnull( sum( ifnull( out_qty, 0 ) ), 0 ) out_qty'))
+      .where('generic_id', genericId)
+      .where('out_qty', '>', 0)
+      .whereRaw(`stock_date > (NOW( ) - INTERVAL ${day} DAY)`)
+      .groupBy('generic_id')
+  }
+
 }

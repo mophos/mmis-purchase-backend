@@ -92,13 +92,14 @@ html
           for c in arCommittee[i]
             - b++
               tr
-                td &nbsp;&nbsp; #{b}. #{c.fullname}  
-                td #{c.position}
-              tr  
+                td &nbsp;&nbsp; #{b}. #{c.fullname} 
                 if(arCommittee[i].length > 1)
-                  td(colspan='2') &nbsp;&nbsp; #{c.position_name}  
+                  td #{c.position}
                 else 
-                  td(colspan='2') &nbsp;&nbsp; ผู้ตรวจรับพัสดุ
+                  td ผู้ตรวจรับพัสดุ
+              tr  
+                
+                td(colspan='2') &nbsp;&nbsp; #{c.position_name}
     .fontspace
     | &nbsp;&nbsp; อำนาจและหน้าที่
     br

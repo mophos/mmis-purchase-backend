@@ -191,8 +191,8 @@ router.get('/report/list/all/purchase-trade-select', wrap(async (req, res, next)
 }));
 
 router.get('/report/list/purchase-trade-select', wrap(async (req, res, next) => {
-  let product_id = req.query.product_id;
-  let unit_generic_id = req.query.unit_generic_id;
+  let product_id = req.query.p;
+  let unit_generic_id = req.query.u;
   let warehouseId = req.decoded.warehouseId;
   let db = req.db;
   product_id = Array.isArray(product_id) ? product_id : [product_id]
@@ -2399,8 +2399,6 @@ router.get('/report/allpo/egp/4', wrap(async (req, res, next) => {
     let total: any = 0;
     for (const v of arrayItems) {
       let rsRemain = await model.getRemainStock(db, v.purchase_order_item_id);
-      console.log(rsRemain, 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx');
-
       let remainQty = 0;
       let qty = 0;
       if (rsRemain.length === 0) {

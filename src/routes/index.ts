@@ -3413,10 +3413,10 @@ router.get('/account/payable', wrap(async (req, res, next) => {
     const hospname = JSON.parse(sys_hospital).hospname;
     const rs: any = await model.accountPayable(db, purchaseOrderId);
     if (rs.length > 0) {
+      const sum = _.sumBy(rs, function (o: any) { return o.cost; });
       for (const i of rs) {
         i.cost = model.comma(i.cost);
       }
-      const sum = _.sumBy(rs, function (o: any) { return o.cost; });
       res.render('account_payable', {
         hospname: hospname,
         details: rs,

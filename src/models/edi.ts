@@ -81,7 +81,8 @@ export class EdiModel {
     mu1.unit_name as large_unit,
     mu2.unit_name as small_unit,
     mug.qty as conversion_qty,
-    poi.* 
+    poi.*,
+    mp.edi_labeler_code
     from pc_purchasing_order_item as poi
     join mm_products as mp on poi.product_id = mp.product_id
     join mm_unit_generics as mug on poi.unit_generic_id = mug.unit_generic_id

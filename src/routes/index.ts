@@ -2202,14 +2202,11 @@ router.get('/report/getporder/singburi', wrap(async (req, res, next) => {
 }));
 
 router.get('/report/allpo/egp/singburi', wrap(async (req, res, next) => {
-  let porder = req.query.porder;
+  const db = req.db;
+  const porder = Array.isArray(req.query.porder) ? req.query.porder : [req.query.porder];
+  const warehouseId = req.decoded.warehouseId;
+  let purchaingOrderIds = await model.checkCancelPo(db, porder);
 
-  porder = Array.isArray(porder) ? porder : [porder];
-
-  let warehouseId = req.decoded.warehouseId;
-  let type = req.query.type;
-  let db = req.db;
-  let pid = await model.checkCancelPo(db, porder);
 
   let hosdetail = await model.hospital(db);
   let hospitalName = hosdetail[0].hospname;
@@ -2223,16 +2220,9 @@ router.get('/report/allpo/egp/singburi', wrap(async (req, res, next) => {
   let nDate = moment(new Date()).format('D MMMM ') + (moment(new Date()).get('year') + 543)
 
   let pcb;
-
-  let committeesVerify;
-  let arrayItems;
-  let bidname;
-  let bahtText: any = 0;
-  let purchasingChief;
-  let budget;
-
   let arBudget = [];
   let arrayChief = [];
+  let arrayBuyyer = [];
   let arrayTotal = [];
   let arrayBahtText = [];
   let arrayBid = [];
@@ -2242,46 +2232,45 @@ router.get('/report/allpo/egp/singburi', wrap(async (req, res, next) => {
   let arCommittee = [];
   let arAllamount = [];
   let arAtransection = [];
+  for (const i of purchaingOrderIds) {
+    const purchaseOrderId = i.purchase_order_id;
+    const egpItems = await model.purchasingEgp(db, i.purchase_order_id, warehouseId);
+    purchasing.push(egpItems);
 
-  let getAmountTransaction;
-  let allAmount;
+    const purchasingChief = await model.getStaff(db, i.chief_id);
+    arrayChief.push(purchasingChief[0]);
 
-  for (let i in pid) {
-    arrayItems = await model.purchasingEgp(db, porder[i], warehouseId);
-    purchasing.push(arrayItems);
+    const purchasingBuyyer = await model.getStaff(db, i.buyer_id);
+    arrayBuyyer.push(purchasingBuyyer[0]);
 
-    purchasingChief = await model.purchasing2Chief(db, porder[i]);
-    arrayChief.push(purchasingChief);
 
-    committeesVerify = await model.purchasingCommittee2(db, porder[i]);
+    let committeesVerify = await model.purchasingCommittee2(db, purchaseOrderId);
     committeesVerify = committeesVerify[0];
     if (committeesVerify.length == 1) {
       committeesVerify[0].position = 'ผู้ตรวจรับพัสดุ';
     }
     arCommittee.push(committeesVerify);
-
-    budget = await model.budgetType(db, purchasing[i][0].budget_detail_id);
+    let budget = await model.budgetType(db, i.budget_detail_id);
     budget = budget[0];
-    arBudget.push(budget);
-    arBudget[i][0].amount = model.comma(arBudget[i][0].amount);
+    budget[0].amount = model.comma(budget[0].amount);
+    arBudget.push(budget[0]);
 
-    getAmountTransaction = await model.allAmountTransaction(db, purchasing[i][0].budget_detail_id, +arBudget[i][0].bg_year - 543, purchasing[i][0].purchase_order_id);
+    let getAmountTransaction = await model.allAmountTransaction(db, i.budget_detail_id, +budget[0].bg_year - 543, purchaseOrderId);
     getAmountTransaction = getAmountTransaction[0];
     arAtransection.push(getAmountTransaction);
 
-    pcb = await model.pcBudget(db, porder[i]);
-    arPcb.push(pcb);
-    if (arPcb[i].length) {
-      arPcb[i][0].balance = model.comma(arPcb[i][0].balance);
+    const pcb = await model.pcBudget(db, purchaseOrderId);
+    if (pcb.length) {
+      pcb[0].balance = model.comma(pcb[0].balance);
     }
+    arPcb.push(pcb[0]);
 
-    allAmount = model.comma(arAtransection[i][0].amount);
+    const allAmount = model.comma(getAmountTransaction[0].amount);
     arAllamount.push(allAmount);
 
     let total: any = 0;
-    arrayItems.forEach(v => {
+    egpItems.forEach(v => {
       v.order_date = moment(v.order_date).format('D MMMM ') + (moment(v.order_date).get('year') + 543);
-
       total += v.qtyPoi * v.unit_price;
       v.total_price = model.comma(v.qtyPoi * v.unit_price);
       v.qty = model.commaQty(v.qty);
@@ -2291,14 +2280,16 @@ router.get('/report/allpo/egp/singburi', wrap(async (req, res, next) => {
       v.cost = model.comma(v.cost);
     });
 
-    bahtText = model.bahtText(total);
+
+    const bahtText = model.bahtText(total);
     total = model.comma(total);
     arrayTotal.push(total);
     arrayBahtText.push(bahtText);
-
-    bidname = await model.bidName(db, purchasing[i][0].purchase_method_id);
+    const bidname = await model.bidName(db, i.purchase_method_id);
     arrayBid.push(bidname);
+
   }
+
 
   res.render('egpSingburi', {
     hosaddress: hosaddress,
@@ -2312,6 +2303,7 @@ router.get('/report/allpo/egp/singburi', wrap(async (req, res, next) => {
     managerName: managerName,
     managerPosition: managerPosition,
     arrayChief: arrayChief,
+    arrayBuyyer: arrayBuyyer,
     arrayBahtText: arrayBahtText,
     arrayTotal: arrayTotal,
     nDate: nDate,

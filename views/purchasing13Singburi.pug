@@ -75,7 +75,7 @@ html
             td #{c.position}
       br
     .fontspace
-    | จึงเรียนมาเพื่อโปรดพิจารณาอนุมัติ โดยใช้เงิน #{arBudget[i][0].bgtype_name} ประเภท#{arBudget[i][0].bgtypesub_name} ปี #{arBudget[i][0].bg_year} 
+    | จึงเรียนมาเพื่อโปรดพิจารณาอนุมัติ โดยใช้เงิน #{arBudget[i].bgtype_name} ประเภท#{arBudget[i].bgtypesub_name} ปี #{arBudget[i].bg_year} 
     br
     | ในการจัดซื้อในครั้งนี้ ซึ่งมีรายละเอียดการใช้เงินดังนี้
     br
@@ -84,13 +84,13 @@ html
       tbody
         tr 
           td ยอดเงินที่ได้รับจัดสรร
-          td #{arBudget[i][0].amount} บาท
+          td #{arBudget[i].amount} บาท
         tr 
           td ยอดจัดซื้อสะสมจากครั้งก่อน
           td #{arAllamount[i]} บาท
         tr 
           td ยอดเงินคงเหลือจากการซื้อครั้งนี้
-          td #{arPcb[i][0].balance} บาท
+          td #{arPcb[i].balance} บาท
     .fontspace 
     | เกณฑ์การพิจารณาผลการยื่นข้อเสนอครั้งนี้ จะพิจารณาตัดสินโดยใช้หลักเกณฑ์ราคาประกอบคุณภาพ
     br
@@ -103,8 +103,8 @@ html
     br
     br
     div(style="width:100%;float:left;")
-      div(style="width:50%;float:left;text-align:center") ลงชื่อ.................................................เจ้าหน้าที่
-        if(arrayChief[i][0].buyer_id===null)
+      div(style="width:50%;float:left;text-align:center") ลงชื่อ.................................................#{arrayBuyyer[i].position}
+        if(arrayBuyyer[i].buyer_id===null)
           |
           br
           |
@@ -112,11 +112,11 @@ html
           | 
         else
           br
-          | ( #{arrayChief[i][0].buyer_fullname} )
+          | ( #{arrayBuyyer[i].fullname} )
           br 
-          | #{arrayChief[i][0].buyer_position}
-      div(style="width:50%;float:left;text-align:center") ลงชื่อ.................................................หัวหน้าเจ้าหน้าที่
-        if(arrayChief[i][0].chief_id===null)
+          | #{arrayBuyyer[i].position_name}
+      div(style="width:50%;float:left;text-align:center") ลงชื่อ.................................................#{arrayChief[i].position}
+        if(arrayChief[i].chief_id===null)
           |
           br
           |
@@ -124,9 +124,9 @@ html
           | 
         else
           br 
-          | ( #{arrayChief[i][0].chief_fullname} )
+          | ( #{arrayChief[i].fullname} )
           br
-          | #{arrayChief[i][0].chief_position} 
+          | #{arrayChief[i].position_name} 
     div(style="width:100%;float:left;text-align:center")
       br
       br

@@ -107,14 +107,14 @@ html
   table.table( style='float:right; width:50%; font-size: 15pt;')
       tr
         td.center  ลงชื่อ......................................................ผู้สั่งซื้อ
-      if(arrayChief[i][0].chief_id===null)
+      if(arrayChief[i].chief_id===null)
         tr
           td(height='30px')
       else
         tr
-          td.center ( #{arrayChief[i][0].chief_fullname} )
+          td.center ( #{arrayChief[i].fullname} )
         tr
-          td.center #{arrayChief[i][0].chief_position} 
+          td.center #{arrayChief[i].position_name} 
         tr
           td.center หัวหน้าเจ้าหน้าที่ 
       tr

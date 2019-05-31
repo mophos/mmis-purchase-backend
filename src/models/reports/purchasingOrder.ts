@@ -699,6 +699,30 @@ export class PurchasingOrderReportModel {
             .where('upo.type_id', typeId)
             .where('upo.isactive', '1')
     }
+
+    // getChief(knex: Knex, purchaOrderId) {
+    //     return knex.select('t.title_name as title', 'p.fname', 'p.lname', knex.raw(`concat(t.title_name,p.fname,' ',p.lname) as fullname`), 'upos.position_name', 'upot.type_name as position')
+    //         .from('pc_purchasing_order as po')
+    //         .join('um_purchasing_officer as upo', 'upo.people_id', 'po.chief_id')
+    //         .join('um_people as p', 'upo.people_id', 'p.people_id')
+    //         .join('um_titles as t', 't.title_id', 'p.title_id')
+    //         .join('um_positions as upos', 'upos.position_id', 'p.position_id')
+    //         .join('um_purchasing_officer_type as upot', 'upot.type_id', 'upo.type_id')
+    //         .where('po.purchase_order_id', purchaOrderId)
+    //         .where('upo.isactive', '1')
+    // }
+
+    getStaff(knex: Knex, peopleId) {
+        //BUYYER=เจ้าหน้าที่, CHIEF = หัวหน้าเจ้าหน้าที่
+        return knex.select('t.title_name as title', 'p.fname', 'p.lname', knex.raw(`concat(t.title_name,p.fname,' ',p.lname) as fullname`), 'upos.position_name', 'upot.type_name as position')
+            .from('um_purchasing_officer as upo')
+            .join('um_people as p', 'upo.people_id', 'p.people_id')
+            .join('um_titles as t', 't.title_id', 'p.title_id')
+            .join('um_positions as upos', 'upos.position_id', 'p.position_id')
+            .join('um_purchasing_officer_type as upot', 'upot.type_id', 'upo.type_id')
+            .where('p.people_id', peopleId)
+            .where('upo.isactive', '1')
+    }
     purchasing2Chief(knex: Knex, purchaOrderId) {
         return knex.select('po.chief_id', 'po.buyer_id', knex.raw('concat(tiy.title_name,pey.fname," ",pey.lname) as buyer_fullname'), 'psy.position_name as buyer_position', knex.raw('concat(tic.title_name,pec.fname," ",pec.lname) as chief_fullname'), 'psc.position_name as chief_position')
             .from('pc_purchasing_order as po')
@@ -1152,7 +1176,6 @@ export class PurchasingOrderReportModel {
 
     checkCancelPo(knex: Knex, purchaOrderId) {
         return knex('pc_purchasing_order')
-            .select('purchase_order_id')
             .whereIn('purchase_order_id', purchaOrderId)
             .andWhere('is_cancel', 'N')
     }

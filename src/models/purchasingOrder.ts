@@ -58,7 +58,7 @@ export class PurchasingOrderModel {
       .where('p.people_id', id);
   }
 
-  officers(knex: Knex, limit: number = 100, offset: number = 0) {
+  officers(knex: Knex) {
     return knex('um_purchasing_officer')
       .select(knex.raw('concat(um_titles.title_name, um_people.fname," ",um_people.lname) as  fullname'), 'um_positions.position_name', 'um_purchasing_officer.*', 'um_purchasing_officer_type.type_name')
       .leftJoin('um_people', 'um_people.people_id', 'um_purchasing_officer.people_id')
@@ -68,7 +68,7 @@ export class PurchasingOrderModel {
       .orderBy('um_purchasing_officer.type_id', 'ASC');
   }
 
-  officersByTypeId(knex: Knex, id: number, limit: number = 100, offset: number = 0) {
+  officersByTypeId(knex: Knex, id: number) {
     return knex('um_purchasing_officer')
       .select(knex.raw('concat(um_titles.title_name, um_people.fname," ",um_people.lname) as  fullname'), 'um_positions.position_name', 'um_purchasing_officer.*', 'um_purchasing_officer_type.type_name')
       .innerJoin('um_people', 'um_people.people_id', 'um_purchasing_officer.people_id')

@@ -83,8 +83,8 @@ html
     br
     br
     div(style="width:100%;float:left;")
-      div(style="width:50%;float:left;text-align:center") ลงชื่อ.................................................เจ้าหน้าที่
-        if(arrayChief[i][0].buyer_id===null)
+      div(style="width:50%;float:left;text-align:center") ลงชื่อ.................................................#{arrayBuyyer[i].position}
+        if(arrayBuyyer[i].buyer_id===null)
           |
           br
           |
@@ -92,11 +92,11 @@ html
           | 
         else
           br
-          | ( #{arrayChief[i][0].buyer_fullname} )
+          | ( #{arrayBuyyer[i].fullname} )
           br 
-          | #{arrayChief[i][0].buyer_position}
-      div(style="width:50%;float:left;text-align:center") ลงชื่อ.................................................หัวหน้าเจ้าหน้าที่
-        if(arrayChief[i][0].chief_id===null)
+          | #{arrayBuyyer[i].position_name}
+      div(style="width:50%;float:left;text-align:center") ลงชื่อ.................................................#{arrayChief[i].position}
+        if(arrayChief[i].chief_id===null)
           |
           br
           |
@@ -104,9 +104,9 @@ html
           | 
         else
           br 
-          | ( #{arrayChief[i][0].chief_fullname} )
+          | ( #{arrayChief[i].fullname} )
           br
-          | #{arrayChief[i][0].chief_position}  
+          | #{arrayChief[i].position_name}  
     div(style="width:100%;float:left;text-align:center")
       br
       br

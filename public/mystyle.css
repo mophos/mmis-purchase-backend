@@ -52,8 +52,7 @@ table {
 table tr,
 td,
 th {
-
-  border: 1px solid black;
+  /* border: 1px solid black; */
   border: 0px solid black;
   padding-left: 5px;
   padding-right: 5px;
@@ -89,6 +88,10 @@ table th {
 
 .top {
   vertical-align: top;
+}
+
+.border {
+  border: 1px solid black;
 }
 
 .btn {

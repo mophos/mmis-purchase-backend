@@ -82,31 +82,58 @@ html
     br
     br
     br
-    div(style="width:100%;float:left;")
-      div(style="width:50%;float:left;text-align:center") ลงชื่อ.................................................#{arrayBuyyer[i].position}
-        if(arrayBuyyer[i].buyer_id===null)
-          |
-          br
-          |
-          br
-          | 
-        else
-          br
-          | ( #{arrayBuyyer[i].fullname} )
-          br 
-          | #{arrayBuyyer[i].position_name}
-      div(style="width:50%;float:left;text-align:center") ลงชื่อ.................................................#{arrayChief[i].position}
-        if(arrayChief[i].chief_id===null)
-          |
-          br
-          |
-          br
-          | 
-        else
-          br 
-          | ( #{arrayChief[i].fullname} )
-          br
-          | #{arrayChief[i].position_name}  
+    table.table2
+      tr
+        td(style="padding:0px")
+          table.table
+            tr
+              td.right ลงชื่อ
+              td.center .................................................................................
+            if(arrayBuyyer[i].buyer_id===null)
+              tr
+                td
+                td 
+              tr
+                td
+                td
+              tr
+                td
+                td
+            else 
+              tr
+                td
+                td.center ( #{arrayBuyyer[i].fullname} )
+              tr
+                td
+                td.center #{arrayBuyyer[i].position_name}
+              tr
+                td
+                td.center #{arrayBuyyer[i].position}
+        td(style="padding:0px")
+          table.table
+            tr
+              td(style="width:10%").right ลงชื่อ
+              td.center .................................................................................
+            if(arrayChief[i].chief_id===null)
+              tr
+                td
+                td 
+              tr
+                td
+                td
+              tr
+                td
+                td
+            else 
+              tr
+                td
+                td.center ( #{arrayChief[i].fullname} )
+              tr
+                td
+                td.center #{arrayChief[i].position_name}
+              tr
+                td
+                td.center #{arrayChief[i].position}
     div(style="width:100%;float:left;text-align:center")
       br
       br

@@ -2213,7 +2213,8 @@ router.get('/report/allpo/egp/singburi', wrap(async (req, res, next) => {
 
   let hosdetail = await model.hospital(db);
   let hospitalName = hosdetail[0].hospname;
-  let poraor = hosdetail[0].managerName;
+  let managerName = hosdetail[0].managerName;
+  let managerPosition = hosdetail[0].managerPosition;
   let hosaddress = hosdetail[0].address;
   let hostel = hosdetail[0].telephone;
   let province = hosdetail[0].province;
@@ -2308,7 +2309,8 @@ router.get('/report/allpo/egp/singburi', wrap(async (req, res, next) => {
     arCommittee: arCommittee,
     province: province,
     chief: chief,
-    poraor: poraor,
+    managerName: managerName,
+    managerPosition: managerPosition,
     arrayChief: arrayChief,
     arrayBahtText: arrayBahtText,
     arrayTotal: arrayTotal,

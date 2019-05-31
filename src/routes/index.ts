@@ -2212,6 +2212,7 @@ router.get('/report/allpo/egp/singburi', wrap(async (req, res, next) => {
   let hospitalName = hosdetail[0].hospname;
   let managerName = hosdetail[0].managerName;
   let managerPosition = hosdetail[0].managerPosition;
+  let managerPositionType = hosdetail[0].managerPositionType;
   let hosaddress = hosdetail[0].address;
   let hostel = hosdetail[0].telephone;
   let province = hosdetail[0].province;
@@ -2302,6 +2303,7 @@ router.get('/report/allpo/egp/singburi', wrap(async (req, res, next) => {
     chief: chief,
     managerName: managerName,
     managerPosition: managerPosition,
+    managerPositionType: managerPositionType,
     arrayChief: arrayChief,
     arrayBuyyer: arrayBuyyer,
     arrayBahtText: arrayBahtText,

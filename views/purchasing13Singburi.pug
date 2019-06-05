@@ -166,8 +166,9 @@ html
       br
       | ( #{managerName} )
       br
-      | #{managerPosition}
-      br
+      if(managerPosition !== '')
+        | #{managerPosition}
+        br
       | #{managerPositionType}
       br
       if(purchasing[i][0].purchase_method_id==2) 

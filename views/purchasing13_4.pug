@@ -62,54 +62,59 @@ html
     br
     br
     br
-    div(style='width: 100%; text-align:center;')
-      div(style='float:left; width: 50%; text-align:center;')
-        | ลงชื่อ.................................................เจ้าหน้าที่
-        if(arrayChief[i][0].buyer_id===null)
-          |
-          br
-          |
-          br
-          | 
-        else
-          br
-          | ( #{arrayChief[i][0].buyer_fullname} )
-          br 
-          | #{arrayChief[i][0].buyer_position}
-      div(style='float:left; width: 50%; text-align:center;')
-        | ลงชื่อ.................................................หัวหน้ากลุ่มงาน
-        if(head[0].fname===null)
-          |
-          br
-          |
-          br
-          | 
-        else
-          br
-          | ( #{head[0].fname} #{head[0].lname} )
-          br 
-          | #{head[0].position_name}
+    div(style='float:left; width: 50%; text-align: center;')
+     .enter
+    div(style='float:left; width: 50%; text-align: center;')
+      | ลงชื่อ.................................................เจ้าหน้าที่
+      if(arrayChief[i][0].buyer_id===null)
+        |
         br
+        |
         br
+        | 
+      else
         br
+        | ( #{arrayChief[i][0].buyer_fullname} )
+        br 
+        | #{arrayChief[i][0].buyer_position}
         br
+      br
+      br
+      br
+      br
+      | ลงชื่อ.................................................หัวหน้ากลุ่มงาน
+      if(head[0].fname===null)
+        |
         br
-        | อนุมัติ
+        |
         br
+        | 
+      else
         br
+        | ( #{head[0].fname} #{head[0].lname} )
+        br 
+        | #{head[0].position_name}
+      br
+      br
+      br
+      br
+      br
+      | อนุมัติ
+      br
+      br
+      br
+      br
+      br
+      br
+      | ลงชื่อ.................................................หัวหน้าเจ้าหน้าที่
+      if(arrayChief[i][0].chief_id===null)
+        |
         br
+        |
         br
+        | 
+      else
+        br 
+        | ( #{arrayChief[i][0].chief_fullname} )
         br
-        br
-        | ลงชื่อ.................................................หัวหน้าเจ้าหน้าที่
-        if(arrayChief[i][0].chief_id===null)
-          |
-          br
-          |
-          br
-          | 
-        else
-          br 
-          | ( #{arrayChief[i][0].chief_fullname} )
-          br
-          | #{arrayChief[i][0].chief_position}
+        | #{arrayChief[i][0].chief_position}

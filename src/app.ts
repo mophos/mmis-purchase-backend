@@ -49,6 +49,10 @@ import userRoute from './routes/users';
 import stdRoute from './routes/standard';
 import officerRoute from './routes/officer'
 import ediRoute from './routes/edi';
+import egpRoute from './routes/reports/egp'
+import poRoute from './routes/reports/po'
+import pafRoute from './routes/reports/paf'
+import gpoRoute from './routes/reports//gpo'
 const app: express.Express = express();
 
 //view engine setup
@@ -156,7 +160,13 @@ app.use('/std', stdRoute);
 app.use('/officer', checkAuth, officerRoute);
 app.use('/edi', checkAuth, ediRoute);
 
-// app.use('/', checkAuth, indexRoute);
+
+//report
+app.use('/report/egp', checkAuth, egpRoute);
+app.use('/report/po', checkAuth, poRoute);
+app.use('/report/paf', checkAuth, pafRoute);
+app.use('/report/gpo', checkAuth, gpoRoute);
+
 app.use('/', checkAuth, indexRoute);
 
 //catch 404 and forward to error handler

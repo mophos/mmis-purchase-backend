@@ -165,26 +165,6 @@ router.put('/updatePurchasingOfficerType', (req, res, next) => {
       res.send({ ok: false, error: error });
     });
 });
-router.post('/deletePurchasingOfficer', (req, res, next) => {
-  let ref = req.body.ref;
-  let db = req.db;
-  let tokenKey: string = req.body.tokenKey;
-  if (tokenKey === "") {
-    res.send({ ok: false, err: 'token error' });
-  }
-  if (!ref || ref < 0) {
-    res.send({ ok: false, err: 'reference not found' });
-  }
-
-  officerModel.deletePurchasingOfficer(db, ref)
-    .then((results: any) => {
-      res.send({ ok: true, ref: results[0] });
-    })
-    .catch(error => {
-      console.log({ ok: false, error: error });
-      res.send({ ok: false, error: error });
-    });
-});
 
 router.delete('/:officerId', (req, res, next) => {
   let db = req.db;
@@ -197,5 +177,47 @@ router.delete('/:officerId', (req, res, next) => {
       console.log({ ok: false, error: error });
       res.send({ ok: false, error: error });
     });
+});
+
+router.put('/type_show/:officerId', (req, res, next) => {
+  let db = req.db;
+  let officerId = req.params.officerId;
+  let data = req.body.data;
+  officerModel.editTypeShow(db, officerId, data)
+    .then((results: any) => {
+      res.send({ ok: true });
+    })
+    .catch(error => {
+      console.log({ ok: false, error: error });
+      res.send({ ok: false, error: error });
+    });
+});
+
+router.put('/edit/type_show/:officerId', (req, res, next) => {
+  let db = req.db;
+  let officerId = req.params.officerId;
+  let data = req.body.data;
+  officerModel.editTypeShow(db, officerId, data)
+    .then((results: any) => {
+      res.send({ ok: true });
+    })
+    .catch(error => {
+      console.log({ ok: false, error: error });
+      res.send({ ok: false, error: error });
+    });
+});
+
+router.put('/change/type_show', async (req, res, next) => {
+  let db = req.db;
+  let data = req.body.data;
+  try {
+    await officerModel.unActive(db, data.people_id, data.type_code);
+    await officerModel.savePurchasingOfficer(db, data);
+    res.send({ ok: true });
+
+  } catch (error) {
+    console.log({ ok: false, error: error });
+    res.send({ ok: false, error: error });
+  }
 });
 export default router;

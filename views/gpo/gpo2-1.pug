@@ -1,0 +1,191 @@
+style(type='text/css').
+  body{
+  font-family: 'THSarabunIT';
+  }
+style(type='text/css' media='print').
+ @page{
+    margin-top: 1.5cm;
+    margin-left: 1.3cm;
+    margin-right: 1.3cm;
+  }
+doctype html
+html
+  head
+    meta(charset="utf-8")
+    title report
+  body
+    button.btn.btn-sm.btn-success.btnprint(onclick='window.print()') Print
+    center
+      table(style='width:100%;')
+        tr
+          td(width='180') ที่ #{i.poNumber}
+          td.center(colspan='3')
+            img(src=APIURL+'krut.png', height='130px')
+          td(width='200') 
+            | ศาลากลางจังหวัด#{hospitalDetail.province}
+            br
+            //- | #{hospitalDetail.address}
+        tr
+          td(colspan='4')
+          td 
+        tr
+          td(colspan='3')
+          td(colspan='2') #{hospitalDetail.month}
+    br
+    .enter เรื่อง สั่งซื้อยา
+    .enter เรียน ผู้อำนวยการองค์การเภสัชกรรม
+    .enter สิ่งที่ส่งมาด้วย 1. ใบสั่งซื้อยา พร้อมเงื่อนไข&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; จำนวน 1 ฉบับ
+    .fontspace
+    .enter &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2. สำเนาใบอนุมัติสั่งซื้อยา&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; จำนวน 1 ฉบับ
+    .fontspace
+    .enter(style="line-height: 1.2em;") &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ด้วยจังหวัด#{hospitalDetail.province} มีความประสงค์จะสั่งซื้อยา จากองค์การเภสัชกรรม เพื่อใช้ในราชการ #{hospitalDetail.hospname} จำนวน #{i.arrayItems.length} รายการ เป็นเงิน #{i.total_price} บาท (#{i.bahtText}) สำเนาใบอนุมัติสั่งซื้อยาและใบสั่งซื้อยาพร้อมเงื่อนไขในการสั่งซื้อที่แนบมาพร้อมนี้
+    .fontspace
+    .enter &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;จึงเรียนมาเพื่อโปรดจัดส่งยา ให้แก่#{hospitalDetail.hospname} ตามกำหนดเวลาและสถานที่ ที่ระบุในใบสั่งซื้อด้วย จักเป็นพระคุณ
+    div(style='margin-left: 40%; width: 40%; text-align:center;')
+      | ขอแสดงความนับถือ
+      br
+      br
+      br
+      br
+      | (#{i.manager.fullname})
+      br
+      | #{i.manager.position}
+      br
+      if(i.purchase_method_id==2) 
+        | ปฏิบัติราชการแทนผู้ตรวจกระทรวงเขต 4
+      if(i.purchase_method_id!=2) 
+        | #{hospitalDetail.chief}#{hospitalDetail.province} 
+    .enter 
+    p(style='text-decoration:underline; font-size: 14pt;') เงื่อนไขในการสั่งซื้อ
+    div(style='font-size: 14pt;')
+      .fontspace
+      | 1.ให้ส่งมอบ ณ #{hospitalDetail.hospname} #{hospitalDetail.address}
+      br
+      .fontspace
+      | 2.การส่งมอบ ให้ส่งมอบดังนี้คือ
+      br
+      .fontspace
+      .fontspace
+      | 2.1 กรณีใบสั่งซื้อที่มีรายการสั่งซื้อไม่เกิน 25 รายการ ให้ส่งมอบภายใน 65 วัน นับจากวันที่องค์การเภสัชกรรมได้รับใบสั่งซื้อ
+      br
+      .fontspace
+      .fontspace
+      | 2.2 กรณีใบสั่งซื้อเกิน 25 รายการ ให้ส่งมอบภายในกำหนด 90 วัน นับจากวันที่องค์การเภสัชกรรมได้รับใบสั่งซื้อ
+      br
+      .fontspace
+      .fontspace
+      | ถ้าหากส่งมอบเกินกำหนดเวลาดังกล่าวในข้อ 2.1 หรือ 2.2 แล้วแต่กรณีขอสงวนการปรับเป็นรายวันในอัตราร้อยละ 0.1 ของราคาสิ่งของที่ยังไม่ได้รับมอบ
+      br
+      .fontspace
+      | 3.รายการใดที่ไม่สามารถส่งมอบได้ภายในกำหนด องค์การเภสัชกรรมต้องแจ้งยกเลิกรายการนั้นให้ทราบภายใน 30 วันหลังจากที่ได้รับใบสั่งซื้อนี้ และจะต้องไม่นำวงเงินในรายการดังกล่าวไปเพิ่มในรายการอื่นเว้นแต่ผู้สั่งซื้อได้ระบุไว้ในใบสั่งซื้อ
+      br
+      .fontspace
+      | 4.การชำระเงินตามใบสั่งซื้อนี้จะชำระเป็นรายงวด หรือรายการตามที่คณะกรรมการตรวจรับพัสดุของทางรายการได้รับมอบไว้
+    br
+    br
+    div(style='font-size:14pt; width:30%;')
+      | สำนักงานสาธารณสุขจังหวัด#{hospitalDetail.province}
+      br
+      | #{hospitalDetail.hospname}
+      br
+      | โทร. #{hospitalDetail.telephone}
+      br
+      | โทรสาร #{hospitalDetail.fax}
+    hr.hideprint
+    div(style='page-break-after: always;')
+    img(src=APIURL+'krut.png', height='60px')
+    .headkut.bold(style="font-size: 24pt;") บันทึกข้อความ
+    .enter  
+    table
+      tr
+        td.bold(style='font-size: 20pt; width:90px;') ส่วนราชการ
+        td(style='border-bottom: 1px dotted black;').left กลุ่มงานเภสัชกรรม #{hospitalDetail.hospname}
+    table
+      tr
+        td.bold(style='font-size: 20pt; width:5px;') ที่
+        td(style='border-bottom: 1px dotted black;').left &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp; #{i.poNumber} 
+        td.bold(style='font-size: 20pt; width:40px;') วันที่
+        td(style='border-bottom: 1px dotted black;').left &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#{hospitalDetail.month} 
+    table
+      tr
+        td.bold(style='font-size: 20pt; width:30px;') เรื่อง
+        td(style='border-bottom: 1px dotted black;').left &nbsp;ขออนุมัติซื้อยาด้วย#{i.budget_type_name} ประจำปีงบประมาณ #{i.budget_year}
+    br
+    .enter เรียน ผู้ว่าราชการจังหวัด#{hospitalDetail.province}
+    .enter
+    .fontspace
+    p(style="line-height: 1.2em;") ด้วย#{hospitalDetail.hospname} มีความประสงค์จะสั่งซื้อยา จากองค์การเภสัชกรรม ตามแบบ บส.09/1 ที่แนบมาพร้อมนี้ เพื่อใช้ในการรักษาพยาบาล จำนวน #{i.arrayItems.length} รายการ เป็นเงิน #{i.total_price} บาท (#{i.bahtText}) โดยใช้#{i.budget_type_name} ประจำปีงบประมาณ #{i.budget_year}
+    .enter
+    .fontspace(style="line-height: 1.2em;")
+    | จึงเรียนมาเพื่อขออนุมัติซื้อยาดังกล่าว
+    if(i.type == 8 || i.type == 9 || i.type == 10)
+      | ตามพระราชบัญญัติการจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ.2560 
+    if(i.type == 8) 
+      | &nbsp;มาตรา 56 วรรคหนึ่ง (2)(ข) 
+    if(i.type == 9) 
+      | &nbsp;มาตรา 56 วรรคหนึ่ง (2)(ค) 
+    if(i.type == 10) 
+      | &nbsp;มาตรา 56 วรรคหนึ่ง (2)(ซ)
+    | &nbsp;ระเบียบกระทรวงการคลังและกฎกระทรวงว่าด้วยการจัดซื้อจัดจ้างภาครัฐจากองค์การเภสัชกรรม อนึ่งในการจัดซื้อในครั้งนี้ใคร่ขอเสนอแต่งตั้งให้ผู้มีรายนามต่อไปนี้ เป็นกรรมการตรวจรับของ คือ
+    br
+    br
+    -var b=0
+    for c in i.committee
+      .fontspace
+      | #{b+1}. #{c.fullname}  #{c.position_name}  #{c.position}
+      br
+      -b++
+    br
+    .fontspace
+    | จึงเรียนมาเพื่อโปรดพิจารณาขออนุมัติ และลงนามในใบสั่งซื้อที่แนบด้วยจักเป็นพระคุณ
+    br
+    br
+    br
+    br
+    div(style='margin-left: 40%; width: 60%; text-align:center;')
+      | ( #{i.buyer.fullname} )
+      br
+      | #{i.buyer.position_name}
+      br
+      | #{i.buyer.position} 
+    br
+    br
+    br
+    div(style='margin-left: 40%; width: 60%; text-align:center;')
+      if(i.chief == null)
+        |
+        br
+        |
+        br
+        |
+        br
+        |
+        br
+        | 
+        br
+        | 
+        br
+        | 
+        br
+        | 
+      else 
+        | ( #{i.chief.fullname} )
+        br
+        | #{i.chief.position_name}
+        br
+        | #{i.chief.position} 
+    br
+    .bold(style='margin-left: 68.5%;') อนุมัติ
+    br
+    br
+    br
+    div(style='margin-left: 41%; width: 60%; text-align:center;')
+      br
+      | (#{i.manager.fullname} )
+      br
+      | #{i.manager.position}
+      br
+      if(i.purchase_method_id==2) 
+        | ปฏิบัติราชการแทนผู้ตรวจกระทรวงเขต 4
+      if(i.purchase_method_id!=2) 
+        | #{hospitalDetail.chief}#{hospitalDetail.province}

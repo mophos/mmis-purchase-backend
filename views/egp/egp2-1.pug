@@ -1,0 +1,155 @@
+doctype html
+html
+  head
+    meta(charset="utf-8")
+    title report
+  body(style="font-size: 16pt;")
+    button.btn.btn-sm.btn-success.btnprint(onclick='window.print()') Print
+    img(src=APIURL+'krut.png', height='60px')
+    .headkut.h1 บันทึกข้อความ
+    p.h2
+      | ส่วนราชการ
+      label.h3(style='margin-top: 5px; font-size: 16pt;')  &nbsp;#{hospitalDetail.hospitalName}
+    p.h2(style='width:50%;float: left;')
+      | ที่
+      label.h3(style='margin-top: 5px;')
+        if(i.purchase_order_book_number)
+          | &nbsp;#{i.purchase_order_book_number}
+        else
+          | &nbsp;#{i.purchase_order_number}
+    b.h2(style='width:50%;float: left;')
+      | วันที่ 
+      label.h3(style="font-size: 16pt;") &nbsp;#{i.order_date}
+    b.h2(style='border: 1px solid white; width:50%; float: left;') เรื่อง
+      |  รายงานขอซื้อยา/เวชภัณฑ์มิใช่ยา
+    br
+    br
+    hr
+    .enter เรียน ผู้ว่าราชการจังหวัด#{hospitalDetail.province}
+    .fontspace
+    | ด้วย#{hospitalDetail.hospitalName}มีความประสงค์จะ ซื้อยา/เวชภัณฑ์มิใช่ยา จำนวน #{i.egpItems.length} รายการ 
+    br
+    - var y=0
+          - for(var b of i.egpItems)
+            - y++
+            .fontspace
+            .fontspace
+            label(style="font-size: 15pt;") &nbsp;- #{b.generic_name}
+            br 
+    br
+    | โดย #{i.bid_process_name} ซึ่งมีรายละเอียดดังต่อไปนี้
+    br
+    .fontspace
+    | 1.  เหตุผลและความจำเป็นที่ต้องซื้อ
+    br
+    .fontspace 
+    | &nbsp;&nbsp; เพื่อให้บริการผู้ป่วยที่มารับบริการ และให้เพียงพอต่อการให้บริการผู้ป่วย
+    br
+    .fontspace 
+    | 2.	ราคากลางและรายละเอียดของรายการตามเอกสาร รายงานผลการพิจารณาและรออนุมัติสั่งซื้อ
+    br
+    .fontspace 
+    | 3.	วงเงินที่จะซื้อ
+    br
+    .fontspace 
+    | &nbsp;&nbsp; เงินงบประมาณ จำนวน #{i.total_price} บาท (#{i.bahtText})
+    br
+    .fontspace 
+    | 4.	กำหนดเวลาที่ต้องการใช้พัสดุนั้น หรือให้งานแล้วเสร็จ
+    br
+    .fontspace 
+    | &nbsp;&nbsp; กำหนดเวลาส่งมอบงานหรือให้งานแล้วเสร็จภายใน #{i.delivery} วัน 
+    br
+    .fontspace
+    | 5.	วิธีที่จะซื้อ #{i.bid_process_name}
+    br
+    .fontspace
+    | 6.	หลักเกณฑ์การพิจารณาคัดเลือกข้อเสนอ
+    br
+    .fontspace
+    | &nbsp;&nbsp; การพิจารณาคัดเลือกข้อเสนอโดยใช้เกณฑ์ราคา
+    br
+    .fontspace 
+    | 7.	ข้อเสนออื่นๆ
+    br
+    br
+    | จึงเรียนมาเพื่อโปรดพิจารณา หากเห็นชอบขอได้โปรดอนุมัติให้ดำเนินการตามรายละเอียดในรายงานขอซื้อดังกล่าวข้างต้น
+    br
+    .fontspace 
+    br
+    br
+    br
+    br
+    table.table2
+      tr
+        td(style="padding:0px")
+          table.table
+            tr
+              td.right ลงชื่อ
+              td.center .................................................................................
+            if(i.buyer===null)
+              tr
+                td
+                td 
+              tr
+                td
+                td
+              tr
+                td
+                td
+            else 
+              tr
+                td
+                td.center ( #{i.buyer.fullname} )
+              tr
+                td
+                td.center #{i.buyer.position_name}
+              tr
+                td
+                td.center #{i.buyer.position}
+        td(style="padding:0px")
+          table.table
+            tr
+              td(style="width:10%").right ลงชื่อ
+              td.center .................................................................................
+            if(i.chief === null)
+              tr
+                td
+                td 
+              tr
+                td
+                td
+              tr
+                td
+                td
+            else 
+              tr
+                td
+                td.center ( #{i.chief.fullname} )
+              tr
+                td
+                td.center #{i.chief.position_name}
+              tr
+                td
+                td.center #{i.chief.position}
+    div(style="width:100%;float:left;text-align:center")
+      br
+      br
+      br
+      label(style="font-weight: bold;") เห็นชอบ
+      br
+      br
+      br
+      | ลงชื่อ............................................................
+      br
+      | ( #{i.manager.fullname} )
+      br
+      | #{i.manager.position}
+      br
+      if(i.manager.position_name != null) 
+        #{i.manager.position_name}
+        br
+      if(i.purchase_method_id==2) 
+        | ปฏิบัติราชการแทนผู้ตรวจกระทรวงเขต 4
+      if(i.purchase_method_id!=2) 
+        | #{hospitalDetail.chief}#{hospitalDetail.province}

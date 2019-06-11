@@ -1,0 +1,144 @@
+doctype html
+html
+  head
+    meta(charset="utf-8")
+    title report
+  body
+    button.btn.btn-sm.btn-success.btnprint(onclick='window.print()') Print
+    img(src=APIURL+'krut.png', height='60px')
+    .headkut.bold(style="font-size: 24pt;") บันทึกข้อความ
+    p.h2
+      | ส่วนราชการ
+      label.h3(style='margin-top: 5px; font-size: 16pt;')  &nbsp;#{hospitalDetail.hospname}
+    p.h2(style='width:50%;float: left;')
+      | ที่
+      label.h3(style='margin-top: 5px;')  #{i.poNumber}
+    b.h2(style='width:50%;float: left;')
+      | วันที่ 
+      label.h3(style="font-size: 16pt;") &nbsp;&nbsp;&nbsp;&nbsp;#{hospitalDetail.month}
+    b.h2(style='border: 1px solid white; width:75%; float: left;') เรื่อง
+      |  รายงานผลการพิจารณาและขออนุมัติสั่งซื้อยา/เวชภัณฑ์มิใช่ยา
+    br
+    br
+    hr
+    .enter เรียน ผู้ว่าราชการจังหวัด#{hospitalDetail.province}
+    .fontspace
+    | ขอรายงานผลการพิจารณาซื้อยาจำนวน #{i.arrayItems.length} รายการ โดย#{i.bid_process_name} ดังนี้
+    br
+    table
+      thead
+        tr 
+          td(rowspan='2' style='font-size: 13pt; border: 1px solid black; vertical-align: middle; width:4%;').center ลำดับ
+          td(rowspan='2' style='font-size: 13pt; border: 1px solid black; vertical-align: middle;').center รหัส/รายการยา
+          td(rowspan='2' style='font-size: 13pt; border: 1px solid black; vertical-align: middle;').center คงเหลือ
+          td(colspan='3' style='font-size: 13pt; border: 1px solid black; vertical-align: middle;').center ความต้องการซื้อครั้งนี้
+          td(rowspan='2' style='font-size: 13pt; border: 1px solid black; vertical-align: middle;').center ราคากลาง
+          td(rowspan='2' style='font-size: 13pt; border: 1px solid black; vertical-align: middle;').center ราคาซื้อหลังสุด
+        tr
+          td(style='border: 1px solid black; font-size: 13pt;').center จำนวน
+          td(style='border: 1px solid black; font-size: 13pt;').center ราคา @
+          td(style='border: 1px solid black; font-size: 13pt;').center ราคารวม
+      tbody
+        - var y=0
+            for b in i.arrayItems
+              - y++
+                tr
+                  td.center(style='border: 1px solid black; font-size:12pt;') #{y}
+                  td(style='border: 1px solid black;font-family:THSarabunNew; font-size:12pt;') #{b.generic_code} : #{b.generic_name}
+                  td.center(style='border: 1px solid black; font-size:12pt;') #{b.balance_qty} x #{b.conversion} #{b.primary_unit}
+                  td.center(style='border: 1px solid black; font-size:12pt;') #{b.qty} x #{b.conversion} #{b.primary_unit}
+                  td.right(style='border: 1px solid black; font-size:12pt;') #{b.unit_price}
+                  td.right(style='border: 1px solid black; font-size:12pt;') #{b.total_price_item}
+                  td.right(style='border: 1px solid black; font-size:12pt;') #{b.standard_cost}
+                  td.right(style='border: 1px solid black; font-size:12pt;') #{b.sumcost}
+      if(i.vat > 0)
+        tr
+          td
+          td(colspan='7').right รวมเป็นเงิน #{i.sub_total} บาท
+        tr
+          td
+          td(colspan='7').right ภาษีมูลค่าเพิ่ม #{i.vat} บาท
+      tr
+        td
+        td(colspan='7').right รวม #{y} รายการ รวมเป็นเงินสุทธิ #{i.total_price} บาท
+      tr
+        td
+        td(colspan='7').right (ตัวอักษร) (#{i.bahtText})
+    .fontspace
+    | ระเบียบกระทรวงการคลังและกฎกระทรวงว่าด้วยการจัดซื้อจัดจ้างภาครัฐจาก#{i.labeler_name_po} อนึ่งในการจัดซื้อในครั้งนี้ใคร่ขอเสนอแต่งตั้งให้ผู้มีรายนามต่อไปนี้ เป็นกรรมการตรวจรับของ คือ
+    table(style="width: 80%; margin-left:7%;")
+      tbody
+      -var b=0
+        for c in i.committee
+          - b++
+            tr
+              td #{b}. #{c.fullname}  
+              td #{c.position_name}  
+              td #{c.position}
+    br
+    .fontspace
+    | จึงเรียนมาเพื่อโปรดพิจารณาอนุมัติ โดยใช้เงิน #{i.budget_type_name} ประเภท#{i.budget_type_sub_name} ปี #{i.budget_year} 
+    br
+    | ในการจัดซื้อในครั้งนี้ ซึ่งมีรายละเอียดการใช้เงินดังนี้
+    br
+    .fontspace
+    table(style="width: 70%;")
+      tbody
+        tr 
+          td ยอดเงินที่ได้รับจัดสรร
+          td #{i.budget_amount} บาท
+        tr 
+          td ยอดเงินคงเหลือหลังจากการซื้อครั้งก่อน
+          td #{i.allAmount} บาท
+        tr 
+          td ยอดการจัดซื้อครั้งนี้
+          td #{i.total_price} บาท
+        tr 
+          td ยอดเงินคงเหลือจากการซื้อครั้งนี้
+          td #{i.transection_balance} บาท
+    .fontspace 
+    | เกณฑ์การพิจารณาผลการยื่นข้อเสนอครั้งนี้ จะพิจารณาตัดสินโดยใช้หลักเกณฑ์ราคาประกอบคุณภาพ
+    br
+    .fontspace
+    | #{hospitalDetail.hospname}พิจารณาแล้ว เห็นสมควรจัดซื้อจากผู้เสนอราคาดังกล่าว
+    br
+    .fontspace
+    | จึงเรียนมาเพื่อโปรดพิจารณา หากเห็นชอบขอได้โปรดอนุมัติให้สั่งซื้อสั่งจ้างจากผู้เสนอราคาดังกล่าว
+    br
+    br
+    br
+    div(style="width:100%;float:left;")
+      div(style="width:50%;float:left;text-align:center") ลงชื่อ.................................................#{i.buyer.position}
+        br
+        | ( #{i.buyer.fullname} )
+        br
+        | #{i.buyer.position_name}
+      div(style="width:50%;float:left;text-align:center") ลงชื่อ.................................................#{i.chief.position}
+        if(i.chief===null)
+          |
+          br
+          |
+          br
+          | 
+        else
+          br 
+          | ( #{i.chief.fullname} )
+          br
+          | #{i.chief.position_name} 
+    div(style="width:100%;float:left;text-align:center")
+      br
+      br
+      br
+      br
+      br
+      br
+      | ลงชื่อ............................................................
+      br
+      | ( #{i.manager.fullname} )
+      br
+      | #{i.manager.position}
+      br
+      if(i.purchase_method_id==2) 
+        | ปฏิบัติราชการแทนผู้ตรวจกระทรวงเขต 4
+      if(i.purchase_method_id!=2) 
+        | #{hospitalDetail.chief}#{hospitalDetail.province}

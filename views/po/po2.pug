@@ -1,0 +1,98 @@
+include ../css.pug
+doctype html
+style(type='text/css' media='print').
+   @page{
+   margin-top: 0.5cm;
+   margin-left: 1cm;
+   margin-right: 1cm;
+   }
+html
+  head
+    meta(charset="utf-8")
+    title report
+  body
+    button.btn.btn-sm.btn-success(onclick='window.print()') Print
+    - for(var i of header)
+        |
+        br
+        div(style='float: left;') เลขที่&nbsp;
+        if(i.purchase_order_book_number)
+          | #{i.purchase_order_book_number}
+        else
+          | #{i.purchase_order_number}
+        br
+        .center
+          .bold #{hospitalDetail.hospname}
+          .bold ใบสั่งซื้อเวชภัณฑ์
+        .center
+          b วันที่ #{hospitalDetail.date}
+        br
+        | เรียน ผู้จัดการ/ผู้อำนวยการ #{i.labeler_name_po}
+        br
+        | &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#{hospitalDetail.hospname}ต้องการซื้อเวชภัณฑ์ รายการดังต่อไปนี้
+        br
+        br
+        center
+          table
+            thead
+              tr
+                th(width='5%') ลำดับ&nbsp;
+                th.center(width='50%') รายการ
+                th(width='15%') จำนวนสั่งซื้อ
+                th.right(width='15%') ราคาต่อหน่วย
+                th.right(width='15%') จำนวนเงิน
+            tbody
+              - var y=0
+              - for(var b of i.arrayItems)
+                  - y++
+                    tr
+                      td.center #{y}
+                      td.left 
+                        | #{b.generic_name} 
+                        br
+                        | ชื่อการค้า :  #{b.product_name}
+                      td.center #{b.qty} x #{b.conversion} #{b.unit_name}
+                      td.right #{b.unit_price}
+                      td.right #{b.total_price_item}
+              - for (var c = y; c < 15-y; ++c)
+                  tr
+                    td(colspan='5') &nbsp;
+            tfooter
+              tr
+                td.tbfooter(colspan='5' height='10px;')
+              tr
+                td.right.bold(colspan='5') รวมเป็นเงิน #{i.total_price} บาท
+              tr
+                td.right.bold(colspan='5')  (#{i.bahtText})
+        .left.font14(style='padding-top: 15pt;') 1. กำหนดส่งมอบสิ่งของตามรายการข้างต้น ณ #{hospitalDetail.hospname} ภายใน #{i.delivery} วันนับจากวันที่ผู้ขายได้รับใบสั่งซื้อนี้ พร้อมใบส่งสินค้า(และสำเนา) 2 ฉบับ ใบวิเคราะห์คุณภาพ 1 ฉบับ
+        .left.font14 2. ระยะเวลารับประกัน 12 เดือน
+        .left.font14 3. สงวนสิทธิ์ค่าปรับกรณีส่งมอบเกินกำหนดเวลา โดยคิดค่าปรับเป็นรายวันในอัตราร้อยละ 0.01 ของราคาสิ่งของที่ยังไม่ได้รับมอบ
+        .left.font14 4. ผู้ขายต้องส่งมอบยาที่มีอายุการใช้ 1 ปีขึ้นไป
+        br
+        br
+        table.table( style='float:left;width:50%;')
+          tr
+            td(height='200px')
+        table.table( style='float:right;width:50%;')
+          tr
+            td.center  ลงชื่อ......................................................ผู้สั่งซื้อ       
+          tr
+            td.center
+              if(i.chief == null)   
+                |
+                br
+                |
+                br
+              else   
+                | (#{i.chief.fullname})
+                br
+                | #{i.chief.position}  
+          tr
+            td(height='90px')
+          tr
+            td.center  ลงชื่อ......................................................ผู้ขาย
+          tr
+            td.center  (......................................................)
+          tr
+            td.center  วันที่รับใบสั่งซื้อ_____/_________/_____
+        .pagebreak

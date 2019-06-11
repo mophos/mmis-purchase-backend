@@ -56,12 +56,12 @@ export class OfficerModel {
   }
   getPurchasingOfficer(knex: Knex) {
     return knex('um_purchasing_officer as pu')
-      .select('pu.p_id', 'pu.people_id', 'pu.type_id', 'type.type_name', 'type.type_code', 'pu.isactive', knex.raw('concat(t.title_name,p.fname," ",p.lname) AS fullname'))
+      .select('pu.officer_id', 'pu.people_id', 'pu.type_code', 'pu.type_name as type_show', 'pot.type_name', 'pu.is_actived', knex.raw('concat(t.title_name,p.fname," ",p.lname) AS fullname'))
       .innerJoin('um_people as p', 'pu.people_id', 'p.people_id')
       .innerJoin('um_titles as t', 't.title_id', 'p.title_id')
-      .innerJoin('um_purchasing_officer_type as type', 'pu.type_id', 'type.type_id')
-      .where('pu.isactive', 1)
-      .where('pu.is_deleted','N');
+      .innerJoin('um_purchasing_officer_type as pot', 'pot.type_code', 'pu.type_code')
+      .where('pu.is_actived', 'Y')
+    // .where('pu.is_deleted', 'N');
   }
 
   getPurchasingOfficerType(knex: Knex) {
@@ -72,15 +72,32 @@ export class OfficerModel {
     return knex('um_people');
   }
 
-  deletePurchasingOfficer(knex: Knex, ref: number) {
-    return knex('um_purchasing_officer').delete()
-      .where('p_id', '=', ref)
-      .returning(['p_id']);
-  }
-  deleteOfficer(knex: Knex, id) {
+
+  deleteOfficer(knex: Knex, officerId) {
     return knex('um_purchasing_officer')
-      .update('is_deleted', 'Y')
-      .where('p_id', id);
+      .update('is_actived', 'N')
+      .where('officer_id', officerId);
   }
+
+  editTypeShow(knex: Knex, officerId, data) {
+    return knex('um_purchasing_officer')
+      .update(data)
+      .where('officer_id', officerId);
+  }
+
+  unActive(knex: Knex, peopleId, typeCode) {
+    return knex('um_purchasing_officer')
+      .update({ 'is_actived': 'N' })
+      .where('people_id', peopleId)
+      .where('type_code', typeCode);
+  }
+
+  changeTypeShow(knex: Knex, officerId, data) {
+    return knex('um_purchasing_officer')
+      .update(data)
+      .where('officer_id', officerId);
+  }
+
+
 
 }

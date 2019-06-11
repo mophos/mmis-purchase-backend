@@ -1,0 +1,106 @@
+doctype html
+html
+  head
+    meta(charset="utf-8")
+    title report
+  body
+    button.btn.btn-sm.btn-success.btnprint(onclick='window.print()') Print
+    img(src=APIURL+'krut.png', height='60px')
+    .headkut.bold(style="font-size: 24pt;") บันทึกข้อความ
+    p.h2
+      | ส่วนราชการ
+      label.h3(style='margin-top: 5px; font-size: 16pt;')  &nbsp;#{hospitalDetail.hospname} โทร. #{hospitalDetail.telephone}
+    p.h2(style='width:50%;float: left;')
+      | ที่
+      label.h3(style='margin-top: 5px;') #{i.poNumber}
+    b.h2(style='width:50%;float: left;')
+      | วันที่ 
+      label.h3(style="font-size: 16pt;") &nbsp;#{i.order_date}
+    b.h2(style='border: 1px solid white; width:75%; float: left;') เรื่อง
+      |  รายงานผลการพิจารณาและขออนุมัติสั่งซื้อยา/เวชภัณฑ์มิใช่ยา
+    br
+    br
+    hr
+    .enter เรียน หัวหน้าเจ้าหน้าที่
+    .fontspace
+    | ตามที่บันทึกรายงานขออนุมัติจัดซื้อที่ #{i.poNumber} 
+    | ลงวันที่ #{i.order_date} ได้รับอนุมัติให้ซื้อยาจำนวน #{y} รายการ ในวงเงิน #{i.total_price} บาทนั้น ขอรายงานผลการพิจารณาซื้อยาจำนวน #{y} รายการ โดย#{i.bid_process_name} ดังนี้
+    br
+    table
+      thead
+        tr 
+          td(style='font-size: 13pt; border: 1px solid black; vertical-align: middle;').center รายการพิจารณา
+          td(style='font-size: 13pt; border: 1px solid black; vertical-align: middle;').center รายชื่อผู้ยื่นข้อเสนอ
+          td(style='font-size: 13pt; border: 1px solid black; vertical-align: middle;').center ราคาที่เสนอ*
+          td(style='font-size: 13pt; border: 1px solid black; vertical-align: middle;').center ราคาที่ตกลงซื้อหรือจ้าง*
+      tbody
+      - var y=0
+          for b in i.egpItems
+            - y++
+              tr
+                td(style='border: 1px solid black;font-family:THSarabunNew; font-size:12pt;') #{b.generic_code} : #{b.generic_name}
+                td.left(style='border: 1px solid black; font-size:12pt;') #{b.labeler_name_po}
+                td.right(style='border: 1px solid black; font-size:12pt;') #{b.total_price_item}
+                td.right(style='border: 1px solid black; font-size:12pt;') #{b.total_price_item}
+      tr
+        td(colspan='3' style='border: 1px solid black;').right รวม
+        td(colspan='1' style='border: 1px solid black;').right #{i.total_price} บาท
+    .enter
+    | * ราคาที่เสนอ และราคาที่ตกลงซื้อหรือจ้าง เป็นราคารวมภาษีมูลค่าเพิ่มและภาษีอื่น ค่าขนส่ง ค่าจดทะเบียน และค่าใช้จ่ายอื่นๆ ทั้งปวง
+    .enter
+    | โดยเกณฑ์การพิจารณาผลการยื่นข้อเสนอครั้งนี้ จะพิจารณาตัดสินโดยใช้หลักเกณฑ์ราคา โรงพยาบาลบางระจันพิจารณาแล้ว เห็นสมควรจัดซื้อจากผู้เสนอราคาดังกล่าว จึงเรียนมาเพื่อโปรดพิจารณา หากเห็นชอบขอได้โปรดอนุมัติให้สั่งซื้อสั่งจ้างจากผู้เสนอราคาดังกล่าว
+    br
+    br
+    br
+    br
+    div(style='width: 100%; text-align:center;')
+      div(style='float:left; width: 50%; text-align:center;')
+        if(i.buyer === null)
+          | ลงชื่อ.................................................เจ้าหน้าที่
+          br
+          |
+          br
+          | 
+        else
+          | ลงชื่อ.................................................#{i.buyer.position}
+          br
+          | ( #{i.buyer.fullname} )
+          br 
+          | #{i.buyer.position_name}
+      div(style='float:left; width: 50%; text-align:center;')
+        if(i.supply === null)
+          | ลงชื่อ.................................................หัวหน้ากลุ่มงาน
+          br
+          |
+          br
+          | 
+        else
+          | ลงชื่อ.................................................#{i.supply.position}
+          br
+          | ( #{i.supply.fullname} )
+          br 
+          | #{i.supply.position_name}
+        br
+        br
+        br
+        br
+        br
+        | อนุมัติ
+        br
+        br
+        br
+        br
+        br
+        br
+        | ลงชื่อ.................................................#{i.chief.position}
+        if(i.chief === null)
+          |
+          br
+          |
+          br
+          | 
+        else
+          br 
+          | ( #{i.chief.fullname} )
+          br
+          | #{i.chief.position_name}

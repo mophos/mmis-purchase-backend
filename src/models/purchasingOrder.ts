@@ -54,27 +54,28 @@ export class PurchasingOrderModel {
 
   officerId(knex: Knex, id: any) {
     return knex('um_people as p')
-      .leftJoin('um_positions as pp', 'pp.position_id', 'p.position_id')
+      .joinRaw(`left join um_people_positions upp on p.people_id = upp.people_id and upp.is_actived='Y'`)
+      .leftJoin('um_positions as pp', 'pp.position_id', 'upp.position_id')
       .where('p.people_id', id);
   }
 
   officers(knex: Knex) {
     return knex('um_purchasing_officer')
-      .select(knex.raw('concat(um_titles.title_name, um_people.fname," ",um_people.lname) as  fullname'), 'um_positions.position_name', 'um_purchasing_officer.*', 'um_purchasing_officer_type.type_name')
+      .select(knex.raw('concat(um_titles.title_name, um_people.fname," ",um_people.lname) as  fullname'), 'um_positions.position_name', 'um_purchasing_officer.*')
       .leftJoin('um_people', 'um_people.people_id', 'um_purchasing_officer.people_id')
-      .leftJoin('um_positions', 'um_positions.position_id', 'um_people.position_id')
+      .joinRaw(`left join um_people_positions upp on um_people.people_id = upp.people_id and upp.is_actived='Y'`)
+      .leftJoin('um_positions', 'um_positions.position_id', 'upp.position_id')
       .leftJoin('um_titles', 'um_titles.title_id', 'um_people.title_id')
-      .leftJoin('um_purchasing_officer_type', 'um_purchasing_officer_type.type_id', 'um_purchasing_officer.type_id')
       .orderBy('um_purchasing_officer.type_id', 'ASC');
   }
 
   officersByTypeId(knex: Knex, id: number) {
     return knex('um_purchasing_officer')
-      .select(knex.raw('concat(um_titles.title_name, um_people.fname," ",um_people.lname) as  fullname'), 'um_positions.position_name', 'um_purchasing_officer.*', 'um_purchasing_officer_type.type_name')
+      .select(knex.raw('concat(um_titles.title_name, um_people.fname," ",um_people.lname) as  fullname'), 'um_positions.position_name', 'um_purchasing_officer.*')
       .innerJoin('um_people', 'um_people.people_id', 'um_purchasing_officer.people_id')
       .innerJoin('um_titles', 'um_titles.title_id', 'um_people.title_id')
-      .leftJoin('um_positions', 'um_positions.position_id', 'um_people.position_id')
-      .innerJoin('um_purchasing_officer_type', 'um_purchasing_officer_type.type_id', 'um_purchasing_officer.type_id')
+      .joinRaw(`left join um_people_positions upp on um_people.people_id = upp.people_id and upp.is_actived='Y'`)
+      .leftJoin('um_positions', 'um_positions.position_id', 'upp.position_id')
       .where('um_purchasing_officer.type_id', id)
       .orderBy('um_purchasing_officer.type_id', 'ASC');
   }

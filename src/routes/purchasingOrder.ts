@@ -483,6 +483,7 @@ router.post('/', async (req, res, next) => {
         purchase.chief_id = summary.chief_id;
         purchase.buyer_id = summary.buyer_id;
         purchase.supply_id = summary.supply_id;
+        purchase.manager_id = summary.manager_id;
         purchase.budget_year = summary.budget_year;
         purchase.comment = summary.comment ? summary.comment : null;
         // is_reorder= summary.is_reorder;

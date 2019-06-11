@@ -1,0 +1,182 @@
+include ../css.pug
+- for(var i of header)
+  style(type='text/css').
+    body{
+      font-family:'THSarabunIT';
+    }
+  style(type='text/css' media='print').
+    @page{
+    margin-top: 1cm;
+    margin-left: 1cm;
+    margin-right: 1cm;
+    }
+  doctype html
+  html
+    head
+      meta(charset="utf-8")
+      title report
+    body
+      button.btn.btn-sm.btn-success.btnprint(onclick='window.print()') Print
+      img(src=APIURL+'krut.png', height='60px')
+      .headkut.h1 บันทึกข้อความ
+      p.h2
+        | ส่วนราชการ
+        label.h3(style='margin-top: 5px;')  &nbsp;#{hospitalDetail.hospname}
+      p.h2(style='width:50%;float: left;')
+        | ที่
+        label.h3(style='margin-top: 5px;') #{i.poNumber}
+      b.h2(style='width:50%;float: left;')
+        | วันที่ 
+        label.h3 &nbsp;#{i.order_date}
+      br
+      b.h2 เรื่อง 
+      | ขออนุมัติซื้อเวชภัณฑ์
+      .enter เรียน ผู้ว่าราชการจังหวัด
+      .fontspace
+      | ด้วยเวชภัณฑ์ของ#{hospitalDetail.hospname} มีเหลือน้อยอาจจะไม่เพียงพอจะให้บริการรักษาพยาบาลได้ตลอดเวลา เห็นควรดำเนินการ#{i.bid_type_name} 
+      if(i.bid_type_id!=1)
+        | โดย#{i.bid_type_name} 
+      if(type == 8 || type == 9 || type == 10)
+        | ตามพระราชบัญญัติการจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ.2560 
+      if(type == 8) 
+        | มาตรา 56 วรรคหนึ่ง (2)(ข) 
+      if(type == 9) 
+        | มาตรา 56 วรรคหนึ่ง (2)(ค) 
+      if(type == 10) 
+        | มาตรา 56 วรรคหนึ่ง (2)(ซ) 
+      |  จาก #{i.labeler_name_po} 
+      br
+      .fontspace
+      | รายการดังต่อไปนี้
+      br
+      .fontspace
+      table(style='font-size: 13pt;')
+        thead
+          tr 
+            td(rowspan='2' style='font-size: 11pt; border: 1px solid black; vertical-align: middle; width:4%;').center ลำดับ
+            td(rowspan='2' style='font-size: 11pt; border: 1px solid black; vertical-align: middle;').center รหัส/รายการยา
+            td(rowspan='2' style='font-size: 11pt; border: 1px solid black; vertical-align: middle;').center คงเหลือ
+            td(colspan='3' style='font-size: 11pt; border: 1px solid black; vertical-align: middle;').center ความต้องการซื้อครั้งนี้
+            td(rowspan='2' style='font-size: 11pt; border: 1px solid black; vertical-align: middle;').center ราคากลาง
+            td(rowspan='2' style='font-size: 11pt; border: 1px solid black; vertical-align: middle;').center ราคาซื้อหลังสุด
+          tr
+            td(style='border: 1px solid black; font-size: 11pt;').center จำนวน
+            td(style='border: 1px solid black; font-size: 11pt;').center ราคา @
+            td(style='border: 1px solid black; font-size: 11pt;').center ราคารวม
+        tbody
+          - var y=0
+            - for(b of i.arrayItems)
+              - y++
+                tr
+                  td.center(style='border: 1px solid black;') #{y}
+                  td(style='border: 1px solid black;font-family:THSarabunNew; font-size:11pt;') #{b.generic_code} : #{b.generic_name}
+                  if( b.total_price < 1 )
+                    | &nbsp;(ของแถม)
+                  td.center(style='border: 1px solid black;') #{b.balance_qty} x #{b.conversion} #{b.primary_unit}
+                  td.center(style='border: 1px solid black;') #{b.qty} x #{b.conversion} #{b.primary_unit}
+                  td.right(style='border: 1px solid black;') #{b.unit_price}
+                  td.right(style='border: 1px solid black;') #{b.total_price_item}
+                  td.right(style='border: 1px solid black;') #{b.standard_cost}
+                  td.right(style='border: 1px solid black;') #{b.sumcost}
+        if(i.vat > 0)
+          tr
+            td
+            td(colspan='7').right รวมเป็นเงิน #{i.sub_total} บาท
+          tr
+            td
+            td(colspan='7').right ภาษีมูลค่าเพิ่ม #{i.vat} บาท
+        tr
+          td
+          td(colspan='7').right รวม #{y} รายการ รวมเป็นเงินสุทธิ #{i.total_price} บาท
+        tr
+          td
+          td(colspan='7').right (ตัวอักษร) (#{i.bahtText})
+      br
+      | กำหนดส่งมอบภายใน #{i.delivery} วัน และขออนุมัติแต่งตั้งคณะกรรมการตรวจรับพัสดุ ประกอบด้วย
+      br
+      -var b=0
+      for c in i.committee
+        .fontspace
+        | #{b+1}. #{c.fullname}  #{c.position_name}  #{c.position}
+        br
+        -b++
+      br
+      .fontspace
+      | จึงเรียนมาเพื่อโปรดพิจารณาอนุมัติ โดยใช้เงิน #{i.budget_type_name} ประเภท#{i.budget_type_sub_name} ปี #{i.budget_year} 
+      br
+      | ในการจัดซื้อในครั้งนี้ ซึ่งมีรายละเอียดการใช้เงินดังนี้
+      br
+      .fontspace
+      table(style="width: 60%;")
+        tbody
+          tr 
+            td ยอดเงินที่ได้รับจัดสรร
+            td #{i.budget_amount} บาท
+          tr 
+            td ยอดเงินคงเหลือหลังจากการซื้อครั้งก่อน
+            td #{i.allAmount} บาท
+          tr 
+            td ยอดการจัดซื้อครั้งนี้
+            td #{i.total_price} บาท
+          tr 
+            td ยอดเงินคงเหลือจากการซื้อครั้งนี้
+            td #{i.transection_balance} บาท
+      br
+      br 
+      br 
+      div(style="width:100%;float:left;")
+        div(style="width:50%;float:left;text-align:center")
+          if(i.buyer === null)
+            table.table
+              tr
+                td.center ลงชื่อ.........................................................เจ้าหน้าที่
+              tr
+                td 
+              tr
+                td 
+          else
+            table.table
+              tr
+                td.center ลงชื่อ.........................................................
+              tr
+                td.center ( #{i.buyer.fullname} )
+              tr
+                td.center #{i.buyer.position_name}
+              tr
+                td.center #{i.buyer.position}
+        div(style="width:50%;float:left;text-align:center")
+          if(i.chief ===null)
+            table.table
+              tr
+                td.center ลงชื่อ.........................................................หัวหน้าเจ้าหน้าที่
+              tr
+                td 
+              tr
+                td 
+          else
+            table.table
+              tr
+                td.center ลงชื่อ.........................................................
+              tr
+                td.center ( #{i.chief.fullname} )
+              tr
+                td.center #{i.chief.position_name}
+              tr
+                td.center #{i.chief.position}
+      br
+      div(style="width:100%;float:left;text-align:center") อนุมัติ
+        br
+        br
+        br
+        br
+        br
+        | ลงชื่อ............................................................
+        br
+        if(i.manager == null)
+          |(.....................................................)
+        else
+          | #{i.manager.fullname}
+        br
+        | #{i.manager.position}
+        br
+        | #{hospitalDetail.chief}

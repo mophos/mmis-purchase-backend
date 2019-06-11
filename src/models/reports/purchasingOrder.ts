@@ -15,7 +15,7 @@ export class PurchasingOrderReportModel {
         let result = await this.hospname(knex);
         result = JSON.parse(result[0].value);
         array.push(result);
-        return array;
+        return array[0];
     }
     hospname(knex: Knex) {
         return knex.select('value').from('sys_settings').where('action_name', 'SYS_HOSPITAL');
@@ -34,8 +34,10 @@ export class PurchasingOrderReportModel {
     GROUP BY bd.bg_year`
         return knex.raw(sql, [year])
     }
-    budgetType(knex: Knex, bgdetail_id: any) {
-        return knex.raw(`SELECT bgtype_id,bgtype_name,bgtypesub_name,amount,bg_year+543 as bg_year FROM view_budget_subtype WHERE bgdetail_id=?`, [bgdetail_id])
+    budgetType(knex: Knex, bgdetailId: any) {
+        return knex('view_budget_subtype')
+            .select('bgtype_id', 'bgtype_name', 'bgtypesub_name', 'amount', knex.raw('bg_year+543 as bg_year'))
+            .where('bgdetail_id', bgdetailId);
     }
     budgetTypeRemark(knex: Knex, bgdetail_id: any) {
         return knex.raw(`SELECT remark,bgtype_id,bgtype_name,bgtypesub_name,amount,bg_year+543 as bg_year FROM view_budget_subtype WHERE bgdetail_id=?`, [bgdetail_id])
@@ -70,6 +72,7 @@ export class PurchasingOrderReportModel {
         pcpo.order_date,
         pcpo.chief_id,
         pcpo.buyer_id,
+        pcpo.manager_id,
     CONCAT(t.title_name,p.fname,' ',p.lname) as buyer_fullname,
     CONCAT(t2.title_name,p2.fname,' ',p2.lname) as chief_fullname,
     po.position_name as buyer_position,
@@ -614,27 +617,30 @@ export class PurchasingOrderReportModel {
     }
 
 
-    purchasingCommittee(knex: Knex, purchaOrderId) {
-        let sql = `
-        SELECT
-        pc.committee_id,
-        pcp.people_id,
-        pcp.position_name,
-        ut.title_name,
-        p.fname,
-        p.lname,
-        up.position_name as position2
-        FROM
-            pc_purchasing_order po
-        JOIN pc_committee pc ON po.verify_committee_id = pc.committee_id
-        JOIN pc_committee_people pcp ON pc.committee_id = pcp.committee_id
-        JOIN um_people p ON p.people_id = pcp.people_id
-        JOIN um_titles ut ON ut.title_id = p.title_id
-        JOIN um_positions up ON up.position_id = p.people_id
-         WHERE
-        po.purchase_order_id = ? 
-        ORDER BY p.position_id asc`;
-        return knex.raw(sql, purchaOrderId);
+    purchasingCommittee(knex: Knex, committeeId) {
+        return knex('pc_committee as pc')
+            .select(
+                'pc.committee_id',
+                'pcp.people_id',
+                'ut.title_name',
+                'p.fname',
+                'p.lname',
+                'up.position_name',
+                'pcp.position_name AS position',
+                knex.raw(`concat(
+                    ut.title_name,
+                    p.fname,
+                    " ",
+                    p.lname
+                ) AS fullname`
+                ))
+            .join('pc_committee_people as pcp', 'pc.committee_id', 'pcp.committee_id')
+            .join('um_people as p', 'p.people_id', 'pcp.people_id')
+            .join('um_titles as ut', 'ut.title_id', 'p.title_id')
+            .joinRaw(`left join um_people_positions upp on p.people_id = upp.people_id and upp.is_actived='Y'`)
+            .leftJoin('um_positions as up', 'up.position_id', 'upp.position_id')
+            .orderBy('pcp.committee_people_id')
+            .where('pc.committee_id', committeeId)
     }
     purchasingCommittee2(knex: Knex, purchaOrderId) {
         let sql = `
@@ -658,7 +664,8 @@ export class PurchasingOrderReportModel {
         LEFT JOIN pc_committee_people pcp ON pc.committee_id = pcp.committee_id
         LEFT JOIN um_people p ON p.people_id = pcp.people_id
         LEFT JOIN um_titles ut ON ut.title_id = p.title_id
-        LEFT JOIN um_positions up ON up.position_id = p.position_id
+        left join um_people_positions upp on p.people_id = upp.people_id and upp.is_actived='Y'
+        LEFT JOIN um_positions up ON up.position_id = upp.position_id
         WHERE
             po.purchase_order_id = ?
         ORDER BY
@@ -688,41 +695,29 @@ export class PurchasingOrderReportModel {
         return knex.raw(sql, purchaOrderId);
     }
 
-    getChief(knex: Knex, typeId) {
-        //ดึงหัวหน้าเจ้าหน้าที่พัสดุ ส่ง 4 เข้ามา
-        return knex.select('t.title_name as title', 'p.fname', 'p.lname', 'upos.position_name', 'upot.type_name as position')
-            .from('um_purchasing_officer as upo')
-            .join('um_people as p', 'upo.people_id', 'p.people_id')
-            .join('um_titles as t', 't.title_id', 'p.title_id')
-            .join('um_positions as upos', 'upos.position_id', 'p.position_id')
-            .join('um_purchasing_officer_type as upot', 'upot.type_id', 'upo.type_id')
-            .where('upo.type_id', typeId)
-            .where('upo.isactive', '1')
-    }
-
-    // getChief(knex: Knex, purchaOrderId) {
-    //     return knex.select('t.title_name as title', 'p.fname', 'p.lname', knex.raw(`concat(t.title_name,p.fname,' ',p.lname) as fullname`), 'upos.position_name', 'upot.type_name as position')
-    //         .from('pc_purchasing_order as po')
-    //         .join('um_purchasing_officer as upo', 'upo.people_id', 'po.chief_id')
+    // getChief(knex: Knex, typeId) {
+    //     //ดึงหัวหน้าเจ้าหน้าที่พัสดุ ส่ง 4 เข้ามา
+    //     return knex.select('t.title_name as title', 'p.fname', 'p.lname', 'upos.position_name', 'upot.type_name as position')
+    //         .from('um_purchasing_officer as upo')
     //         .join('um_people as p', 'upo.people_id', 'p.people_id')
     //         .join('um_titles as t', 't.title_id', 'p.title_id')
     //         .join('um_positions as upos', 'upos.position_id', 'p.position_id')
     //         .join('um_purchasing_officer_type as upot', 'upot.type_id', 'upo.type_id')
-    //         .where('po.purchase_order_id', purchaOrderId)
+    //         .where('upo.type_id', typeId)
     //         .where('upo.isactive', '1')
     // }
 
-    getStaff(knex: Knex, peopleId) {
-        //BUYYER=เจ้าหน้าที่, CHIEF = หัวหน้าเจ้าหน้าที่
-        return knex.select('t.title_name as title', 'p.fname', 'p.lname', knex.raw(`concat(t.title_name,p.fname,' ',p.lname) as fullname`), 'upos.position_name', 'upot.type_name as position')
+
+    getStaff(knex: Knex, officerId) {
+        return knex.select('t.title_name as title', 'p.fname', 'p.lname', knex.raw(`concat(t.title_name,p.fname,' ',p.lname) as fullname`), 'upos.position_name', 'upo.type_name as position')
             .from('um_purchasing_officer as upo')
             .join('um_people as p', 'upo.people_id', 'p.people_id')
             .join('um_titles as t', 't.title_id', 'p.title_id')
-            .join('um_positions as upos', 'upos.position_id', 'p.position_id')
-            .join('um_purchasing_officer_type as upot', 'upot.type_id', 'upo.type_id')
-            .where('p.people_id', peopleId)
-            .where('upo.isactive', '1')
+            .joinRaw(`left join um_people_positions upp on p.people_id = upp.people_id and upp.is_actived='Y'`)
+            .leftJoin('um_positions as upos', 'upos.position_id', 'upp.position_id')
+            .where('upo.officer_id', officerId)
     }
+
     purchasing2Chief(knex: Knex, purchaOrderId) {
         return knex.select('po.chief_id', 'po.buyer_id', knex.raw('concat(tiy.title_name,pey.fname," ",pey.lname) as buyer_fullname'), 'psy.position_name as buyer_position', knex.raw('concat(tic.title_name,pec.fname," ",pec.lname) as chief_fullname'), 'psc.position_name as chief_position')
             .from('pc_purchasing_order as po')
@@ -731,7 +726,8 @@ export class PurchasingOrderReportModel {
             .leftJoin('um_positions as psy', 'psy.position_id', 'pey.position_id')
             .leftJoin('um_people as pec', 'po.chief_id', 'pec.people_id')
             .leftJoin('um_titles as tic', 'pec.title_id', 'tic.title_id')
-            .leftJoin('um_positions as psc', 'psc.position_id', 'pec.position_id')
+            .joinRaw(`left join um_people_positions upp on pey.people_id = upp.people_id and upp.is_actived='Y'`)
+            .leftJoin('um_positions as psc', 'psc.position_id', 'upp.position_id')
             .where('po.purchase_order_id', purchaOrderId)
     }
     getPosition(knex: Knex, id: any) {
@@ -863,7 +859,10 @@ export class PurchasingOrderReportModel {
             po.sub_total,
             po.total_price as net_total,
             po.include_vat,
-            po.exclude_vat
+            po.exclude_vat,
+            po.buyer_id,
+            po.chief_id,
+            po.manager_id
         FROM
             pc_purchasing_order po
             LEFT JOIN pc_purchasing_order_item poi ON poi.purchase_order_id = po.purchase_order_id
@@ -881,21 +880,68 @@ export class PurchasingOrderReportModel {
         return knex.raw(sql, purchaOrderId)
     }
 
-    purchasingEgp(knex: Knex, porder: any, warehouseId: any) {
+    purchasingHeader(knex: Knex, purchasingOrderId) {
         return knex('pc_purchasing_order as po')
-            .select('po.vat',
-                'mup.cost',
-                'mp.product_name',
-                'mup.qty AS conversion',
-                'muu.unit_name AS primary_unit',
-                'po.delivery',
-                'ml.address',
-                'ml.phone',
-                'ml.nin',
+            .select(
                 'po.purchase_order_id',
                 'po.purchase_order_number',
                 'po.purchase_method_id',
                 'po.purchase_order_book_number',
+                'po.include_vat',
+                'po.exclude_vat',
+                'po.sub_total',
+                'po.vat_rate',
+                'po.total_price',
+                'po.vat',
+                'po.delivery',
+                'po.verify_committee_id',
+                'po.check_price_committee_id',
+                'po.budget_detail_id',
+                'po.order_date',
+                'po.chief_id',
+                'po.buyer_id',
+                'po.manager_id',
+                'vb.amount as budget_amount',
+                'vb.bgtype_name as budget_type_name',
+                'vb.bgtypesub_name as budget_type_sub_name',
+                'vb.bg_year as budget_year',
+                'cbp.name AS bid_process_name',
+                'cbt.bid_name as bid_type_name',
+                'cbt.bid_id as bid_type_id',
+                'ml.address as labeler_address',
+                'ml.phone as labeler_phone',
+                'ml.nin as labeler_nin',
+                'ml.labeler_name',
+                'ml.labeler_name_po',
+                'ml.zipcode as labeler_zipcode',
+                'lm.tambon_name as labeler_tambon_name',
+                'la.ampur_name as labeler_ampur_name',
+                'lp.province_name as labeler_province_name',
+                'lp.province_code as labeler_province_code',
+                'bt.balance as transection_balance'
+            )
+            .leftJoin('mm_labelers as ml', 'ml.labeler_id', 'po.labeler_id')
+            .leftJoin(knex.raw('l_tambon as lm on lm.tambon_code = ml.tambon_code and lm.ampur_code = ml.ampur_code and lm.province_code = ml.province_code'))
+            .leftJoin(knex.raw('l_ampur as la on la.ampur_code = ml.ampur_code and la.province_code = ml.province_code'))
+            .leftJoin(knex.raw('l_province as lp on lp.province_code = ml.province_code'))
+            .leftJoin('l_bid_process as cbp', 'cbp.id', 'po.purchase_method_id')
+            .leftJoin('l_bid_type as cbt', 'cbt.bid_id', 'po.purchase_type_id')
+            .leftJoin('view_budget_subtype as vb', 'vb.bgdetail_id', 'po.budget_detail_id')
+            .joinRaw(`left join pc_budget_transection as bt on bt.purchase_order_id = po.purchase_order_id and transaction_status='spend'`)
+            .whereIn('po.purchase_order_id', purchasingOrderId)
+            .andWhere('po.is_cancel', 'N');
+    }
+
+    purchasingEgp(knex: Knex, porder: any, warehouseId: any) {
+        return knex('pc_purchasing_order as po')
+            .select(
+                'mup.cost',
+                'mp.product_name',
+                'mup.qty AS conversion',
+                'muu.unit_name AS primary_unit',
+                'ml.address',
+                'ml.phone',
+                'ml.nin',
                 'poi.purchase_order_item_id',
                 'cbp.NAME AS bname',
                 'cbt.bid_name',
@@ -909,9 +955,6 @@ export class PurchasingOrderReportModel {
                 'lp.province_code',
                 'mg.generic_id',
                 'mg.generic_name',
-                'po.include_vat',
-                'po.exclude_vat',
-                'po.sub_total',
                 knex.raw(`IF
                 (
                     ( SELECT standard_cost FROM mm_unit_generics WHERE unit_generic_id = poi.unit_generic_id ) = 0,
@@ -932,18 +975,13 @@ export class PurchasingOrderReportModel {
                     AND wp.warehouse_id = ${warehouseId} 
                     ),
                     0 
-                    ) AS qty`),
-                'poi.qty AS qtyPoi',
+                    ) AS balance_qty`),
+                'poi.qty AS qty',
                 'poi.unit_price',
-                //total_price ของ PO_item
-                'po.total_price',
                 'poi.total_price AS total_price_item',
                 'poi.giveaway',
                 'mu.unit_name',
-                'po.verify_committee_id',
-                'po.check_price_committee_id',
-                'po.budget_detail_id',
-                'po.order_date')
+                'mup.standard_cost')
             .leftJoin(' pc_purchasing_order_item as poi', 'poi.purchase_order_id', 'po.purchase_order_id')
             .leftJoin('mm_products as mp', 'mp.product_id', 'poi.product_id')
             .leftJoin('mm_generics as mg', 'mp.generic_id', 'mg.generic_id')

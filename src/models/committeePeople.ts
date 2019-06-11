@@ -27,10 +27,11 @@ export class CommitteePeopleModel {
   listWithPeopleByCommitteeId(knex: Knex, committee_id: string, limit: number = 100, offset: number = 0) {
     return knex(this.tableName)
       .select('um_people.people_id', 'pc_committee.committee_type', 'pc_committee_people.position_name as cp_position_name', 'um_positions.position_name', 'um_titles.title_name', 'fname', 'lname', knex.raw('concat(um_titles.title_name, fname," ",lname) as  fullname'))
-      .innerJoin('pc_committee','pc_committee.committee_id','pc_committee_people.committee_id')
+      .innerJoin('pc_committee', 'pc_committee.committee_id', 'pc_committee_people.committee_id')
       .innerJoin('um_people', 'um_people.people_id', 'pc_committee_people.people_id')
       .leftJoin('um_titles', 'um_titles.title_id', 'um_people.title_id')
-      .leftJoin('um_positions', 'um_positions.position_id', 'um_people.position_id')
+      .joinRaw(`left join um_people_positions upp on um_people.people_id = upp.people_id and upp.is_actived='Y'`)
+      .leftJoin('um_positions', 'um_positions.position_id', 'upp.position_id')
       .where('pc_committee_people.committee_id', committee_id)
       .limit(limit)
       .offset(offset)

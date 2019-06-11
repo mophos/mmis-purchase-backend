@@ -1,0 +1,20 @@
+include ../css.pug
+style.
+  @media print {
+      body {
+          margin: -20px;
+      }
+  }
+- for(var i of header)
+  include egp3-1.pug
+  hr.hideprint
+  .break
+  include egp3-2.pug
+  hr.hideprint
+  .break
+  include egp3-3.pug
+  hr.hideprint
+  .break
+  include egp3-4.pug
+  hr.hideprint
+  .break

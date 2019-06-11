@@ -7,24 +7,24 @@ export class PeopleModel {
   public primaryKey = 'people_id';
 
   list(knex: Knex, limit: number = 100, offset: number = 0) {
-    return knex('um_people')
-      .select('people_id', 'um_positions.position_name', 'um_titles.title_name', 'fname', 'lname', knex.raw('concat(um_titles.title_name, fname," ",lname) as  fullname'))
-      .leftJoin('um_titles', 'um_titles.title_id', 'um_people.title_id')
-      .leftJoin('um_positions', 'um_positions.position_id', 'um_people.position_id')
-    // .limit(limit)
-    // .offset(offset)
+    return knex('um_people as p')
+      .select('p.people_id', 'up.position_name', 't.title_name', 'p.fname', 'p.lname', knex.raw('concat(t.title_name, p.fname," ",p.lname) as  fullname'))
+      .leftJoin('um_titles as t', 't.title_id', 'p.title_id')
+      .joinRaw(`left join um_people_positions upp on p.people_id = upp.people_id and upp.is_actived='Y'`)
+      .leftJoin('um_positions as up', 'up.position_id', 'upp.position_id')
   }
 
   search(knex: Knex, query = '') {
     let q = `%${query}%`;
-    let sql = knex('um_people')
-      .select('people_id', 'um_positions.position_name', 'um_titles.title_name', 'fname', 'lname', knex.raw('concat(um_titles.title_name, fname," ",lname) as  fullname'))
-      .leftJoin('um_titles', 'um_titles.title_id', 'um_people.title_id')
-      .leftJoin('um_positions', 'um_positions.position_id', 'um_people.position_id')
+    let sql = knex('um_people as p')
+      .select('p.people_id', 'up.position_name', 't.title_name', 'p.fname', 'p.lname', knex.raw('concat(t.title_name, p.fname," ",p.lname) as  fullname'))
+      .leftJoin('um_titles as t', 't.title_id', 'p.title_id')
+      .joinRaw(`left join um_people_positions upp on p.people_id = upp.people_id and upp.is_actived='Y'`)
+      .leftJoin('um_positions as up', 'up.position_id', 'upp.position_id')
     if (query !== '') {
       sql.where(w => {
-        w.where('fname', 'like', q)
-          .orWhere('lname', 'like', q)
+        w.where('p.fname', 'like', q)
+          .orWhere('p.lname', 'like', q)
       })
     }
     return sql;

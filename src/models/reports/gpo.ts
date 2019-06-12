@@ -79,6 +79,7 @@ export class GpoModel {
                 'lp.province_code',
                 'mg.generic_id',
                 'mg.generic_name',
+                'mg.working_code as generic_code',
                 knex.raw(`IF
                 (
                     ( SELECT standard_cost FROM mm_unit_generics WHERE unit_generic_id = poi.unit_generic_id ) = 0,

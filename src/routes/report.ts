@@ -25,7 +25,7 @@ router.get('/requisition', wrap(async (req, res, next) => {
   count = count[0][0].count || 0;
 
   let hosdetail = await model.hospital(db);
-  let hospitalName = hosdetail[0].hospname;
+  let hospitalName = hosdetail.hospname;
   let orderDate = moment(purchasing.order_date).format('D MMMM ') + (moment(purchasing.order_date).get('year') + 543);
 
   let purchasingOfficer = await model.getPurchasingOfficer(db);
@@ -53,9 +53,9 @@ router.get('/getProductHistory', wrap(async (req, res, next) => {
   generic_code = Array.isArray(generic_code) ? generic_code : [generic_code];
   ////ชื่อโรงพยาบาล//////////
   let hosdetail = await model.hospital(db);
-  let hospitalName = hosdetail[0].hospname;
-  let hostel = hosdetail[0].telephone;
-  let hosaddress = hosdetail[0].address;
+  let hospitalName = hosdetail.hospname;
+  let hostel = hosdetail.telephone;
+  let hosaddress = hosdetail.address;
   moment.locale('th');
   let nDate = moment(new Date()).format('D MMMM ') + (moment(new Date()).get('year') + 543)
   let tradingList: any = []

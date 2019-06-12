@@ -60,7 +60,7 @@ router.get('/report/requisitionorder/:orderId', wrap(async (req, res, next) => {
   let detail: any[] = await modelPr.requisitionItem(db, orderId);
   let detail1: any[] = await modelPr.name(db, orderId);
   let hospname = await model.hospital(db);
-  hospname = hospname[0].hospname
+  hospname = hospname.hospname
   detail = detail[0]
   detail1 = detail1[0]
   if (detail === undefined) res.render('error404')
@@ -78,7 +78,7 @@ router.get('/report/agree', wrap(async (req, res, next) => {
   let db = req.db;
   let hospname = await model.hospital(db);
 
-  hospname = hospname[0].hospname
+  hospname = hospname.hospname
   res.render('agree', { hospname: hospname })
 }));
 
@@ -100,7 +100,7 @@ router.get('/report/list/purchaseSelec', wrap(async (req, res, next) => {
   let hospname = await model.hospital(db);
   results = results[0]
   if (results[0] === undefined) res.render('error404')
-  hospname = hospname[0].hospname
+  hospname = hospname.hospname
   let nDate = model.prettyDate(new Date())
   let i = 0;
   let fill = [];
@@ -135,7 +135,7 @@ router.get('/report/list/all/purchase-trade-select', wrap(async (req, res, next)
   }
   let hospname = await model.hospital(db);
   if (array[0] === undefined) res.render('error404')
-  hospname = hospname[0].hospname
+  hospname = hospname.hospname
   let nDate = model.prettyDate(new Date())
   let i = 0;
   let fill = [];
@@ -173,7 +173,7 @@ router.get('/report/list/purchase-trade-select', wrap(async (req, res, next) => 
   }
   let hospname = await model.hospital(db);
   if (array[0] === undefined) res.render('error404')
-  hospname = hospname[0].hospname
+  hospname = hospname.hospname
   let nDate = model.prettyDate(new Date())
   let i = 0;
   let fill = [];
@@ -201,7 +201,7 @@ router.get('/report/list/purchase/:startdate/:enddate', wrap(async (req, res, ne
   let hospname = await model.hospital(db);
   results = results[0]
   if (results[0] === undefined) res.render('error404')
-  hospname = hospname[0].hospname
+  hospname = hospname.hospname
   let nDate = model.prettyDate(new Date())
   results.forEach(value => {
     if (value.qty === null) value.qty = 0
@@ -223,7 +223,7 @@ router.get('/report/total/purchase/:createDate', wrap(async (req, res, next) => 
   let results = await model.tPurchase(db, createDate);
   let hospname = await model.hospital(db);
   results = results[0]
-  hospname = hospname[0].hospname
+  hospname = hospname.hospname
   moment.locale('th')
   nDate = moment(nDate).format('MMMM ') + (moment(nDate).get('year') + 543);
   let sum = 0
@@ -252,7 +252,7 @@ router.get('/report/month/purchase', wrap(async (req, res, next) => {
   let results = await model.mPurchase(db);
   let hospname = await model.hospital(db);
   results = results[0]
-  hospname = hospname[0].hospname
+  hospname = hospname.hospname
   let nDate = model.prettyDate(new Date())
   // let date = model.prettyDate(results[0].created_date);
   let sum = 0
@@ -273,7 +273,7 @@ router.get('/report/process/purchase/:startdate/:enddate', wrap(async (req, res,
   let results = await model.pPurchase(db, startdate, enddate);
   let hospname = await model.hospital(db);
   results = results[0]
-  hospname = hospname[0].hospname
+  hospname = hospname.hospname
   let nDate = model.prettyDate(new Date())
   moment.locale('th');
   let dates = moment(startdate).format('D MMMM ') + (moment(startdate).get('year') + 543);
@@ -342,7 +342,7 @@ router.get('/report/purchasing-list', wrap(async (req, res, next) => {
   let hospname = await model.hospital(db);
   if (!results[0].length) { res.render('error404') };
   results = results[0]
-  hospname = hospname[0].hospname
+  hospname = hospname.hospname
   moment.locale('th');
   let sdate = moment(startdate).format('D MMMM ') + (moment(startdate).get('year') + 543);
   let edate = moment(enddate).format('D MMMM ') + (moment(enddate).get('year') + 543);
@@ -384,7 +384,7 @@ router.get('/report/purchasing/:startdate/:enddate/:bgtypeId/:status', wrap(asyn
 
   let hospname = await model.hospital(db);
   results = results[0]
-  hospname = hospname[0].hospname
+  hospname = hospname.hospname
   moment.locale('th');
   let sdate = moment(startdate).format('D MMMM ') + (moment(startdate).get('year') + 543);
   let edate = moment(enddate).format('D MMMM ') + (moment(enddate).get('year') + 543);
@@ -430,7 +430,7 @@ router.get('/report/totalcost/purchase/:month', wrap(async (req, res, next) => {
   type1 = type1[0]
   type2 = type2[0]
   let hosdetail = await model.hospital(db);
-  let hospitalName = hosdetail[0].hospname;
+  let hospitalName = hosdetail.hospname;
   moment.locale('th');
   let nDate = moment(new Date()).format('D MMMM ') + (moment(new Date()).get('year') + 543);
   let thmonth = moment(month).format('MMMM')
@@ -472,7 +472,7 @@ router.get('/test', wrap(async (req, res, next) => {
   count = count[0][0].count || 0;
 
   let hosdetail = await model.hospital(db);
-  let hospitalName = hosdetail[0].hospname;
+  let hospitalName = hosdetail.hospname;
   let orderDate = moment(purchasing.order_date).format('D MMMM ') + (moment(purchasing.order_date).get('year') + 543);
 
   let purchasingOfficer = await model.getPurchasingOfficer(db);
@@ -500,7 +500,7 @@ router.get('/report/purchasing/1/:purchaOrderId/:type', wrap(async (req, res, ne
   let purchaOrderId = req.params.purchaOrderId;
 
   let hosdetail = await model.hospital(db);
-  let hospitalName = hosdetail[0].hospname;
+  let hospitalName = hosdetail.hospname;
   let purchasing = await model.purchasing(db, purchaOrderId);
 
   purchasing = purchasing[0];
@@ -555,8 +555,8 @@ router.get('/report/purchasing/1/:purchaOrderId/:type', wrap(async (req, res, ne
 //   let purchaOrderId = req.query.purchaOrderId
 
 //   let hosdetail = await model.hospital(db);
-//   let hospitalName = hosdetail[0].hospname;
-//   let province = hosdetail[0].province;
+//   let hospitalName = hosdetail.hospname;
+//   let province = hosdetail.province;
 
 //   moment.locale('th');
 //   let today = moment(new Date()).format('D MMMM ') + (moment(new Date()).get('year') + 543)
@@ -583,8 +583,8 @@ router.get('/report/purchasing/1/:purchaOrderId/:type', wrap(async (req, res, ne
 //   let purchaOrderId = req.query.purchaOrderId
 
 //   let hosdetail = await model.hospital(db);
-//   let hospitalName = hosdetail[0].hospname;
-//   let province = hosdetail[0].province;
+//   let hospitalName = hosdetail.hospname;
+//   let province = hosdetail.province;
 
 //   moment.locale('th');
 //   let today = moment(new Date()).format('D MMMM ') + (moment(new Date()).get('year') + 543)
@@ -625,8 +625,8 @@ router.get('/report/purchasing/1/:purchaOrderId/:type', wrap(async (req, res, ne
 //   let at = await model.at(db)
 //   at = at[0]
 //   results = results[0]
-//   let hospitalName = hosdetail[0].hospname;
-//   let province = hosdetail[0].province
+//   let hospitalName = hosdetail.hospname;
+//   let province = hosdetail.province
 //   let name = results[0].name
 //   let at_name = at[0].value;
 //   moment.locale('th');
@@ -699,9 +699,9 @@ router.get('/report/purchasing/1/:purchaOrderId/:type', wrap(async (req, res, ne
 
 //   at = at[0]
 //   results = results[0]
-//   let hospitalName = hosdetail[0].hospname
-//   let address = hosdetail[0].address
-//   let province = hosdetail[0].province
+//   let hospitalName = hosdetail.hospname
+//   let address = hosdetail.address
+//   let province = hosdetail.province
 //   let name = results[0].name
 //   let at_name = at[0].value;
 //   moment.locale('th');
@@ -764,8 +764,8 @@ router.get('/report/purchasing/1/:purchaOrderId/:type', wrap(async (req, res, ne
 //   let purchaOrderId = req.query.purchaOrderId
 
 //   let hosdetail = await model.hospital(db);
-//   let hospitalName = hosdetail[0].hospname;
-//   let province = hosdetail[0].province;
+//   let hospitalName = hosdetail.hospname;
+//   let province = hosdetail.province;
 
 //   moment.locale('th');
 //   let today = moment(new Date()).format('D MMMM ') + (moment(new Date()).get('year') + 543)
@@ -822,10 +822,10 @@ router.post('/report/purchasingorder', wrap(async (req, res, next) => {
   let num = purchasOrderId.length;
   let db = req.db;
   let hospname = await model.hospital(db)
-  let hospAddress = hospname[0].address
-  let hopsTel = hospname[0].telephone
-  let hopsprovince = hospname[0].province
-  hospname = hospname[0].hospname
+  let hospAddress = hospname.address
+  let hopsTel = hospname.telephone
+  let hopsprovince = hospname.province
+  hospname = hospname.hospname
 
   let nDate = moment(new Date()).format('DD MMMM ') + (moment(new Date()).get('year') + 543)
   let array = [];
@@ -862,10 +862,10 @@ router.get('/report/getporder', wrap(async (req, res, next) => {
   let db = req.db;
 
   let hospname = await model.hospital(db)
-  let hospAddress = hospname[0].address
-  let hopsTel = hospname[0].telephone
-  let hopsprovince = hospname[0].province
-  hospname = hospname[0].hospname
+  let hospAddress = hospname.address
+  let hopsTel = hospname.telephone
+  let hopsprovince = hospname.province
+  hospname = hospname.hospname
   moment.locale('th');
   let nDate = moment(new Date()).format('DD MMMM ') + (moment(new Date()).get('year') + 543)
   let array = [];
@@ -911,9 +911,9 @@ router.get('/report/getProductHistory/:generic_code', wrap(async (req, res, next
   let db = req.db;
   let generic_code = req.params.generic_code;
   let hosdetail = await model.hospital(db);
-  let hospitalName = hosdetail[0].hospname;
-  let hostel = hosdetail[0].telephone;
-  let hosaddress = hosdetail[0].address;
+  let hospitalName = hosdetail.hospname;
+  let hostel = hosdetail.telephone;
+  let hosaddress = hosdetail.address;
 
   let rs: any = await model.getProductHistory(db, generic_code);
 
@@ -932,7 +932,7 @@ router.get('/report/purchasing-list/excel', async (req, res, next) => {
   let hospname = await model.hospital(db);
   if (!results[0].length) { res.render('error404') };
   results = results[0]
-  hospname = hospname[0].hospname
+  hospname = hospname.hospname
   moment.locale('th');
   let sum: any = 0;
   startdate = moment(startdate).format('DD-MM-') + (moment(startdate).get('year') + 543)
@@ -986,9 +986,9 @@ router.get('/report/budget-history', wrap(async (req, res, next) => {
   let endDate = req.query.endDate;
   let budgetDetailId = req.query.budgetDetailId;
   let hosdetail = await model.hospital(db);
-  let hospitalName = hosdetail[0].hospname;
-  let hostel = hosdetail[0].telephone;
-  let hosaddress = hosdetail[0].address;
+  let hospitalName = hosdetail.hospname;
+  let hostel = hosdetail.telephone;
+  let hosaddress = hosdetail.address;
   moment.locale('th');
   let sdate = moment(startDate).format('D MMMM ') + (moment(startDate).get('year') + 543);
   let edate = moment(endDate).format('D MMMM ') + (moment(endDate).get('year') + 543);
@@ -1024,9 +1024,9 @@ router.get('/report/budget-history/excel', wrap(async (req, res, next) => {
   let endDate = req.query.endDate;
   let budgetDetailId = req.query.budgetDetailId;
   let hosdetail = await model.hospital(db);
-  let hospitalName = hosdetail[0].hospname;
-  let hostel = hosdetail[0].telephone;
-  let hosaddress = hosdetail[0].address;
+  let hospitalName = hosdetail.hospname;
+  let hostel = hosdetail.telephone;
+  let hosaddress = hosdetail.address;
   moment.locale('th');
   let sdate = moment(startDate).format('D MMMM ') + (moment(startDate).get('year') + 543);
   let edate = moment(endDate).format('D MMMM ') + (moment(endDate).get('year') + 543);
@@ -1083,7 +1083,7 @@ router.get('/report/purchasing-list/byPO', wrap(async (req, res, next) => {
   let hospname = await model.hospital(db);
   if (!results[0].length) { res.render('error404') };
   results = results[0]
-  hospname = hospname[0].hospname
+  hospname = hospname.hospname
   moment.locale('th');
   let startPO = Sid;
   let endPO = Eid;
@@ -1120,7 +1120,7 @@ router.get('/report/purchasing-list/byPO/excel', async (req, res, next) => {
   let hospname = await model.hospital(db);
   if (!results[0].length) { res.render('error404') };
   results = results[0]
-  hospname = hospname[0].hospname
+  hospname = hospname.hospname
   moment.locale('th');
   let sum: any = 0;
 

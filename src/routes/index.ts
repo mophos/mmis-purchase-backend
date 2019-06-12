@@ -305,9 +305,8 @@ router.get('/report/purchasing', wrap(async (req, res, next) => {
   // let enddate = req.params.enddate;
   let db = req.db;
   let results = await model.pPurchasing(db, moment(startdate).format('YYYY-MM-DD'));
-  let hospname = await model.hospital(db);
+  const hospitalDetail = await model.hospital(db);
   results = results[0]
-  hospname = hospname[0].hospname
   moment.locale('th');
   let sdate = moment(startdate).format('D MMMM ') + (moment(startdate).get('year') + 543);
   // let edate = moment(enddate).format('D MMMM ') + (moment(enddate).get('year') + 543);
@@ -328,7 +327,7 @@ router.get('/report/purchasing', wrap(async (req, res, next) => {
 
   res.render('pPurchasing', {
     results: results,
-    hospname: hospname,
+    hospitalDetail: hospitalDetail,
     sum: sum,
     sdate: sdate,
   })

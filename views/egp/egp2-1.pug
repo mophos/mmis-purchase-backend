@@ -9,14 +9,10 @@ html
     .headkut.h1 บันทึกข้อความ
     p.h2
       | ส่วนราชการ
-      label.h3(style='margin-top: 5px; font-size: 16pt;')  &nbsp;#{hospitalDetail.hospitalName}
+      label.h3(style='margin-top: 5px; font-size: 16pt;')  &nbsp;#{hospitalDetail.hospname}
     p.h2(style='width:50%;float: left;')
       | ที่
-      label.h3(style='margin-top: 5px;')
-        if(i.purchase_order_book_number)
-          | &nbsp;#{i.purchase_order_book_number}
-        else
-          | &nbsp;#{i.purchase_order_number}
+      label.h3(style='margin-top: 5px;') #{i.poNumber}
     b.h2(style='width:50%;float: left;')
       | วันที่ 
       label.h3(style="font-size: 16pt;") &nbsp;#{i.order_date}
@@ -27,7 +23,7 @@ html
     hr
     .enter เรียน ผู้ว่าราชการจังหวัด#{hospitalDetail.province}
     .fontspace
-    | ด้วย#{hospitalDetail.hospitalName}มีความประสงค์จะ ซื้อยา/เวชภัณฑ์มิใช่ยา จำนวน #{i.egpItems.length} รายการ 
+    | ด้วย#{hospitalDetail.hospname}มีความประสงค์จะ ซื้อยา/เวชภัณฑ์มิใช่ยา จำนวน #{i.egpItems.length} รายการ 
     br
     - var y=0
           - for(var b of i.egpItems)

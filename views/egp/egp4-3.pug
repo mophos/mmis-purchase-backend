@@ -55,6 +55,8 @@ html
     br
     div(style='width: 100%; text-align:center;')
       div(style='float:left; width: 50%; text-align:center;')
+        | &nbsp;
+      div(style='float:left; width: 50%; text-align:center;')
         if(i.buyer === null)
           | ลงชื่อ.................................................เจ้าหน้าที่
           br
@@ -67,7 +69,11 @@ html
           | ( #{i.buyer.fullname} )
           br 
           | #{i.buyer.position_name}
-      div(style='float:left; width: 50%; text-align:center;')
+        br
+        br
+        br
+        br
+        br
         if(i.supply === null)
           | ลงชื่อ.................................................หัวหน้ากลุ่มงาน
           br

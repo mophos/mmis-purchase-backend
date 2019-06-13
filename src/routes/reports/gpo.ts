@@ -69,9 +69,9 @@ router.get('/', wrap(async (req, res, next) => {
 
         const deliveryDate = moment(i.order_date).add(i.delivery, 'days');
         i.limitDate = (moment(deliveryDate).format('D MMMM ') + (moment(deliveryDate).get('year') + 543));
+        i.bahtText = basicModel.bahtText(i.total_price);
         i.total_price = basicModel.comma(i.total_price);
         i.sub_total = basicModel.comma(i.sub_total);
-        i.bahtText = basicModel.bahtText(i.total_price);
         i.vat = basicModel.comma(i.vat);
         i.order_date = moment(i.order_date).format('D MMMM ') + (moment(i.order_date).get('year') + 543);
     }
@@ -125,9 +125,9 @@ router.get('/2', wrap(async (req, res, next) => {
 
         const deliveryDate = moment(i.order_date).add(i.delivery, 'days');
         i.limitDate = (moment(deliveryDate).format('D MMMM ') + (moment(deliveryDate).get('year') + 543));
+        i.bahtText = basicModel.bahtText(i.total_price);
         i.total_price = basicModel.comma(i.total_price);
         i.sub_total = basicModel.comma(i.sub_total);
-        i.bahtText = basicModel.bahtText(i.total_price);
         i.vat = basicModel.comma(i.vat);
         i.order_date = moment(i.order_date).format('D MMMM ') + (moment(i.order_date).get('year') + 543);
     }
@@ -182,9 +182,9 @@ router.get('/3', wrap(async (req, res, next) => {
 
         const deliveryDate = moment(i.order_date).add(i.delivery, 'days');
         i.limitDate = (moment(deliveryDate).format('D MMMM ') + (moment(deliveryDate).get('year') + 543));
+        i.bahtText = basicModel.bahtText(i.total_price);
         i.sub_total = basicModel.comma(i.sub_total);
         i.total_price = basicModel.comma(i.total_price);
-        i.bahtText = basicModel.bahtText(i.total_price);
         i.vat = basicModel.comma(i.vat);
         i.order_date = moment(i.order_date).format('D MMMM ') + (moment(i.order_date).get('year') + 543);
     }

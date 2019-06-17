@@ -34,6 +34,9 @@ html
       br
       | ลงชื่อ............................................................
       br
-      | ( #{i.manager.fullname} )
-      br
-      | #{i.manager.position}
+      if(i.manager === null)
+        | (.....................................................)
+      else
+        | ( #{i.manager.fullname} )
+        br
+        | #{i.manager.position}

@@ -108,19 +108,27 @@ html
     br
     br
     div(style="width:100%;float:left;")
-      div(style="width:50%;float:left;text-align:center") ลงชื่อ.................................................#{i.buyer.position}
-        br
-        | ( #{i.buyer.fullname} )
-        br
-        | #{i.buyer.position_name}
-      div(style="width:50%;float:left;text-align:center") ลงชื่อ.................................................#{i.chief.position}
-        if(i.chief===null)
+      if(i.buyer === null)
+        div(style="width:50%;float:left;text-align:center") ลงชื่อ.................................................เจ้าหน้าที่
+          br
+          | (.....................................................)
+          br
+          | 
+      else
+        div(style="width:50%;float:left;text-align:center") ลงชื่อ.................................................#{i.buyer.position}
+          br
+          | ( #{i.buyer.fullname} )
+          br
+          | #{i.buyer.position_name}
+      if(i.chief===null)
+        div(style="width:50%;float:left;text-align:center") ลงชื่อ.................................................หัวหน้าเจ้าหน้าที่
           |
           br
           |
           br
           | 
-        else
+      else
+        div(style="width:50%;float:left;text-align:center") ลงชื่อ.................................................#{i.chief.position}
           br 
           | ( #{i.chief.fullname} )
           br
@@ -134,9 +142,12 @@ html
       br
       | ลงชื่อ............................................................
       br
-      | ( #{i.manager.fullname} )
-      br
-      | #{i.manager.position}
+      if(i.manager === null)
+        | (.....................................................)
+      else
+        | ( #{i.manager.fullname} )
+        br
+        | #{i.manager.position}
       br
       if(i.purchase_method_id==2) 
         | ปฏิบัติราชการแทนผู้ตรวจกระทรวงเขต 4

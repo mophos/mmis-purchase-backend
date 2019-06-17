@@ -155,9 +155,12 @@ html
       br
       | ลงชื่อ............................................................
       br
-      | ( #{i.manager.fullname} )
-      br
-      | #{i.manager.position}
+      if(i.manager === null)
+        | (.....................................................)
+      else
+        | ( #{i.manager.fullname} )
+        br
+        | #{i.manager.position}
       br
       if(i.purchase_method_id==2) 
         | ปฏิบัติราชการแทนผู้ตรวจกระทรวงเขต 4

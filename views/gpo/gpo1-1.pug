@@ -50,9 +50,14 @@ body
         br
         br
         br
-        | (#{i.manager.fullname})
-        br
-        | #{i.manager.position}
+        if(i.manager === null)
+          |(.....................................................)
+          br
+          | 
+        else
+          | (#{i.manager.fullname})
+          br
+          | #{i.manager.position}
         br
         if(i.purchase_method_id==2) 
             | ปฏิบัติราชการแทนผู้ตรวจกระทรวงเขต 4
@@ -146,11 +151,17 @@ body
     br
     br
     div(style='margin-left: 40%; width: 60%; text-align:center;')
-      | ( #{i.buyer.fullname} )
-      br
-      | #{i.buyer.position_name}
-      br
-      | #{i.buyer.position} 
+      if(i.buyer === null)
+        |(.....................................................)
+        br
+        |
+        br
+      else
+        | ( #{i.buyer.fullname} )
+        br
+        | #{i.buyer.position_name}
+        br
+        | #{i.buyer.position} 
       br
       br
       br
@@ -161,14 +172,6 @@ body
         |
         br
         |
-        br
-        |
-        br
-        | 
-        br
-        | 
-        br
-        | 
         br
         | 
       else 
@@ -184,9 +187,12 @@ body
     br
     div(style='margin-left: 41%; width: 60%; text-align:center;')
       br
-      | (#{i.manager.fullname})
-      br
-      | #{i.manager.position}
+      if(i.manager == null)
+          |(.....................................................)
+      else
+        | (#{i.manager.fullname})
+        br
+        | #{i.manager.position}
       br
       if(i.purchase_method_id==2) 
           | ปฏิบัติราชการแทนผู้ตรวจกระทรวงเขต 4

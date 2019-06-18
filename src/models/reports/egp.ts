@@ -25,6 +25,7 @@ export class EgpModel {
                 'po.buyer_id',
                 'po.supply_id',
                 'po.manager_id',
+                'po.head_id',
                 'vb.amount as budget_amount',
                 'vb.bgtype_name as budget_type_name',
                 'vb.bgtypesub_name as budget_type_sub_name',

@@ -225,6 +225,7 @@ router.get('/4', wrap(async (req, res, next) => {
         i.buyer = await getOfficer(db, i.buyer_id);
         i.manager = await getOfficer(db, i.manager_id);
         i.supply = await getOfficer(db, i.supply_id);
+        i.head = await getOfficer(db, i.head_id);
         i.committee = await getCommitee(db, i.verify_committee_id);
         i.budget_amount = basicModel.comma(i.budget_amount);
 

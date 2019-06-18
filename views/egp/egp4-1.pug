@@ -146,18 +146,18 @@ html
           br 
           | #{i.buyer.position_name}
       div(style='float:left; width: 50%; text-align:center;')
-        | ลงชื่อ.................................................หัวหน้ากลุ่มงาน
-        if(i.chief===null)
-          |
+        if(i.head===null)
+          | ลงชื่อ.................................................หัวหน้ากลุ่มงาน
           br
           |
           br
           | 
         else
+          | ลงชื่อ.................................................#{i.head.position}
           br
-          | ( #{i.chief.fullname} )
+          | ( #{i.head.fullname} )
           br 
-          | #{i.chief.position_name}
+          | #{i.head.position_name}
         br
         br
         br

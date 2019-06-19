@@ -342,6 +342,8 @@ router.post('/purchase-reorder', async (req, res, next) => {
             obj.buyer_id = v.buyer_id;
             obj.chief_id = v.chief_id;
             obj.supply_id = v.supply_id;
+            obj.head_id = v.head_id;
+            obj.manager_id = v.manager_id;
             obj.verify_committee_id = v.verify_committee_id;
             obj.sub_total = sub_total;
             obj.vat = vat;
@@ -484,6 +486,7 @@ router.post('/', async (req, res, next) => {
         purchase.buyer_id = summary.buyer_id;
         purchase.supply_id = summary.supply_id;
         purchase.manager_id = summary.manager_id;
+        purchase.head_id = summary.head_id;
         purchase.budget_year = summary.budget_year;
         purchase.comment = summary.comment ? summary.comment : null;
         // is_reorder= summary.is_reorder;
@@ -600,6 +603,8 @@ router.put('/:purchaseOrderId', async (req, res, next) => {
         purchase.purchase_type_id = summary.purchase_type_id;
         purchase.chief_id = summary.chief_id;
         purchase.buyer_id = summary.buyer_id;
+        purchase.manager_id = summary.manager_id;
+        purchase.head_id = summary.head_id;
         purchase.supply_id = summary.supply_id;
         purchase.budget_year = summary.budget_year;
         purchase.comment = summary.comment ? summary.comment : null;
@@ -1178,9 +1183,9 @@ router.get('/generic-issue', async (req, res, next) => {
   try {
     let rs: any = await model.getGenericIssue(db, genericId, day);
     console.log('----');
-    
+
     console.log(rs[0]);
-    
+
     if (rs[0]) {
       res.send({ ok: true, rows: rs[0] });
     } else {

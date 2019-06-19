@@ -78,6 +78,7 @@ export class EdiModel {
     const sql = `
     select 
     mp.working_code,
+    mp.product_name,
     mu1.unit_name as large_unit,
     mu2.unit_name as small_unit,
     mug.qty as conversion_qty,

@@ -61,7 +61,7 @@ router.get('/', wrap(async (req, res, next) => {
         i.committee = await getCommitee(db, i.verify_committee_id);
         i.budget_amount = basicModel.comma(i.budget_amount);
 
-        let getAmountTransaction = await model.allAmountTransaction(db, i.budget_detail_id, +i.budget_year - 543, i.purchase_order_id);
+        let getAmountTransaction = await model.allAmountTransaction(db, i.budget_detail_id, +i.budget_year, i.purchase_order_id);
         i.transection_balance = basicModel.comma(i.transection_balance);
         i.allAmount = basicModel.comma(getAmountTransaction[0].amount);
         i.budget_year = +i.budget_year + 543;
@@ -117,7 +117,7 @@ router.get('/2', wrap(async (req, res, next) => {
         i.committee = await getCommitee(db, i.verify_committee_id);
         i.budget_amount = basicModel.comma(i.budget_amount);
 
-        let getAmountTransaction = await model.allAmountTransaction(db, i.budget_detail_id, +i.budget_year - 543, i.purchase_order_id);
+        let getAmountTransaction = await model.allAmountTransaction(db, i.budget_detail_id, +i.budget_year, i.purchase_order_id);
         i.transection_balance = basicModel.comma(i.transection_balance);
         i.allAmount = basicModel.comma(getAmountTransaction[0].amount);
         i.budget_year = +i.budget_year + 543;
@@ -172,7 +172,7 @@ router.get('/3', wrap(async (req, res, next) => {
         i.committee = await getCommitee(db, i.verify_committee_id);
         i.budget_amount = basicModel.comma(i.budget_amount);
 
-        let getAmountTransaction = await model.allAmountTransaction(db, i.budget_detail_id, +i.budget_year - 543, i.purchase_order_id);
+        let getAmountTransaction = await model.allAmountTransaction(db, i.budget_detail_id, +i.budget_year, i.purchase_order_id);
         i.transection_balance = basicModel.comma(i.transection_balance);
         i.allAmount = basicModel.comma(getAmountTransaction[0].amount);
         i.budget_year = +i.budget_year + 543;

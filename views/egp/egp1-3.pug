@@ -10,11 +10,11 @@ html
           td.center
             img(src=APIURL+'krut.png', height='128px')
     .center.bold ประกาศ#{hospitalDetail.hospname}
-    .center.bold เรื่อง ประกาศผู้ชนะการเสนอราคา ซื้อยาจำนวน #{i.egpItems.length} รายการโดย#{i.bid_process_name}
+    .center.bold เรื่อง ประกาศผู้ชนะการเสนอราคา ซื้อยา/เวชภัณฑ์มิใช่ยา จำนวน #{i.egpItems.length} รายการโดย#{i.bid_process_name}
     .center
       | ---------------------------------------------------------
     .fontspace
-    | ตามที่#{hospitalDetail.hospname} ได้มีโครงการ ซื้อยาจำนวน #{i.egpItems.length} รายการโดย#{i.bid_process_name} นั้น
+    | ตามที่#{hospitalDetail.hospname} ได้มีโครงการ ซื้อยา/เวชภัณฑ์มิใช่ยา จำนวน #{i.egpItems.length} รายการโดย#{i.bid_process_name} นั้น
     br
     .fontspace
     - var y=0

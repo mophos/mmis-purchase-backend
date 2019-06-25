@@ -19,6 +19,10 @@ export class EdiModel {
     let queries = sqls.join(';');
     return knex.raw(queries);
   }
+  logEDI(knex: Knex, log: any) {
+    return knex('pc_edi_log')
+      .insert(log);
+  }
 
   sendEDI(data: any) {
     return new Promise((resolve: any, reject: any) => {

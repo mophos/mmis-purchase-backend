@@ -1,3 +1,4 @@
+import { log } from 'util';
 'use strict';
 
 import * as express from 'express';
@@ -63,15 +64,15 @@ router.post('/create', async (req, res, next) => {
 
         obj.header = {};
         obj.header.data_line_type = 'HD'; // ใส่ค่าคงที่ 'HD'
-        obj.header.po_no = header[0].purchase_order_number; // หมายเลขใบสั่งซื้อ 
+        obj.header.po_number = header[0].purchase_order_number; // หมายเลขใบสั่งซื้อ 
         obj.header.po_type = header[0].po_type; // ประเภทใบสั่งซื้อ (0: ไม่ติดสัญญา, 1:  ติดสัญญา)
-        obj.header.contract_no = header[0].contract_ref; // เลขที่สัญญา 
+        obj.header.contract_number = header[0].contract_ref; // เลขที่สัญญา 
         obj.header.ordered_date = moment(header[0].order_date).format('YYYY-MM-DD'); // วันที่สั่งซื้อ (Date) 
         // obj.header.delivery_date = ''; // วันที่ส่งสินค้า (Date) 
         obj.header.hosp_code = hospcode; // รหัสโรงพยาบาล
         obj.header.hosp_name = hospname; // ชื่อโรงพยาบาล
         obj.header.buyer_name = header[0].buyer_name; // ชื่อผู้สั่งซื้อ  
-        obj.header.buyer_dept = header[0].warehouse_name; // แผนกผู้สั่งซื้อ 
+        obj.header.buyer_department = header[0].warehouse_name; // แผนกผู้สั่งซื้อ 
         // obj.header.email = ''; // Email Address
         obj.header.supplier_code = header[0].labeler_code_edi; // รหัสผู้จำหน่าย/ผู้ผลิต 
         obj.header.ship_to_code = hospcode; // รหัส Ship_to 
@@ -85,7 +86,7 @@ router.post('/create', async (req, res, next) => {
         obj.header.note_to_supplier = ''; // หมายเหตุ ถึง ผู้จำหน่าย/ผู้ผลิต 
         obj.header.resend_flag = 'NEW'; // ส่งข้อมูล PO ซ้ำไปแทนที่ใบเดิม  (Refer PO No.)
         obj.header.creation_date = moment().format('YYYY-MM-DD'); // วัน/เวลา ที่สร้างข้อมูล (Date/Time) 
-        obj.header.quotation_no = ''; // รหัสใบเสนอราคา
+        obj.header.quotation_id = ''; // รหัสใบเสนอราคา
         obj.header.customer_id = ''; // รหัสลูกค้า (GPO)
         obj.header.last_interfaced_date = moment().format('YYYY-MM-DD HH:mm:ss'); // system Value 
         obj.header.interface_id = '-';  // system Value 
@@ -97,10 +98,10 @@ router.post('/create', async (req, res, next) => {
           no++;
           const line: any = {};
           line.data_line_type = 'LN'; // ใส่ค่าคงที่ 'LN'
-          line.line_no = no; // ลำดับรายการ 
-          line.hosp_item_code = v.working_code; // *รหัสยาของโรงพยาบาล
-          line.hosp_item_name = v.product_name; // *ชื่อยาของโรงพยาบาล
-          line.dist_item_code = v.edi_labeler_code; // *รหัสยาของผู้จัดจำหน่าย
+          line.line_number = no; // ลำดับรายการ 
+          line.hospitem_code = v.working_code; // *รหัสยาของโรงพยาบาล
+          line.hospitem_name = v.product_name; // *ชื่อยาของโรงพยาบาล
+          line.distitem_code = v.edi_labeler_code; // *รหัสยาของผู้จัดจำหน่าย
           line.pack_size_desc = `${v.large_unit} (${v.conversion_qty} ${v.small_unit})`;
           line.ordered_qty = v.qty;
           line.uom = v.large_unit;
@@ -112,8 +113,16 @@ router.post('/create', async (req, res, next) => {
           obj.line.push(line);
         }
         console.log(obj);
-        const rs = await ediModel.sendEDI(obj);
+        const rs: any = await ediModel.sendEDI(obj);
         console.log(rs);
+        const log: any = {
+          purchase_order_number: header[0].purchase_order_number,
+          log_message: rs.message
+        };
+        if (rs.status === 'failed') {
+          log.log_error = JSON.stringify(rs.error);
+        }
+        await ediModel.logEDI(db, log);
 
       }
       res.send({ ok: true });

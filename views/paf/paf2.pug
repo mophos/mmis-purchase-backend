@@ -31,7 +31,7 @@ include ../css.pug
       br
       b.h2 เรื่อง 
       | ขออนุมัติซื้อเวชภัณฑ์
-      .enter เรียน ผู้ว่าราชการจังหวัด
+      .enter เรียน ผู้ว่าราชการจังหวัด#{hospitalDetail.province}
       .fontspace
       | ด้วยเวชภัณฑ์ของ#{hospitalDetail.hospname} มีเหลือน้อยอาจจะไม่เพียงพอจะให้บริการรักษาพยาบาลได้ตลอดเวลา เห็นควรดำเนินการ#{i.bid_type_name} 
       if(i.bid_type_id!=1)
@@ -72,7 +72,7 @@ include ../css.pug
                   td(style='border: 1px solid black;font-family:THSarabunNew; font-size:11pt;') #{b.generic_code} : #{b.generic_name}
                   td.center(style='border: 1px solid black;') #{b.balance_qty} x #{b.conversion} #{b.primary_unit}
                   td.center(style='border: 1px solid black;') #{b.qty} x #{b.conversion} #{b.primary_unit}
-                  td.right(style='border: 1px solid black;') #{b.standard_cost}  
+                  td.right(style='border: 1px solid black;') #{b.unit_price}  
                   td.right(style='border: 1px solid black;') #{b.total_price_item}
                   td.right(style='border: 1px solid black;') #{b.standard_cost} 
                   td.right(style='border: 1px solid black;') #{b.unit_price} /

@@ -1,0 +1,51 @@
+include css.pug
+style(media='print').
+  @page {
+    //- size:landscape;
+    margin-top: 1.5cm;
+    margin-left: .5cm;
+    margin-right: .5cm;
+  }
+style.
+  table, tr, td, th {
+    font-size: 12pt;
+  }
+doctype html
+html
+  head
+    meta(charset="utf-8")
+    title report
+  body
+    button.btn.btn-sm.btn-success(onclick='window.print()') Print
+    table.table
+      thead
+        tr
+          td(colspan="8").center(style='font-weight: bold;') #{hospitalDetail.hospname}
+        tr
+          td(colspan="8").center(style='font-weight: bold;') รายการรอออกใบสั่งซื้อ
+        tr
+          td(colspan="8").left #{printDate}
+        tr
+          td(colspan="8") &nbsp;
+        tr(style="") 
+          th(style="font-size:12pt;" valign='middle') ชื่อสินค้า (Generic Name)
+          th(style="font-size:12pt;") ผู้จำหน่าย
+          th(style="font-size:12pt;") ประเภท
+          th(style="font-size:12pt;") เลขที่สัญญา
+          th(style="font-size:12pt;") ราคาต่อ Pack
+          th(style="font-size:12pt;") จำนวนซื้อ
+          th(style="font-size:12pt;") หน่วยจัดซื้อ
+          th(style="font-size:12pt;") รวมมูลค่า
+      tbody
+        - var y=0
+        for b in results
+          - y++
+            tr(style="")
+              td(style="") #{y}. #{b.working_code}-#{b.generic_name} <br> Trade: #{b.product_name}
+              td(style="") #{b.labeler_name}
+              td(style="") #{b.generic_type_name}
+              td(style="") #{b.contract_no}
+              td(style="").right #{b.purchase_cost }
+              td(style="").right #{ b.order_qty }
+              td(style="") #{b.from_unit_name} (#{b.conversion_qty} #{b.to_unit_name})
+              td(style="").right #{ b.total_cost  }

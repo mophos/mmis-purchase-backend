@@ -187,6 +187,23 @@ router.get('/report/list/purchase-trade-select', wrap(async (req, res, next) => 
   res.render('listpurchase', { fill: fill, nDate: nDate, hospname: hospname, results: array, printDate: printDate(req.decoded.SYS_PRINT_DATE) })
 }));
 
+router.get('/report/list/purchase-orders-reserved', wrap(async (req, res, next) => {
+  let reserve_id = req.query.r;
+  let db = req.db;
+
+  reserve_id = Array.isArray(reserve_id) ? reserve_id : [reserve_id]
+  let results = await model.getReservedOrdered(db, reserve_id);
+
+  for (const rs of results) {
+    rs.total_cost = model.comma(rs.purchase_cost * rs.order_qty)
+    rs.purchase_cost = model.comma(rs.purchase_cost)
+    rs.order_qty = model.commaQty(rs.order_qty)
+  }
+  let hospitalDetail = await model.hospital(db);
+  moment.locale('th');
+  res.render('listReservedOrdered', { hospitalDetail: hospitalDetail, results: results, printDate: printDate(req.decoded.SYS_PRINT_DATE) })
+}));
+
 router.get('/report/list/purchase/:startdate/:enddate', wrap(async (req, res, next) => {
   let startdate = req.params.startdate;
   let enddate = req.params.enddate;

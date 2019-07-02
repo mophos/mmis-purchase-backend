@@ -256,6 +256,28 @@ export class PurchasingOrderReportModel {
         return knex.raw(sql)
     }
 
+    getReservedOrdered(db: Knex, reserve_id) {
+        let sql = db('pc_product_reserved as rv')
+          .select('mg.working_code', 'mp.product_name', 'mg.generic_id', 'rv.contract_id',
+            'mg.generic_name', 'rv.cost as purchase_cost', 'rv.purchase_qty as order_qty',
+            'rv.unit_generic_id', 'gt.generic_type_id', 'rv.product_id', 'rv.reserve_id',
+            'ut.unit_name as to_unit_name', 'uf.unit_name as from_unit_name', 'mp.v_labeler_id', 'mp.m_labeler_id',
+            'ug.qty as conversion_qty', 'ml.labeler_name', 'gt.generic_type_name', 'vcpa.contract_id', 'vcpa.contract_no')
+          .innerJoin('mm_products as mp', 'mp.product_id', 'rv.product_id')
+          .innerJoin('mm_generics as mg', 'mg.generic_id', 'mp.generic_id')
+          .innerJoin('mm_generic_types as gt', 'gt.generic_type_id', 'mg.generic_type_id')
+          .innerJoin('mm_labelers as ml', 'ml.labeler_id', 'mp.v_labeler_id')
+          .leftJoin('mm_unit_generics as ug', 'ug.unit_generic_id', 'rv.unit_generic_id')
+          .leftJoin('mm_units as uf', 'uf.unit_id', 'ug.from_unit_id')
+          .leftJoin('mm_units as ut', 'ut.unit_id', 'ug.to_unit_id')
+          .leftJoin('view_cm_products_active as vcpa', 'vcpa.product_id', 'mp.product_id')
+          .whereRaw('mg.mark_deleted="N"')
+          .where('rv.reserved_status', 'CONFIRMED')
+          .whereIn('rv.reserve_id',reserve_id)
+        sql.orderBy('ml.labeler_name');
+        return sql;
+      }
+
     lPurchase(knex: Knex, startdate: any, enddate: any) {
         return knex.raw(`SELECT
         g.generic_name,

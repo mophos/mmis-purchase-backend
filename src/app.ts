@@ -10,7 +10,7 @@ import * as cookieParser from 'cookie-parser';
 import * as bodyParser from 'body-parser';
 import * as cors from 'cors';
 
-const protect = require('@risingstack/protect');af
+const protect = require('@risingstack/protect');
 import expressValidator = require('express-validator');
 import * as Knex from 'knex';
 import { MySqlConnectionConfig } from 'knex';

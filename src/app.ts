@@ -10,7 +10,7 @@ import * as cookieParser from 'cookie-parser';
 import * as bodyParser from 'body-parser';
 import * as cors from 'cors';
 
-const protect = require('@risingstack/protect');
+const protect = require('@risingstack/protect');af
 import expressValidator = require('express-validator');
 import * as Knex from 'knex';
 import { MySqlConnectionConfig } from 'knex';
@@ -117,7 +117,7 @@ app.use((req, res, next) => {
     pool: {
       min: 0,
       max: 7,
-      afterCreate: (conn, done) => {
+      create: (conn, done) => {
         conn.query('SET NAMES utf8', (err) => {
           done(err, conn);
         });

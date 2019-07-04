@@ -16,7 +16,8 @@ export class StandardModel {
 
   getBidTypes(db: Knex) {
     return db('l_bid_type')
-      .orderBy('bid_id');
+      .orderBy('bid_id')
+      .where('isactive',1);
   }
 
   getBudgetTypes(db: Knex) {

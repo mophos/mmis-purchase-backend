@@ -117,16 +117,16 @@ router.get('/report/purchase', wrap(async (req, res, next) => {
 // }));
 
 router.get('/report/list/all/purchase-trade-select', wrap(async (req, res, next) => {
-  let product_id = req.query.product_id;
+  let generic_id = req.query.generic_id;
   let warehouseId = req.decoded.warehouseId;
   let db = req.db;
 
-  product_id = Array.isArray(product_id) ? product_id : [product_id]
-  Array.isArray(product_id)
+  generic_id = Array.isArray(generic_id) ? generic_id : [generic_id]
+  Array.isArray(generic_id)
 
   let array: any = [];
-  for (let i = 0; i < product_id.length; i++) {
-    let results = await model.getSelectOrderPoint(db, warehouseId, product_id[i], null);
+  for (let i = 0; i < generic_id.length; i++) {
+    let results = await model.getSelectOrderPointGeneric(db, warehouseId, generic_id[i], null);
 
     array.push(results[0][0]);
   }

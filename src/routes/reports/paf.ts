@@ -152,6 +152,8 @@ router.get('/3', wrap(async (req, res, next) => {
         i.chief = await getOfficer(db, i.chief_id);
         i.buyer = await getOfficer(db, i.buyer_id);
         i.manager = await getOfficer(db, i.manager_id);
+        console.log(i.manager.position_name, 'xzczxczxczxcxcxzczxcxzczxcxzcxzcxzczxczxcxzczxcxzczxcxzczxc');
+        
         i.committee = await getCommitee(db, i.verify_committee_id);
         i.budget_amount = basicModel.comma(i.budget_amount);
         i.at = await basicModel.at(db)//book_prefix

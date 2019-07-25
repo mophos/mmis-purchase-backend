@@ -651,7 +651,7 @@ router.put('/:purchaseOrderId', async (req, res, next) => {
         if (rsAmount.length) {
           if (rsAmount[0].amount !== transaction.totalPurchase) {
             // revoke transaction
-            await bgModel.cancelTransaction(db, purchaseOrderId);
+            // await bgModel.cancelTransaction(db, purchaseOrderId);
             await bgModel.cancelTransactionLog(db, purchaseOrderId);
             // save transaction
             await bgModel.saveLog(db, transactionData);
@@ -678,7 +678,7 @@ router.put('/:purchaseOrderId', async (req, res, next) => {
             }
           }
         } else {
-          await bgModel.cancelTransaction(db, purchaseOrderId);
+          // await bgModel.cancelTransaction(db, purchaseOrderId);
           await bgModel.cancelTransactionLog(db, purchaseOrderId);
           // save transaction
           await bgModel.saveLog(db, transactionData);

@@ -651,6 +651,7 @@ router.put('/:purchaseOrderId', async (req, res, next) => {
         if (rsAmount.length) {
           if (rsAmount[0].amount !== transaction.totalPurchase) {
             // revoke transaction
+            // await bgModel.cancelTransaction(db, purchaseOrderId);
             await bgModel.cancelTransactionLog(db, purchaseOrderId);
             // save transaction
             await bgModel.saveLog(db, transactionData);
@@ -661,7 +662,6 @@ router.put('/:purchaseOrderId', async (req, res, next) => {
 
             // tan re calculate transection 
             const ts = await bgModel.getTransaction(db, rsAmount[0].transection_id, transaction.budgetDetailId);
-            console.log(ts);
             let incomingBalance;
             for (const v of ts) {
               if (!incomingBalance) {
@@ -677,6 +677,7 @@ router.put('/:purchaseOrderId', async (req, res, next) => {
             }
           }
         } else {
+          await bgModel.cancelTransaction(db, purchaseOrderId);
           await bgModel.cancelTransactionLog(db, purchaseOrderId);
           // save transaction
           await bgModel.saveLog(db, transactionData);
@@ -789,8 +790,8 @@ router.put('/update-purchase/status', async (req, res, next) => {
             };
 
             await model.updateStatusLog(db, statusLog);
-            await bgModel.cancelTransactionLog(db, v.purchase_order_id);
             await bgModel.cancelTransaction(db, v.purchase_order_id);
+            await bgModel.cancelTransactionLog(db, v.purchase_order_id);
           }
 
           if (v.purchase_order_status === 'PREPARED') {

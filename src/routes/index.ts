@@ -117,16 +117,16 @@ router.get('/report/purchase', wrap(async (req, res, next) => {
 // }));
 
 router.get('/report/list/all/purchase-trade-select', wrap(async (req, res, next) => {
-  let product_id = req.query.product_id;
+  let generic_id = req.query.generic_id;
   let warehouseId = req.decoded.warehouseId;
   let db = req.db;
 
-  product_id = Array.isArray(product_id) ? product_id : [product_id]
-  Array.isArray(product_id)
+  generic_id = Array.isArray(generic_id) ? generic_id : [generic_id]
+  Array.isArray(generic_id)
 
   let array: any = [];
-  for (let i = 0; i < product_id.length; i++) {
-    let results = await model.getSelectOrderPoint(db, warehouseId, product_id[i], null);
+  for (let i = 0; i < generic_id.length; i++) {
+    let results = await model.getSelectOrderPointGeneric(db, warehouseId, generic_id[i], null);
 
     array.push(results[0][0]);
   }
@@ -185,6 +185,23 @@ router.get('/report/list/purchase-trade-select', wrap(async (req, res, next) => 
   moment.locale('th');
   let sdate = moment(new Date()).format('D MMMM ') + (moment(new Date()).get('year') + 543);
   res.render('listpurchase', { fill: fill, nDate: nDate, hospname: hospname, results: array, printDate: printDate(req.decoded.SYS_PRINT_DATE) })
+}));
+
+router.get('/report/list/purchase-orders-reserved', wrap(async (req, res, next) => {
+  let reserve_id = req.query.r;
+  let db = req.db;
+
+  reserve_id = Array.isArray(reserve_id) ? reserve_id : [reserve_id]
+  let results = await model.getReservedOrdered(db, reserve_id);
+
+  for (const rs of results) {
+    rs.total_cost = model.comma(rs.purchase_cost * rs.order_qty)
+    rs.purchase_cost = model.comma(rs.purchase_cost)
+    rs.order_qty = model.commaQty(rs.order_qty)
+  }
+  let hospitalDetail = await model.hospital(db);
+  moment.locale('th');
+  res.render('listReservedOrdered', { hospitalDetail: hospitalDetail, results: results, printDate: printDate(req.decoded.SYS_PRINT_DATE) })
 }));
 
 router.get('/report/list/purchase/:startdate/:enddate', wrap(async (req, res, next) => {

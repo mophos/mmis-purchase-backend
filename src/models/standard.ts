@@ -5,7 +5,7 @@ export class StandardModel {
 
   getUnitPackages(db: Knex, genericId: any) {
     return db('mm_unit_generics as mu')
-      .select('mu.standard_cost','mu.unit_generic_id', 'mu.from_unit_id', 'mu.to_unit_id', 'mu.qty',
+      .select('mu.standard_cost', 'mu.unit_generic_id', 'mu.from_unit_id', 'mu.to_unit_id', 'mu.qty',
         'mu.cost', 'mu.cost as old_cost', 'mu1.unit_name as from_unit_name', 'mu2.unit_name as to_unit_name')
       .innerJoin('mm_units as mu1', 'mu1.unit_id', 'mu.from_unit_id')
       .innerJoin('mm_units as mu2', 'mu2.unit_id', 'mu.to_unit_id')
@@ -19,9 +19,14 @@ export class StandardModel {
       .orderBy('bid_id');
   }
 
-  getBudgetTypes(db: Knex) {
-    return db('bm_bgtype')
-      .orderBy('bgtype_name');
+  getBudgetTypes(db: Knex, warehouseId: any) {
+    return db('bm_bgtype as bb')
+      .select('bb.bgtype_id', 'bb.bgtype_name', 'bb.isactive')
+      .join('bm_budget_detail as bbd', 'bbd.bgtype_id', 'bb.bgtype_id')
+      .join('bm_budget_detail_warehouse as bbdw', 'bbdw.bgdetail_id', 'bbd.bgdetail_id')
+      .where('bbdw.warehouse_id', warehouseId)
+      .groupBy('bb.bgtype_id')
+      .orderBy('bb.bgtype_name');
   }
 
   getBidProcess(db: Knex) {
@@ -30,9 +35,12 @@ export class StandardModel {
       .orderBy('name');
   }
 
-  getBudgetDetail(db: Knex, budgetYear: string, budgetTypeId: string) {
+  getBudgetDetail(db: Knex, budgetYear: string, budgetTypeId: string, warehouseId: any) {
     return db('view_budget_subtype as vs')
+      .select('vs.bgdetail_id', 'vs.bg_year', 'vs.bgtype_id', 'vs.bgtype_name', 'vs.bgtypesub_id', 'vs.bgtypesub_name', 'vs.remark', 'vs.amount')
+      .join('bm_budget_detail_warehouse as bbdw', 'bbdw.bgdetail_id', 'vs.bgdetail_id')
       .where('vs.bg_year', budgetYear)
-      .andWhere('vs.bgtype_id', budgetTypeId);
+      .andWhere('vs.bgtype_id', budgetTypeId)
+      .andWhere('bbdw.warehouse_id', warehouseId)
   }
 }

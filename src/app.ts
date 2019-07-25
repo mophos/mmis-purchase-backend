@@ -156,7 +156,7 @@ app.use('/generictype', genericTypeRoute);
 app.use('/setting', settingRoute);
 app.use('/docs', poReportRoute);
 app.use('/budget-transection', budgetTransectionRoute);
-app.use('/std', stdRoute);
+app.use('/std', checkAuth, stdRoute);
 app.use('/officer', checkAuth, officerRoute);
 app.use('/edi', checkAuth, ediRoute);
 

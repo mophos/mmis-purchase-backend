@@ -204,6 +204,48 @@ router.get('/report/list/purchase-orders-reserved', wrap(async (req, res, next) 
   res.render('listReservedOrdered', { hospitalDetail: hospitalDetail, results: results, printDate: printDate(req.decoded.SYS_PRINT_DATE) })
 }));
 
+router.get('/report/list/purchase-orders-reserved/excel', wrap(async (req, res, next) => {
+  let reserve_id = req.query.r;
+  let db = req.db;
+
+  let hospitalDetail = await model.hospital(db);
+  reserve_id = Array.isArray(reserve_id) ? reserve_id : [reserve_id]
+  let results = await model.getReservedOrdered(db, reserve_id);
+
+  for (const rs of results) {
+    rs.total_cost = model.comma(rs.purchase_cost * rs.order_qty)
+    rs.purchase_cost = model.comma(rs.purchase_cost)
+    rs.order_qty = model.commaQty(rs.order_qty)
+  }
+  moment.locale('th');
+  let json = [];
+
+  results.forEach(v => {
+    let obj: any = {};
+    obj.generic_code = v.working_code;
+    obj.generic_name = v.generic_name;
+    obj.product_name = v.product_name;
+    obj.labeler_name = v.labeler_name;
+    obj.generic_type_name = v.generic_type_name;
+    obj.contract_no = v.contract_no;
+    obj.purchase_cost = v.purchase_cost;
+    obj.order_qty = v.order_qty;
+    obj.unit = v.from_unit_name + ' (' + v.conversion_qty + ' ' + v.to_unit_name + ')';
+    obj.total_cost = v.total_cost;
+    json.push(obj);
+  });
+
+  const xls = json2xls(json);
+  const exportDirectory = path.join(process.env.MMIS_DATA, 'exports');
+  // create directory
+  fse.ensureDirSync(exportDirectory);
+  const filePath = path.join(exportDirectory, 'รายการรอออกใบสั่งซื้อ.xlsx');
+  fs.writeFileSync(filePath, xls, 'binary');
+  // force download
+  res.download(filePath, 'รายการรอออกใบสั่งซื้อ.xlsx');
+  // res.render('listReservedOrdered', { hospitalDetail: hospitalDetail, results: results, printDate: printDate(req.decoded.SYS_PRINT_DATE) })
+}));
+
 router.get('/report/list/purchase/:startdate/:enddate', wrap(async (req, res, next) => {
   let startdate = req.params.startdate;
   let enddate = req.params.enddate;

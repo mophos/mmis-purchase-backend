@@ -147,6 +147,7 @@ router.get('/3', wrap(async (req, res, next) => {
     hospitalDetail.chief = chief;
     moment.locale('th');
     const header = await model.purchasingHeader(db, purchaOrderId);
+    
     for (const i of header) {
         i.poNumber = i.purchase_order_book_number ? i.purchase_order_book_number : i.purchase_order_number;
         i.chief = await getOfficer(db, i.chief_id);

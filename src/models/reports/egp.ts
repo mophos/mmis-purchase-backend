@@ -54,7 +54,7 @@ export class EgpModel {
             .leftJoin('l_bid_process as cbp', 'cbp.id', 'po.purchase_method_id')
             .leftJoin('l_bid_type as cbt', 'cbt.bid_id', 'po.purchase_type_id')
             .leftJoin('view_budget_subtype as vb', 'vb.bgdetail_id', 'po.budget_detail_id')
-            .joinRaw(`left join pc_budget_transection as bt on bt.purchase_order_id = po.purchase_order_id and transaction_status='spend'`)
+            .joinRaw(`left join pc_budget_transection as bt on bt.purchase_order_id = po.purchase_order_id and transaction_status='spend' and remark is null`)
             .whereIn('po.purchase_order_id', purchasingOrderId)
             .andWhere('po.is_cancel', 'N')
             .orderBy('po.purchase_order_number');
@@ -135,6 +135,7 @@ export class EgpModel {
             .where('t.bgdetail_id', bgdetail_id)
             .where('b.bg_year', budgetYear)
             .where('t.transaction_status', 'SPEND')
+            .whereRaw('t.remark is null')
             .where('t.purchase_order_id', pid)
             .where('t.amount', '>', '0');
 
@@ -145,6 +146,7 @@ export class EgpModel {
             .where('pbt.bgdetail_id', bgdetail_id)
             .where('bbd.bg_year', budgetYear)
             .where('pbt.transaction_status', 'SPEND')
+            .whereRaw('pbt.remark is null')
             .where('pbt.transection_id', '<', transectionId);
     }
 }

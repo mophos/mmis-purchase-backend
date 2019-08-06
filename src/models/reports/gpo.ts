@@ -51,7 +51,7 @@ export class GpoModel {
             .leftJoin('l_bid_process as cbp', 'cbp.id', 'po.purchase_method_id')
             .leftJoin('l_bid_type as cbt', 'cbt.bid_id', 'po.purchase_type_id')
             .leftJoin('view_budget_subtype as vb', 'vb.bgdetail_id', 'po.budget_detail_id')
-            .joinRaw(`left join pc_budget_transection as bt on bt.purchase_order_id = po.purchase_order_id and transaction_status='spend'`)
+            .joinRaw(`left join pc_budget_transection as bt on bt.purchase_order_id = po.purchase_order_id and bt.transaction_status='spend' and bt.remark is null`)
             .whereIn('po.purchase_order_id', purchasingOrderId)
             .andWhere('po.is_cancel', 'N');
     }

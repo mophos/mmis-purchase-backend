@@ -147,12 +147,12 @@ router.get('/3', wrap(async (req, res, next) => {
     hospitalDetail.chief = chief;
     moment.locale('th');
     const header = await model.purchasingHeader(db, purchaOrderId);
+    
     for (const i of header) {
         i.poNumber = i.purchase_order_book_number ? i.purchase_order_book_number : i.purchase_order_number;
         i.chief = await getOfficer(db, i.chief_id);
         i.buyer = await getOfficer(db, i.buyer_id);
         i.manager = await getOfficer(db, i.manager_id);
-        console.log(i.manager.position_name, 'xzczxczxczxcxcxzczxcxzczxcxzcxzcxzczxczxcxzczxcxzczxcxzczxc');
         
         i.committee = await getCommitee(db, i.verify_committee_id);
         i.budget_amount = basicModel.comma(i.budget_amount);

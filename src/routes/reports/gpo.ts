@@ -91,10 +91,10 @@ router.get('/2', wrap(async (req, res, next) => {
     const hospitalDetail = await basicModel.hospital(db);
     hospitalDetail.chief = chief;
     moment.locale('th');
-    hospitalDetail.date = moment(new Date()).format('D MMMM ') + (moment(new Date()).get('year') + 543)
-    hospitalDetail.month = moment(new Date()).format('MMMM ') + (moment(new Date()).get('year') + 543)
     const header = await model.purchasingHeader(db, purchaOrderId);
     for (let i of header) {
+        hospitalDetail.date = moment(i.order_date).format('D MMMM ') + (moment(i.order_date).get('year') + 543)
+        hospitalDetail.month = moment(i.order_date).format('MMMM ') + (moment(i.order_date).get('year') + 543)
         i.type = type;
         i.poNumber = i.purchase_order_book_number ? i.purchase_order_book_number : i.purchase_order_number;
         const arrayItems = await model.purchasingPO(db, i.purchase_order_id, warehouseId);

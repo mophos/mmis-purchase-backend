@@ -22,7 +22,7 @@ router.get('/generic-units/:genericId', async (req, res, next) => {
   } finally {
     db.destroy();
   }
-    
+
 });
 
 router.get('/bid-types', async (req, res, next) => {
@@ -37,22 +37,23 @@ router.get('/bid-types', async (req, res, next) => {
   } finally {
     db.destroy();
   }
-    
+
 });
 
 router.get('/budget-types', async (req, res, next) => {
 
   let db = req.db;
+  let warehouseId = req.decoded.warehouseId;
 
   try {
-    let rs: any = await stdModel.getBudgetTypes(db);
+    let rs: any = await stdModel.getBudgetTypes(db, warehouseId);
     res.send({ ok: true, rows: rs });
   } catch (error) {
     res.send({ ok: false, error: error.message });
   } finally {
     db.destroy();
   }
-    
+
 });
 
 router.get('/bid-process', async (req, res, next) => {
@@ -67,16 +68,17 @@ router.get('/bid-process', async (req, res, next) => {
   } finally {
     db.destroy();
   }
-    
+
 });
 
 router.get('/budget-year/:budgetTypeId/:year', async (req, res, next) => {
   const budgetYear = req.params.year !== 'null' || !req.params.year || req.params.year !== 'undefined' ? req.params.year : moment().get('year');
   const budgetTypeId = req.params.budgetTypeId;
+  let warehouseId = req.decoded.warehouseId;
   let db = req.db;
 
   try {
-    let rs: any = await stdModel.getBudgetDetail(db, budgetYear, budgetTypeId);
+    let rs: any = await stdModel.getBudgetDetail(db, budgetYear, budgetTypeId, warehouseId);
     res.send({ ok: true, rows: rs });
   } catch (error) {
     res.send({ ok: false, error: error.message });

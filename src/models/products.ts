@@ -139,10 +139,11 @@ export class ProductsModel {
       .whereIn('reserved_status', ['SELECTED', 'CONFIRMED']);
     let sql = knex('mm_generics as mg')
       .select(knex.raw(`mg.generic_id,mg.working_code,mg.generic_name,mg.min_qty,mg.max_qty,ifnull(mgp.safety_max_day,'-') safety_max_day ,ifnull(mgp.safety_min_day,'-') safety_min_day,sum(rq.remain_qty) remain_qty,'' issue_qty,
-    ifnull( pur.total, 0 ) AS total_purchased `))
+    ifnull( pur.total, 0 ) AS total_purchased ,mgt.generic_type_name`))
       .joinRaw(`left JOIN (select generic_id,sum(remain_qty) remain_qty from view_product_reserve where warehouse_id = ${warehouseId} group by generic_id, warehouse_id) AS rq ON rq.generic_id = mg.generic_id `)
       .leftJoin('view_purchasing_total_remain as pur', 'pur.generic_id', 'mg.generic_id')
       .leftJoin(knex.raw(`mm_generic_planning as mgp on mgp.generic_id = mg.generic_id and mgp.warehouse_id = ${warehouseId} and mgp.is_active = 'Y'`))
+      .leftJoin('mm_generic_types as mgt','mgt.generic_type_id','mg.generic_type_id')
       .whereRaw('mg.mark_deleted="N"')
       .whereRaw('mg.is_active="Y"')
       .whereNotIn('mg.generic_id', subGenerics);

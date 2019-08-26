@@ -204,6 +204,24 @@ router.get('/report/list/purchase-orders-reserved', wrap(async (req, res, next) 
   res.render('listReservedOrdered', { hospitalDetail: hospitalDetail, results: results, printDate: printDate(req.decoded.SYS_PRINT_DATE) })
 }));
 
+router.get('/report/list/order-point', wrap(async (req, res, next) => {
+  let warehouseId = req.query.warehouseId;
+  let db = req.db;
+  
+
+  let hospitalDetail = await model.hospital(db);
+  let results = await model.orderPoint(db, warehouseId);
+  results = results[0]
+  
+  // for (const rs of results) {
+  //   rs.total_cost = model.comma(rs.purchase_cost * rs.order_qty)
+  //   rs.purchase_cost = model.comma(rs.purchase_cost)
+  //   rs.order_qty = model.commaQty(rs.order_qty)
+  // }
+  moment.locale('th');
+  res.render('listOrderPoint', { hospitalDetail: hospitalDetail, results: results, printDate: printDate(req.decoded.SYS_PRINT_DATE) })
+}));
+
 router.get('/report/list/purchase-orders-reserved/excel', wrap(async (req, res, next) => {
   let reserve_id = req.query.r;
   let db = req.db;

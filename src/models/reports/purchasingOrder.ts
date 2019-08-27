@@ -1323,37 +1323,37 @@ export class PurchasingOrderReportModel {
 
     orderPoint(knex: Knex, warehouseId) {
         return knex.raw(`SELECT
-            mg.generic_id,
-            mg.working_code,
-            mg.generic_name,
-            mg.min_qty,
-            mg.max_qty,
-            ifnull( mgp.safety_max_day, '-' ) safety_max_day,
-            ifnull( mgp.safety_min_day, '-' ) safety_min_day,
-            sum( rq.remain_qty ) remain_qty,
-            '' issue_qty,
-            ifnull( pur.total, 0 ) AS total_purchased,
-            mgt.generic_type_name
-        FROM
-            mm_generics AS mg
-            LEFT JOIN ( SELECT generic_id, sum( remain_qty ) remain_qty FROM view_product_reserve WHERE warehouse_id = ${warehouseId} GROUP BY generic_id, warehouse_id ) AS rq ON rq.generic_id = mg.generic_id
-            LEFT JOIN view_purchasing_total_remain AS pur ON pur.generic_id = mg.generic_id
-            LEFT JOIN mm_generic_planning AS mgp ON mgp.generic_id = mg.generic_id 
-            LEFT JOIN mm_generic_types as mgt ON mgt.generic_type_id = mg.generic_type_id
-            AND mgp.warehouse_id = ${warehouseId} 
-            AND mgp.is_active = 'Y' 
-        WHERE
-            mg.mark_deleted = "N" 
-            AND mg.is_active = "Y" 
-            AND mg.generic_id NOT IN ( SELECT generic_id FROM pc_product_reserved WHERE reserved_status IN ( 'SELECTED', 'CONFIRMED' ) ) 
-        GROUP BY
-            mg.working_code 
-        HAVING
-            remain_qty <= mg.min_qty AND ( total_purchased >= 0 
-            OR total_purchased IS NULL 
-            ) 
-        ORDER BY
-            mg.generic_name`)
+        mg.generic_id,
+        mg.working_code,
+        mg.generic_name,
+        mg.min_qty,
+        mg.max_qty,
+        ifnull( mgp.safety_max_day, '-' ) safety_max_day,
+        ifnull( mgp.safety_min_day, '-' ) safety_min_day,
+        sum( rq.remain_qty ) remain_qty,
+        '' issue_qty,
+        ifnull( pur.total, 0 ) AS total_purchased,
+        mgt.generic_type_name 
+    FROM
+        mm_generics AS mg
+        LEFT JOIN ( SELECT generic_id, sum( remain_qty ) remain_qty FROM view_product_reserve WHERE warehouse_id = ${warehouseId} GROUP BY generic_id, warehouse_id ) AS rq ON rq.generic_id = mg.generic_id
+        LEFT JOIN view_purchasing_total_remain AS pur ON pur.generic_id = mg.generic_id
+        LEFT JOIN mm_generic_planning AS mgp ON mgp.generic_id = mg.generic_id 
+        AND mgp.warehouse_id = ${warehouseId} 
+        AND mgp.is_active = 'Y'
+        LEFT JOIN mm_generic_types AS mgt ON mgt.generic_type_id = mg.generic_type_id 
+    WHERE
+        mg.mark_deleted = "N" 
+        AND mg.is_active = "Y" 
+        AND mg.generic_id NOT IN ( SELECT generic_id FROM pc_product_reserved WHERE reserved_status IN ( 'SELECTED', 'CONFIRMED' ) )
+    GROUP BY
+        mg.working_code 
+    HAVING
+        remain_qty <= mg.min_qty AND ( total_purchased >= 0 
+        OR total_purchased IS NULL 
+        ) 
+    ORDER BY
+        mg.generic_name `)
     }
 }
 

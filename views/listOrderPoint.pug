@@ -1,0 +1,51 @@
+include css.pug
+style(media='print').
+  @page {
+    //- size:landscape;
+    margin-top: 1.5cm;
+    margin-left: .5cm;
+    margin-right: .5cm;
+  }
+style.
+  table, tr, td, th {
+    font-size: 12pt;
+  }
+doctype html
+html
+  head
+    meta(charset="utf-8")
+    title report
+  body
+    button.btn.btn-sm.btn-success(onclick='window.print()') Print
+    table.table
+      thead
+        tr
+          td(colspan="8").center(style='font-weight: bold;') #{hospitalDetail.hospname}
+        tr
+          td(colspan="8").center(style='font-weight: bold;') รายการรอออกใบสั่งซื้อ
+        tr
+          td(colspan="8").left #{printDate}
+        tr
+          td(colspan="8") &nbsp;
+        tr(style="") 
+          th(style="font-size:12pt;" valign='middle') ชื่อสามัญ (Generic Name)
+          th(style="font-size:12pt;") Safety Min
+          th(style="font-size:12pt;") Safety Max
+          th(style="font-size:12pt;") Min
+          th(style="font-size:12pt;") Max
+          th(style="font-size:12pt;") คงเหลือ
+          th(style="font-size:12pt;") กำลังจัดซื้อ
+          th(style="font-size:12pt;") ประเภท
+      tbody
+        - var y=0
+        for b in results
+          - y++
+            tr(style="")
+              td #{y}. #{b.working_code} - #{b.generic_name}
+              td.right #{b.safety_min_day}
+              td.right #{b.safety_max_day}
+              td.right #{b.min_qty}
+              td.right #{b.max_qty}
+              td.right #{b.remain_qty}
+              td.right #{b.total_purchased}
+              td.right #{b.generic_type_name}

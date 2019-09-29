@@ -506,6 +506,7 @@ router.post('/', async (req, res, next) => {
           xxxbgdetail_id: transaction.budgetDetailId,
           view_bgdetail_id: transaction.viewBudgetDetailId,
           incoming_balance: transaction.budgetRemain,
+          appropriation_budget: transaction.budgetAmount,
           amount: transaction.totalPurchase,
           balance: transaction.remainAfterPurchase,
           date_time: moment().format('YYYY-MM-DD HH:mm:ss'),

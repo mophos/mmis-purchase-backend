@@ -17,14 +17,15 @@ export class StandardModel {
   getBidTypes(db: Knex) {
     return db('l_bid_type')
       .orderBy('bid_id')
-      .where('isactive',1);
+      .where('isactive', 1);
   }
 
   getBudgetTypes(db: Knex, warehouseId: any) {
     return db('bm_bgtype as bb')
       .select('bb.bgtype_id', 'bb.bgtype_name', 'bb.isactive')
       .join('bm_budget_detail as bbd', 'bbd.bgtype_id', 'bb.bgtype_id')
-      .join('bm_budget_detail_warehouse as bbdw', 'bbdw.bgdetail_id', 'bbd.bgdetail_id')
+      .join('view_budget_subtype as vbs', 'bbd.bgdetail_id', 'vbs.bgdetail_id')
+      .join('bm_budget_detail_warehouse as bbdw', 'bbdw.view_bgdetail_id', 'vbs.view_bgdetail_id')
       .where('bbdw.warehouse_id', warehouseId)
       .groupBy('bb.bgtype_id')
       .orderBy('bb.bgtype_name');
@@ -39,7 +40,7 @@ export class StandardModel {
   getBudgetDetail(db: Knex, budgetYear: string, budgetTypeId: string, warehouseId: any) {
     return db('view_budget_subtype as vs')
       .select('vs.bgdetail_id', 'vs.bg_year', 'vs.bgtype_id', 'vs.bgtype_name', 'vs.bgtypesub_id', 'vs.bgtypesub_name', 'vs.remark', 'vs.amount')
-      .join('bm_budget_detail_warehouse as bbdw', 'bbdw.bgdetail_id', 'vs.bgdetail_id')
+      .join('bm_budget_detail_warehouse as bbdw', 'bbdw.view_bgdetail_id', 'vs.view_bgdetail_id')
       .where('vs.bg_year', budgetYear)
       .andWhere('vs.bgtype_id', budgetTypeId)
       .andWhere('bbdw.warehouse_id', warehouseId)

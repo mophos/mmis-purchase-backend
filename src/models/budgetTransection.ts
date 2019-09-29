@@ -99,7 +99,7 @@ export class BudgetTransectionModel {
 
   getBalance(db: Knex, budgetDetailId: any) {
     return db('pc_budget_transection as p')
-      .select('p.*', 'v.bgtype_name', 'v.bgtypesub_name')
+      .select('p.*', 'v.bgtype_name', 'v.bgtypesub_name', 'v.amount as vamount')
       .join('view_budget_subtype as v', 'v.view_bgdetail_id', 'p.view_bgdetail_id')
       .where('p.transaction_status', 'SPEND')
       .where('p.view_bgdetail_id', budgetDetailId)

@@ -28,8 +28,6 @@ router.get('/all/:id', async (req, res, next) => {
 
   try {
     let rs: any = await model.listWithPeopleByCommitteeId(db, id);
-    console.log(rs);
-
     res.send({ ok: true, rows: rs });
   } catch (error) {
     res.send({ ok: false, error: error.message });
@@ -78,7 +76,7 @@ router.put('/:id', (req, res, next) => {
         db.destroy();
       });
   } else {
-    res.send({ ok: false, error: 'ข้อมูลไม่สมบูรณ์' }) ;
+    res.send({ ok: false, error: 'ข้อมูลไม่สมบูรณ์' });
   }
 });
 

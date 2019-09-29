@@ -197,9 +197,12 @@ router.post('/transaction/balance', async (req, res, next) => {
   let budgetDetailId = req.body.budgetDetailId;
   let purchaseOrderId = req.body.purchaseOrderId;
   try {
+    // console.log(purchaseOrderId, budgetDetailId);
+
     const transectionId: any = await budgetModel.getCurrentAmount(db, purchaseOrderId, budgetDetailId);
     const _transectionId = transectionId.length ? transectionId[0].transection_id : null;
     const totalPurchase: any = await budgetModel.getTransactionBalance(db, budgetDetailId, purchaseOrderId, _transectionId);
+
     if (purchaseOrderId) {
       const rs: any = await budgetModel.getCurrentAmount(db, purchaseOrderId, budgetDetailId);
       if (rs.length) {
@@ -229,18 +232,18 @@ router.post('/transaction/balance', async (req, res, next) => {
   }
 });
 
-router.get('/purchase-detail/:purchaseOrderId', async (req, res, next) => {
-  let purchaseOrderId = req.params.purchaseOrderId;
-  let db = req.db;
+// router.get('/purchase-detail/:purchaseOrderId', async (req, res, next) => {
+//   let purchaseOrderId = req.params.purchaseOrderId;
+//   let db = req.db;
 
-  try {
-    let detail = await budgetModel.getDetail(db, purchaseOrderId);
-    res.send({ ok: true, detail: detail[0] })
-    db.destroy();
-  } catch (error) {
-    res.send({ ok: false, error: error })
-  }
-});
+//   try {
+//     let detail = await budgetModel.getDetail(db, purchaseOrderId);
+//     res.send({ ok: true, detail: detail[0] })
+//     db.destroy();
+//   } catch (error) {
+//     res.send({ ok: false, error: error })
+//   }
+// });
 
 router.get('/history/:budgetDetailId', async (req, res, next) => {
   let budgetDetailId = req.params.budgetDetailId;

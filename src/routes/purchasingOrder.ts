@@ -356,7 +356,7 @@ router.post('/purchase-reorder', async (req, res, next) => {
             const incoming_balance = rs2[0].amount - totalPurchase[0].total_purchase;
             let transactionData = {
               purchase_order_id: v.purchase_order_id,
-              bgdetail_id: v.budget_detail_id,
+              xxxbgdetail_id: v.budget_detail_id,
               incoming_balance: incoming_balance,
               amount: amount,
               balance: incoming_balance - amount,
@@ -503,7 +503,7 @@ router.post('/', async (req, res, next) => {
 
         let transactionData = {
           purchase_order_id: purchaseOrderId,
-          bgdetail_id: transaction.budgetDetailId,
+          xxxbgdetail_id: transaction.budgetDetailId,
           view_bgdetail_id: transaction.viewBudgetDetailId,
           incoming_balance: transaction.budgetRemain,
           amount: transaction.totalPurchase,
@@ -621,7 +621,7 @@ router.put('/:purchaseOrderId', async (req, res, next) => {
         let transactionData = {
           purchase_order_id: purchaseOrderId,
           view_bgdetail_id: transaction.viewBudgetDetailId,
-          bgdetail_id: transaction.budgetDetailId,
+          xxxbgdetail_id: transaction.budgetDetailId,
           incoming_balance: transaction.budgetRemain,
           amount: transaction.totalPurchase,
           balance: transaction.remainAfterPurchase,

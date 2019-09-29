@@ -37,7 +37,7 @@ export class PurchasingOrderReportModel {
     budgetType(knex: Knex, bgdetailId: any) {
         return knex('view_budget_subtype')
             .select('bgtype_id', 'bgtype_name', 'bgtypesub_name', 'amount', knex.raw('bg_year+543 as bg_year'))
-            .where('bgdetail_id', bgdetailId);
+            .where('view_bgdetail_id', bgdetailId);
     }
     budgetTypeRemark(knex: Knex, bgdetail_id: any) {
         return knex.raw(`SELECT remark,bgtype_id,bgtype_name,bgtypesub_name,amount,bg_year+543 as bg_year FROM view_budget_subtype WHERE bgdetail_id=?`, [bgdetail_id])

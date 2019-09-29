@@ -180,7 +180,9 @@ router.get('/transaction/:budgetDetailId', async (req, res, next) => {
   let db = req.db;
   let budgetDetailId = req.params.budgetDetailId;
   try {
-    const rs: any = await budgetModel.getBudgetTransaction(db, budgetDetailId);
+    const rs: any = await budgetModel.getBalance(db, budgetDetailId);
+    console.log('xcmz,mxcnv.z,mxcnv.zm,xncv.mznxcv', rs);
+    
     res.send({ ok: true, detail: rs[0] });
   } catch (error) {
     console.log(error)

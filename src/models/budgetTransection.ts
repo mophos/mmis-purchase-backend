@@ -4,14 +4,19 @@ import * as express from 'express';
 
 export class BudgetTransectionModel {
 
-
   getCurrentAmount(db: Knex, purchaseOrderId: any, budgetDetailId: any) {
-    return db('pc_budget_transection')
-      // .select('amount', 'transection_id')
-      .where('purchase_order_id', purchaseOrderId)
-      .where('transaction_status', 'SPEND')
-      .where('view_bgdetail_id', budgetDetailId)
+    let sql = db('pc_budget_transection as pt')
+      .select('pt.*', 'v.bgtype_name', 'v.bgtypesub_name')
+      .join('view_budget_subtype as v', 'v.view_bgdetail_id', 'pt.view_bgdetail_id')
+      .join('pc_purchasing_order as po', 'po.purchase_order_id', 'pt.purchase_order_id')
+      .where('pt.purchase_order_id', purchaseOrderId)
+      .where('pt.view_bgdetail_id', budgetDetailId)
+      .whereRaw(`IF
+      ( po.is_cancel = 'N',  pt.transaction_status = 'SPEND',  pt.transaction_status = 'REVOKE' or pt.transaction_status = 'SPEND'  )`)
       .limit(1);
+      console.log(sql.toString());
+      return sql;
+      
   }
 
   // save transaction

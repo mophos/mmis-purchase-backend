@@ -181,8 +181,6 @@ router.get('/transaction/:budgetDetailId', async (req, res, next) => {
   let budgetDetailId = req.params.budgetDetailId;
   try {
     const rs: any = await budgetModel.getBalance(db, budgetDetailId);
-    console.log('xcmz,mxcnv.z,mxcnv.zm,xncv.mznxcv', rs);
-    
     res.send({ ok: true, detail: rs[0] });
   } catch (error) {
     console.log(error)
@@ -196,9 +194,11 @@ router.post('/transaction/balance', async (req, res, next) => {
   let db = req.db;
   let budgetDetailId = req.body.budgetDetailId;
   let purchaseOrderId = req.body.purchaseOrderId;
-  try {
-    // console.log(purchaseOrderId, budgetDetailId);
 
+  try {
+    if (purchaseOrderId) {
+
+    }
     const transectionId: any = await budgetModel.getCurrentAmount(db, purchaseOrderId, budgetDetailId);
     const _transectionId = transectionId.length ? transectionId[0].transection_id : null;
     const totalPurchase: any = await budgetModel.getTransactionBalance(db, budgetDetailId, purchaseOrderId, _transectionId);
@@ -213,7 +213,6 @@ router.post('/transaction/balance', async (req, res, next) => {
         res.send({ ok: true, rows: rs2[0], totalPurchase: totalPurchase[0].total_purchase });
       }
     } else {
-
       const rs: any = await budgetModel.getBalance(db, budgetDetailId);
       if (rs.length) {
         rs[0].incoming_balance = rs[0].balance;

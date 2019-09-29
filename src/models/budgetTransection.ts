@@ -101,7 +101,7 @@ export class BudgetTransectionModel {
     return db('pc_budget_transection as p')
       .select('p.*', 'v.bgtype_name', 'v.bgtypesub_name', 'v.amount as vamount')
       .join('view_budget_subtype as v', 'v.view_bgdetail_id', 'p.view_bgdetail_id')
-      .where('p.transaction_status', 'SPEND')
+      .whereIn('p.transaction_status', ['SPEND', 'ADDED'])
       .where('p.view_bgdetail_id', budgetDetailId)
       .orderBy('p.transection_id', 'DESC')
       .limit(1)

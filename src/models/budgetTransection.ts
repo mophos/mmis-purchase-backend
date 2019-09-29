@@ -10,15 +10,15 @@ export class BudgetTransectionModel {
       // .select('amount', 'transection_id')
       .where('purchase_order_id', purchaseOrderId)
       .where('transaction_status', 'SPEND')
-      .where('bgdetail_id', budgetDetailId)
+      .where('view_bgdetail_id', budgetDetailId)
       .limit(1);
   }
 
   // save transaction
-  saveLog(knex: Knex, datas: any) {
-    return knex('pc_budget_transection_log')
-      .insert(datas);
-  }
+  // saveLog(knex: Knex, datas: any) {
+  //   return knex('pc_budget_transection_log')
+  //     .insert(datas);
+  // }
 
   save(knex: Knex, datas: any) {
     return knex('pc_budget_transection')
@@ -72,11 +72,11 @@ export class BudgetTransectionModel {
 
   }
 
-  cancelTransactionLog(knex: Knex, purchaseOrderId: any) {
-    return knex('pc_budget_transection_log')
-      .where('purchase_order_id', purchaseOrderId)
-      .update('transaction_status', 'REVOKE');
-  }
+  // cancelTransactionLog(knex: Knex, purchaseOrderId: any) {
+  //   return knex('pc_budget_transection_log')
+  //     .where('purchase_order_id', purchaseOrderId)
+  //     .update('transaction_status', 'REVOKE');
+  // }
 
   cancelTransaction(knex: Knex, purchaseOrderId: any) {
     return knex('pc_budget_transection')
@@ -84,10 +84,10 @@ export class BudgetTransectionModel {
       .update('transaction_status', 'REVOKE');
   }
 
-  getTransaction(db: Knex, transectionId: any, budgetDetailId: any) {
+  getTransaction(db: Knex, transectionId: any, viewBudgetDetailId: any) {
     return db('pc_budget_transection')
-      .where('transaction_status', 'SPEND')
-      .where('bgdetail_id', budgetDetailId)
+      .whereIn('transaction_status', ['SPEND', 'ADDED'])
+      .where('view_bgdetail_id', viewBudgetDetailId)
       .where('transection_id', '>=', transectionId)
       .orderBy('transection_id')
   }

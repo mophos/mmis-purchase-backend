@@ -623,6 +623,7 @@ router.put('/:purchaseOrderId', async (req, res, next) => {
           purchase_order_id: purchaseOrderId,
           view_bgdetail_id: transaction.viewBudgetDetailId,
           xxxbgdetail_id: transaction.budgetDetailId,
+          appropriation_budget: transaction.budgetAmount,
           incoming_balance: transaction.budgetRemain,
           amount: transaction.totalPurchase,
           balance: transaction.remainAfterPurchase,

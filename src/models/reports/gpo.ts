@@ -50,7 +50,7 @@ export class GpoModel {
             .leftJoin(knex.raw('l_province as lp on lp.province_code = ml.province_code'))
             .leftJoin('l_bid_process as cbp', 'cbp.id', 'po.purchase_method_id')
             .leftJoin('l_bid_type as cbt', 'cbt.bid_id', 'po.purchase_type_id')
-            .leftJoin('view_budget_subtype as vb', 'vb.bgdetail_id', 'po.budget_detail_id')
+            .leftJoin('view_budget_subtype as vb', 'vb.view_bgdetail_id', 'po.budget_detail_id')
             .joinRaw(`left join pc_budget_transection as bt on bt.purchase_order_id = po.purchase_order_id and bt.transaction_status='spend' and bt.remark is null`)
             .whereIn('po.purchase_order_id', purchasingOrderId)
             .andWhere('po.is_cancel', 'N');
@@ -127,8 +127,8 @@ export class GpoModel {
         const transectionId = knex('pc_budget_transection as t')
             .select('t.transection_id')
             .join('pc_purchasing_order as p', 'p.purchase_order_id', 't.purchase_order_id')
-            .join('bm_budget_detail as b', 'b.bgdetail_id', 't.bgdetail_id')
-            .where('t.bgdetail_id', bgdetail_id)
+            .join('bm_budget_detail as b', 'b.bgdetail_id', 't.view_bgdetail_id')
+            .where('t.view_bgdetail_id', bgdetail_id)
             // .where('b.bg_year', budgetYear)
             .where('t.transaction_status', 'SPEND')
             .where('t.purchase_order_id', pid)
@@ -136,9 +136,9 @@ export class GpoModel {
 
         return knex('pc_budget_transection as pbt')
             .sum('pbt.amount as amount')
-            .leftJoin('bm_budget_detail as bbd', 'bbd.bgdetail_id', 'pbt.bgdetail_id')
+            .leftJoin('bm_budget_detail as bbd', 'bbd.bgdetail_id', 'pbt.view_bgdetail_id')
             .leftJoin('pc_purchasing_order as po', 'po.purchase_order_id', 'pbt.purchase_order_id')
-            .where('pbt.bgdetail_id', bgdetail_id)
+            .where('pbt.view_bgdetail_id', bgdetail_id)
             // .where('bbd.bg_year', budgetYear)
             .where('pbt.transaction_status', 'SPEND')
             .where('pbt.transection_id', '<', transectionId);

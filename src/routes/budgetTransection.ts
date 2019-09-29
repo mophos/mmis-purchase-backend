@@ -230,18 +230,18 @@ router.post('/transaction/balance', async (req, res, next) => {
   }
 });
 
-router.get('/purchase-detail/:purchaseOrderId', async (req, res, next) => {
-  let purchaseOrderId = req.params.purchaseOrderId;
-  let db = req.db;
+// router.get('/purchase-detail/:purchaseOrderId', async (req, res, next) => {
+//   let purchaseOrderId = req.params.purchaseOrderId;
+//   let db = req.db;
 
-  try {
-    let detail = await budgetModel.getDetail(db, purchaseOrderId);
-    res.send({ ok: true, detail: detail[0] })
-    db.destroy();
-  } catch (error) {
-    res.send({ ok: false, error: error })
-  }
-});
+//   try {
+//     let detail = await budgetModel.getDetail(db, purchaseOrderId);
+//     res.send({ ok: true, detail: detail[0] })
+//     db.destroy();
+//   } catch (error) {
+//     res.send({ ok: false, error: error })
+//   }
+// });
 
 router.get('/history/:budgetDetailId', async (req, res, next) => {
   let budgetDetailId = req.params.budgetDetailId;

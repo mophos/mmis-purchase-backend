@@ -196,9 +196,6 @@ router.post('/transaction/balance', async (req, res, next) => {
   let purchaseOrderId = req.body.purchaseOrderId;
 
   try {
-    if (purchaseOrderId) {
-
-    }
     const transectionId: any = await budgetModel.getCurrentAmount(db, purchaseOrderId, budgetDetailId);
     const _transectionId = transectionId.length ? transectionId[0].transection_id : null;
     const totalPurchase: any = await budgetModel.getTransactionBalance(db, budgetDetailId, purchaseOrderId, _transectionId);
@@ -219,6 +216,8 @@ router.post('/transaction/balance', async (req, res, next) => {
         res.send({ ok: true, rows: rs[0], totalPurchase: totalPurchase[0].total_purchase });
       } else {
         const rs: any = await budgetModel.getBudgetTransaction(db, budgetDetailId);
+        console.log(rs[0], ' xcvzxcvz.,xcvmz.,xcmvz.x,cmvz.xc');
+        rs[0].appropriation_budget = rs[0].amount;
         rs[0].incoming_balance = rs[0].amount;
         res.send({ ok: true, rows: rs[0], totalPurchase: totalPurchase[0].total_purchase });
       }

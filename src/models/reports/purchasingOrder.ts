@@ -307,25 +307,25 @@ export class PurchasingOrderReportModel {
 
     getReservedOrdered(db: Knex, reserve_id) {
         let sql = db('pc_product_reserved as rv')
-          .select('mg.working_code', 'mp.product_name', 'mg.generic_id', 'rv.contract_id',
-            'mg.generic_name', 'rv.cost as purchase_cost', 'rv.purchase_qty as order_qty',
-            'rv.unit_generic_id', 'gt.generic_type_id', 'rv.product_id', 'rv.reserve_id',
-            'ut.unit_name as to_unit_name', 'uf.unit_name as from_unit_name', 'mp.v_labeler_id', 'mp.m_labeler_id',
-            'ug.qty as conversion_qty', 'ml.labeler_name', 'gt.generic_type_name', 'vcpa.contract_id', 'vcpa.contract_no')
-          .innerJoin('mm_products as mp', 'mp.product_id', 'rv.product_id')
-          .innerJoin('mm_generics as mg', 'mg.generic_id', 'mp.generic_id')
-          .innerJoin('mm_generic_types as gt', 'gt.generic_type_id', 'mg.generic_type_id')
-          .innerJoin('mm_labelers as ml', 'ml.labeler_id', 'mp.v_labeler_id')
-          .leftJoin('mm_unit_generics as ug', 'ug.unit_generic_id', 'rv.unit_generic_id')
-          .leftJoin('mm_units as uf', 'uf.unit_id', 'ug.from_unit_id')
-          .leftJoin('mm_units as ut', 'ut.unit_id', 'ug.to_unit_id')
-          .leftJoin('view_cm_products_active as vcpa', 'vcpa.product_id', 'mp.product_id')
-          .whereRaw('mg.mark_deleted="N"')
-          .where('rv.reserved_status', 'CONFIRMED')
-          .whereIn('rv.reserve_id',reserve_id)
+            .select('mg.working_code', 'mp.product_name', 'mg.generic_id', 'rv.contract_id',
+                'mg.generic_name', 'rv.cost as purchase_cost', 'rv.purchase_qty as order_qty',
+                'rv.unit_generic_id', 'gt.generic_type_id', 'rv.product_id', 'rv.reserve_id',
+                'ut.unit_name as to_unit_name', 'uf.unit_name as from_unit_name', 'mp.v_labeler_id', 'mp.m_labeler_id',
+                'ug.qty as conversion_qty', 'ml.labeler_name', 'gt.generic_type_name', 'vcpa.contract_id', 'vcpa.contract_no')
+            .innerJoin('mm_products as mp', 'mp.product_id', 'rv.product_id')
+            .innerJoin('mm_generics as mg', 'mg.generic_id', 'mp.generic_id')
+            .innerJoin('mm_generic_types as gt', 'gt.generic_type_id', 'mg.generic_type_id')
+            .innerJoin('mm_labelers as ml', 'ml.labeler_id', 'mp.v_labeler_id')
+            .leftJoin('mm_unit_generics as ug', 'ug.unit_generic_id', 'rv.unit_generic_id')
+            .leftJoin('mm_units as uf', 'uf.unit_id', 'ug.from_unit_id')
+            .leftJoin('mm_units as ut', 'ut.unit_id', 'ug.to_unit_id')
+            .leftJoin('view_cm_products_active as vcpa', 'vcpa.product_id', 'mp.product_id')
+            .whereRaw('mg.mark_deleted="N"')
+            .where('rv.reserved_status', 'CONFIRMED')
+            .whereIn('rv.reserve_id', reserve_id)
         sql.orderBy('ml.labeler_name');
         return sql;
-      }
+    }
 
     lPurchase(knex: Knex, startdate: any, enddate: any) {
         return knex.raw(`SELECT
@@ -1319,6 +1319,41 @@ export class PurchasingOrderReportModel {
             .whereNotNull('pc.approved_date')
             .whereIn('pc.purchase_order_id', purchaseOrderId)
             .groupBy('r.receive_id')
+    }
+
+    orderPoint(knex: Knex, warehouseId) {
+        return knex.raw(`SELECT
+        mg.generic_id,
+        mg.working_code,
+        mg.generic_name,
+        mg.min_qty,
+        mg.max_qty,
+        ifnull( mgp.safety_max_day, '-' ) safety_max_day,
+        ifnull( mgp.safety_min_day, '-' ) safety_min_day,
+        sum( rq.remain_qty ) remain_qty,
+        '' issue_qty,
+        ifnull( pur.total, 0 ) AS total_purchased,
+        mgt.generic_type_name 
+    FROM
+        mm_generics AS mg
+        LEFT JOIN ( SELECT generic_id, sum( remain_qty ) remain_qty FROM view_product_reserve WHERE warehouse_id = ${warehouseId} GROUP BY generic_id, warehouse_id ) AS rq ON rq.generic_id = mg.generic_id
+        LEFT JOIN view_purchasing_total_remain AS pur ON pur.generic_id = mg.generic_id
+        LEFT JOIN mm_generic_planning AS mgp ON mgp.generic_id = mg.generic_id 
+        AND mgp.warehouse_id = ${warehouseId} 
+        AND mgp.is_active = 'Y'
+        LEFT JOIN mm_generic_types AS mgt ON mgt.generic_type_id = mg.generic_type_id 
+    WHERE
+        mg.mark_deleted = "N" 
+        AND mg.is_active = "Y" 
+        AND mg.generic_id NOT IN ( SELECT generic_id FROM pc_product_reserved WHERE reserved_status IN ( 'SELECTED', 'CONFIRMED' ) )
+    GROUP BY
+        mg.working_code 
+    HAVING
+        remain_qty <= mg.min_qty AND ( total_purchased >= 0 
+        OR total_purchased IS NULL 
+        ) 
+    ORDER BY
+        mg.generic_name `)
     }
 }
 

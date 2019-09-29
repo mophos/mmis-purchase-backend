@@ -32,15 +32,15 @@ html
           td(colspan='3')
           td(colspan='2') #{hospitalDetail.month}
     br
-    .enter เรื่อง สั่งซื้อยา
+    .enter เรื่อง สั่งซื้อยา/เวชภัณฑ์มิใช่ยา
     .enter เรียน ผู้อำนวยการองค์การเภสัชกรรม
     .enter สิ่งที่ส่งมาด้วย 1. ใบสั่งซื้อยา พร้อมเงื่อนไข&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; จำนวน 1 ฉบับ
     .fontspace
-    .enter &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2. สำเนาใบอนุมัติสั่งซื้อยา&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; จำนวน 1 ฉบับ
+    .enter &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2. สำเนาใบอนุมัติสั่งซื้อยา/เวชภัณฑ์มิใช่ยา&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; จำนวน 1 ฉบับ
     .fontspace
-    .enter(style="line-height: 1.2em;") &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ด้วยจังหวัด#{hospitalDetail.province} มีความประสงค์จะสั่งซื้อยา จากองค์การเภสัชกรรม เพื่อใช้ในราชการ #{hospitalDetail.hospname} จำนวน #{i.arrayItems.length} รายการ เป็นเงิน #{i.total_price} บาท (#{i.bahtText}) สำเนาใบอนุมัติสั่งซื้อยาและใบสั่งซื้อยาพร้อมเงื่อนไขในการสั่งซื้อที่แนบมาพร้อมนี้
+    .enter(style="line-height: 1.2em;") &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ด้วยจังหวัด#{hospitalDetail.province} มีความประสงค์จะสั่งซื้อยา/เวชภัณฑ์มิใช่ยา จากองค์การเภสัชกรรม เพื่อใช้ในราชการ #{hospitalDetail.hospname} จำนวน #{i.arrayItems.length} รายการ เป็นเงิน #{i.total_price} บาท (#{i.bahtText}) สำเนาใบอนุมัติสั่งซื้อยา/เวชภัณฑ์มิใช่ยาและใบสั่งซื้อยา/เวชภัณฑ์มิใช่ยาพร้อมเงื่อนไขในการสั่งซื้อที่แนบมาพร้อมนี้
     .fontspace
-    .enter &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;จึงเรียนมาเพื่อโปรดจัดส่งยา ให้แก่#{hospitalDetail.hospname} ตามกำหนดเวลาและสถานที่ ที่ระบุในใบสั่งซื้อด้วย จักเป็นพระคุณ
+    .enter &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;จึงเรียนมาเพื่อโปรดจัดส่งยา/เวชภัณฑ์มิใช่ยา ให้แก่#{hospitalDetail.hospname} ตามกำหนดเวลาและสถานที่ ที่ระบุในใบสั่งซื้อด้วย จักเป็นพระคุณ
     div(style='margin-left: 40%; width: 40%; text-align:center;')
       | ขอแสดงความนับถือ
       br
@@ -109,15 +109,15 @@ html
     table
       tr
         td.bold(style='font-size: 20pt; width:30px;') เรื่อง
-        td(style='border-bottom: 1px dotted black;').left &nbsp;ขออนุมัติซื้อยาด้วย#{i.budget_type_name} ประจำปีงบประมาณ #{i.budget_year}
+        td(style='border-bottom: 1px dotted black;').left &nbsp;ขออนุมัติซื้อยา/เวชภัณฑ์มิใช่ยาด้วย#{i.budget_type_name} ประจำปีงบประมาณ #{i.budget_year}
     br
     .enter เรียน ผู้ว่าราชการจังหวัด#{hospitalDetail.province}
     .enter
     .fontspace
-    p(style="line-height: 1.2em;") ด้วย#{hospitalDetail.hospname} มีความประสงค์จะสั่งซื้อยา จากองค์การเภสัชกรรม ตามใบสั่งซื้อที่แนบมาพร้อมนี้ เพื่อใช้ในการรักษาพยาบาล จำนวน #{i.arrayItems.length} รายการ เป็นเงิน #{i.total_price} บาท (#{i.bahtText}) โดยใช้#{i.budget_type_name} ประจำปีงบประมาณ #{i.budget_year}
+    p(style="line-height: 1.2em;") ด้วย#{hospitalDetail.hospname} มีความประสงค์จะสั่งซื้อยา/เวชภัณฑ์มิใช่ยา จากองค์การเภสัชกรรม ตามใบสั่งซื้อที่แนบมาพร้อมนี้ เพื่อใช้ในการรักษาพยาบาล จำนวน #{i.arrayItems.length} รายการ เป็นเงิน #{i.total_price} บาท (#{i.bahtText}) โดยใช้#{i.budget_type_name} ประจำปีงบประมาณ #{i.budget_year}
     .enter
     .fontspace(style="line-height: 1.2em;")
-    | จึงเรียนมาเพื่อขออนุมัติซื้อยาดังกล่าว
+    | จึงเรียนมาเพื่อขออนุมัติซื้อยา/เวชภัณฑ์มิใช่ยาดังกล่าว
     if(i.type == 8 || i.type == 9 || i.type == 10)
       | ตามพระราชบัญญัติการจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ.2560 
     if(i.type == 8) 

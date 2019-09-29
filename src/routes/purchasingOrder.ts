@@ -363,7 +363,7 @@ router.post('/purchase-reorder', async (req, res, next) => {
               date_time: moment().format('YYYY-MM-DD HH:mm:ss'),
               transaction_status: 'SPEND'
             }
-            await bgModel.saveLog(db, transactionData);
+            // await bgModel.saveLog(db, transactionData);
             await bgModel.save(db, transactionData);
           }
           _poItems.push(obj);
@@ -445,25 +445,11 @@ router.post('/', async (req, res, next) => {
         }
 
         serial = await serialModel.getSerial(db, 'PO', year, warehouseId);
-        // if (summary.generic_type_id === 1) {
-        // serial = await serialModel.getSerial(db, 'PO', year,warehouseId);
-        // } else if (summary.generic_type_id === 2) {
-        //   serial = await serialModel.getSerial(db, 'POA', year,warehouseId);
-        // } else if (summary.generic_type_id === 3) {
-        //   serial = await serialModel.getSerial(db, 'POB', year,warehouseId);
-        // } else if (summary.generic_type_id === 4) {
-        //   serial = await serialModel.getSerial(db, 'POC', year,warehouseId);
-        // } else if (summary.generic_type_id === 5) {
-        //   serial = await serialModel.getSerial(db, 'POD', year,warehouseId);
-        // } else {
-        //   serial = await serialModel.getSerial(db, 'PO', year,warehouseId);
-        // }
 
         purchase.warehouse_id = warehouseId;
         purchase.purchase_order_number = serial;
         purchase.purchase_order_status = 'PREPARED';
         purchase.purchase_order_id = purchaseOrderId;
-        // purchasing_id: summary.purchasing_id;
         purchase.labeler_id = summary.labeler_id;
         purchase.verify_committee_id = summary.verify_committee_id;
         purchase.order_date = summary.order_date;
@@ -471,7 +457,6 @@ router.post('/', async (req, res, next) => {
         purchase.discount_cash = summary.discount_cash;
         purchase.exclude_vat = summary.exclude_vat;
         purchase.include_vat = summary.include_vat;
-        // purchase.is_before_vat = summary.is_before_vat;
         purchase.sub_total = summary.sub_total;
         purchase.vat_rate = summary.vat_rate;
         purchase.vat = summary.vat;
@@ -519,6 +504,7 @@ router.post('/', async (req, res, next) => {
         let transactionData = {
           purchase_order_id: purchaseOrderId,
           bgdetail_id: transaction.budgetDetailId,
+          view_bgdetail_id: transaction.viewBudgetDetailId,
           incoming_balance: transaction.budgetRemain,
           amount: transaction.totalPurchase,
           balance: transaction.remainAfterPurchase,
@@ -528,7 +514,7 @@ router.post('/', async (req, res, next) => {
         // save
         await model.save(db, purchase);
         await modelItems.save(db, products);
-        await bgModel.saveLog(db, transactionData);
+        // await bgModel.saveLog(db, transactionData);
         await bgModel.save(db, transactionData);
         res.send({ ok: true });
       }
@@ -634,6 +620,7 @@ router.put('/:purchaseOrderId', async (req, res, next) => {
 
         let transactionData = {
           purchase_order_id: purchaseOrderId,
+          view_bgdetail_id: transaction.viewBudgetDetailId,
           bgdetail_id: transaction.budgetDetailId,
           incoming_balance: transaction.budgetRemain,
           amount: transaction.totalPurchase,
@@ -647,27 +634,30 @@ router.put('/:purchaseOrderId', async (req, res, next) => {
         await modelItems.save(db, products);
 
         // check 
-        let rsAmount = await bgModel.getCurrentAmount(db, purchaseOrderId, transaction.budgetDetailId);
+        let rsAmount = await bgModel.getCurrentAmount(db, purchaseOrderId, transaction.viewBudgetDetailId);
         if (rsAmount.length) {
           if (rsAmount[0].amount !== transaction.totalPurchase) {
             // revoke transaction
             // await bgModel.cancelTransaction(db, purchaseOrderId);
-            await bgModel.cancelTransactionLog(db, purchaseOrderId);
+            // await bgModel.cancelTransactionLog(db, purchaseOrderId);
             // save transaction
-            await bgModel.saveLog(db, transactionData);
+            // await bgModel.saveLog(db, transactionData);
             // tan update transaction
-            console.log('update', transactionData.amount);
-
             await bgModel.update(db, { 'amount': transactionData.amount }, rsAmount[0].transection_id);
 
             // tan re calculate transection 
-            const ts = await bgModel.getTransaction(db, rsAmount[0].transection_id, transaction.budgetDetailId);
+            const ts = await bgModel.getTransaction(db, rsAmount[0].transection_id, transaction.viewBudgetDetailId);
             let incomingBalance;
             for (const v of ts) {
               if (!incomingBalance) {
                 incomingBalance = v.incoming_balance;
               }
-              const balance = incomingBalance - v.amount
+              let balance = 0;
+              if (v.transaction_status == 'SPEND') {
+                balance = incomingBalance - v.amount
+              } else if (v.transaction_status == 'ADDED') {
+                balance = incomingBalance + v.amount
+              }
               const obj = {
                 incoming_balance: incomingBalance,
                 balance: balance
@@ -678,9 +668,9 @@ router.put('/:purchaseOrderId', async (req, res, next) => {
           }
         } else {
           await bgModel.cancelTransaction(db, purchaseOrderId);
-          await bgModel.cancelTransactionLog(db, purchaseOrderId);
+          // await bgModel.cancelTransactionLog(db, purchaseOrderId);
           // save transaction
-          await bgModel.saveLog(db, transactionData);
+          // await bgModel.saveLog(db, transactionData);
           // tan save transaction
           await bgModel.save(db, transactionData);
         }
@@ -791,7 +781,7 @@ router.put('/update-purchase/status', async (req, res, next) => {
 
             await model.updateStatusLog(db, statusLog);
             await bgModel.cancelTransaction(db, v.purchase_order_id);
-            await bgModel.cancelTransactionLog(db, v.purchase_order_id);
+            // await bgModel.cancelTransactionLog(db, v.purchase_order_id);
           }
 
           if (v.purchase_order_status === 'PREPARED') {

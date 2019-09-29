@@ -107,7 +107,8 @@ let dbConnection: MySqlConnectionConfig = {
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
-  multipleStatements: true
+  multipleStatements: true,
+  debug: false
 }
 
 app.use((req, res, next) => {
@@ -123,7 +124,7 @@ app.use((req, res, next) => {
         });
       }
     },
-    debug: true,
+    debug: false,
     acquireConnectionTimeout: 10000
   });
 

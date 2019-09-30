@@ -14,9 +14,9 @@ export class BudgetTransectionModel {
       .whereRaw(`IF
       ( po.is_cancel = 'N',  pt.transaction_status = 'SPEND',  pt.transaction_status = 'REVOKE' or pt.transaction_status = 'SPEND'  )`)
       .limit(1);
-      console.log(sql.toString());
-      return sql;
-      
+    console.log(sql.toString());
+    return sql;
+
   }
 
   // save transaction
@@ -97,11 +97,18 @@ export class BudgetTransectionModel {
       .orderBy('transection_id')
   }
 
+  getlastTransactionWithPo(db: Knex, purchaseOrderId: any) {
+    return db('pc_budget_transection')
+      .where('transaction_status', 'REVOKE')
+      .whereIn('purchase_order_id', purchaseOrderId)
+      .limit(1)
+  }
+
   getBalance(db: Knex, budgetDetailId: any) {
     return db('pc_budget_transection as p')
-      .select('p.*', 'v.bgtype_name', 'v.bgtypesub_name')
+      .select('p.*', 'v.bgtype_name', 'v.bgtypesub_name', 'v.amount as vamount')
       .join('view_budget_subtype as v', 'v.view_bgdetail_id', 'p.view_bgdetail_id')
-      .where('p.transaction_status', 'SPEND')
+      .whereIn('p.transaction_status', ['SPEND', 'ADDED'])
       .where('p.view_bgdetail_id', budgetDetailId)
       .orderBy('p.transection_id', 'DESC')
       .limit(1)

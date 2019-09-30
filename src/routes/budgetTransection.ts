@@ -212,11 +212,11 @@ router.post('/transaction/balance', async (req, res, next) => {
     } else {
       const rs: any = await budgetModel.getBalance(db, budgetDetailId);
       if (rs.length) {
+        rs[0].appropriation_budget = rs[0].vamount;
         rs[0].incoming_balance = rs[0].balance;
         res.send({ ok: true, rows: rs[0], totalPurchase: totalPurchase[0].total_purchase });
       } else {
         const rs: any = await budgetModel.getBudgetTransaction(db, budgetDetailId);
-        console.log(rs[0], ' xcvzxcvz.,xcvmz.,xcmvz.x,cmvz.xc');
         rs[0].appropriation_budget = rs[0].amount;
         rs[0].incoming_balance = rs[0].amount;
         res.send({ ok: true, rows: rs[0], totalPurchase: totalPurchase[0].total_purchase });

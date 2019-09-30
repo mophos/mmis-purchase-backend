@@ -506,6 +506,7 @@ router.post('/', async (req, res, next) => {
           bgdetail_id: transaction.budgetDetailId,
           view_bgdetail_id: transaction.viewBudgetDetailId,
           incoming_balance: transaction.budgetRemain,
+          appropriation_budget: transaction.budgetAmount,
           amount: transaction.totalPurchase,
           balance: transaction.remainAfterPurchase,
           date_time: moment().format('YYYY-MM-DD HH:mm:ss'),
@@ -622,6 +623,7 @@ router.put('/:purchaseOrderId', async (req, res, next) => {
           purchase_order_id: purchaseOrderId,
           view_bgdetail_id: transaction.viewBudgetDetailId,
           bgdetail_id: transaction.budgetDetailId,
+          appropriation_budget: transaction.budgetAmount,
           incoming_balance: transaction.budgetRemain,
           amount: transaction.totalPurchase,
           balance: transaction.remainAfterPurchase,
@@ -714,7 +716,7 @@ router.post('/checkApprove', async (req, res, next) => {
 router.put('/update-purchase/status', async (req, res, next) => {
   const db = req.db;
   let items = req.body.items;
-
+  let checkStatusCancel = false
   let year = moment().get('year');
   let month = moment().get('month') + 1;
 
@@ -781,6 +783,7 @@ router.put('/update-purchase/status', async (req, res, next) => {
 
             await model.updateStatusLog(db, statusLog);
             await bgModel.cancelTransaction(db, v.purchase_order_id);
+            checkStatusCancel = true
             // await bgModel.cancelTransactionLog(db, v.purchase_order_id);
           }
 
@@ -812,6 +815,31 @@ router.put('/update-purchase/status', async (req, res, next) => {
           }
         }
 
+        if (checkStatusCancel) {
+          var poId = _.map(items, (v) => {
+            return v.purchase_order_id
+          })
+          const tsWihtPo = await bgModel.getlastTransactionWithPo(db, poId);
+          const ts = await bgModel.getTransaction(db, tsWihtPo[0].transection_id, tsWihtPo[0].view_bgdetail_id);
+          let incomingBalance = tsWihtPo[0].incoming_balance;
+          for (const v of ts) {
+            if (!incomingBalance) {
+              incomingBalance = v.incoming_balance;
+            }
+            let balance = 0;
+            if (v.transaction_status == 'SPEND') {
+              balance = incomingBalance - v.amount
+            } else if (v.transaction_status == 'ADDED') {
+              balance = incomingBalance + v.amount
+            }
+            const obj = {
+              incoming_balance: incomingBalance,
+              balance: balance
+            }
+            incomingBalance = balance;
+            await bgModel.update(db, obj, v.transection_id);
+          }
+        }
         res.send({ ok: true });
       } catch (error) {
         console.log(error);

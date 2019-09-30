@@ -11,7 +11,6 @@ import * as _ from 'lodash';
 import { PeriodModel } from '../models/period';
 import { BudgetTransectionModel } from '../models/budgetTransection';
 import { ProductsModel } from '../models/products';
-import e = require('express');
 const serialModel = new SerialModel();
 const router = express.Router();
 const model = new PurchasingOrderModel();

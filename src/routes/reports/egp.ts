@@ -91,8 +91,7 @@ router.get('/2', wrap(async (req, res, next) => {
     moment.locale('th');
 
     const header = await model.purchasingHeader(db, porder);
-    console.log('ldvk.cnvz.,mcxnv.,znb,ncvb,zcnv,z', header);
-    
+
     for (const i of header) {
         i.poNumber = i.purchase_order_book_number ? i.purchase_order_book_number : i.purchase_order_number;
         const egpItems = await model.purchasingEgp(db, i.purchase_order_id, warehouseId);

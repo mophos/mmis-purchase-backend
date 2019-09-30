@@ -11,6 +11,7 @@ import * as _ from 'lodash';
 import { PeriodModel } from '../models/period';
 import { BudgetTransectionModel } from '../models/budgetTransection';
 import { ProductsModel } from '../models/products';
+import e = require('express');
 const serialModel = new SerialModel();
 const router = express.Router();
 const model = new PurchasingOrderModel();
@@ -814,6 +815,29 @@ router.put('/update-purchase/status', async (req, res, next) => {
           }
         }
 
+        var poId = _.map(items, (v) => {
+          return v.purchase_order_id
+        })
+        const tsWihtPo = await bgModel.getlastTransactionWithPo(db, poId);
+        const ts = await bgModel.getTransaction(db, tsWihtPo[0].transection_id, tsWihtPo[0].view_bgdetail_id);
+        let incomingBalance = tsWihtPo[0].incoming_balance;
+        for (const v of ts) {
+          if (!incomingBalance) {
+            incomingBalance = v.incoming_balance;
+          }
+          let balance = 0;
+          if (v.transaction_status == 'SPEND') {
+            balance = incomingBalance - v.amount
+          } else if (v.transaction_status == 'ADDED') {
+            balance = incomingBalance + v.amount
+          }
+          const obj = {
+            incoming_balance: incomingBalance,
+            balance: balance
+          }
+          incomingBalance = balance;
+          await bgModel.update(db, obj, v.transection_id);
+        }
         res.send({ ok: true });
       } catch (error) {
         console.log(error);

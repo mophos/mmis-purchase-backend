@@ -206,6 +206,7 @@ router.post('/transaction/balance', async (req, res, next) => {
         res.send({ ok: true, rows: rs[0], totalPurchase: totalPurchase[0].total_purchase });
       } else {
         const rs2: any = await budgetModel.getBudgetTransaction(db, budgetDetailId);
+        rs2[0].appropriation_budget = rs2[0].amount;
         rs2[0].incoming_balance = rs2[0].amount - totalPurchase[0].total_purchase;
         res.send({ ok: true, rows: rs2[0], totalPurchase: totalPurchase[0].total_purchase });
       }

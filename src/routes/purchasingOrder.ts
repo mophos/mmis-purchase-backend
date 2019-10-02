@@ -336,11 +336,7 @@ router.post('/purchase-reorder', async (req, res, next) => {
             people_user_id: req.decoded.people_user_id,
             warehouse_id: warehouseId
           }
-          console.log({ 'v.budget_detail_id ': v });
-
           if (v.budget_detail_id && v.budgettype_id) {
-            console.log(3);
-            
             obj.budget_detail_id = v.budget_detail_id;
             obj.budgettype_id = v.budgettype_id;
             obj.buyer_id = v.buyer_id;

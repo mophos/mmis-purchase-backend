@@ -113,4 +113,18 @@ export class BudgetTransectionModel {
       .orderBy('p.transection_id', 'DESC')
       .limit(1)
   }
+
+  getBudgetDetail2(knex: Knex, budgetDetailId: any, ) {
+    return knex('bm_budget_detail').where('bgdetail_id', budgetDetailId).where('status', 'APPROVE')
+  }
+
+  getMainBudgetDetail(knex: Knex, budgetTypeId: any, budgetSubTyeId: any, budgetYear: any) {
+    let query = knex('view_budget_subtype')
+      .where('bgtype_id', budgetTypeId)
+      .where('bgtypesub_id', budgetSubTyeId)
+      .where('bg_year', budgetYear)
+      .orderBy('view_bgdetail_id', 'asc')
+      .limit(1);
+    return query;
+  }
 }

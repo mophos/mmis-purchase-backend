@@ -25,6 +25,23 @@ router.get('/generic-units/:genericId', async (req, res, next) => {
 
 });
 
+router.get('/generic-units/:genericId/:productId', async (req, res, next) => {
+
+  let db = req.db;
+  let genericId: any = req.params.genericId;
+  let productId: any = req.params.productId;
+
+  try {
+    let rs: any = await stdModel.getUnitPackagesPurchase(db, genericId, productId);
+    res.send({ ok: true, rows: rs });
+  } catch (error) {
+    res.send({ ok: false, error: error.message });
+  } finally {
+    db.destroy();
+  }
+
+});
+
 router.get('/bid-types', async (req, res, next) => {
 
   let db = req.db;

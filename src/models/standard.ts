@@ -14,6 +14,20 @@ export class StandardModel {
       .where('mu.is_deleted', 'N');
   }
 
+  getUnitPackagesPurchase(db: Knex, genericId: any, productId: any) {
+    return db('mm_unit_generics as mu')
+      .select('mu.standard_cost', 'mu.unit_generic_id', 'mu.from_unit_id', 'mu.to_unit_id', 'mu.qty',
+        'mu.cost', 'mu.cost as old_cost', 'mu1.unit_name as from_unit_name', 'mu2.unit_name as to_unit_name',
+        db.raw(`if(mp.purchase_unit_id=mu.unit_generic_id,'Y','N') as is_purchase`))
+      .joinRaw(`left join mm_products as mp on mp.product_id = ${productId}`)
+      .innerJoin('mm_units as mu1', 'mu1.unit_id', 'mu.from_unit_id')
+      .innerJoin('mm_units as mu2', 'mu2.unit_id', 'mu.to_unit_id')
+      .where('mu.generic_id', genericId)
+      .where('mu.is_active', 'Y')
+      .where('mu.is_deleted', 'N');
+
+  }
+
   getBidTypes(db: Knex) {
     return db('l_bid_type')
       .orderBy('bid_id')

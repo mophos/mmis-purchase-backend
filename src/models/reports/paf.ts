@@ -6,6 +6,7 @@ export class PafModel {
     purchasingHeader(knex: Knex, purchasingOrderId) {
         return knex('pc_purchasing_order as po')
             .select(
+                'po.warehouse_id',
                 'po.purchase_order_id',
                 'po.purchase_order_number',
                 'po.purchase_method_id',
@@ -23,6 +24,7 @@ export class PafModel {
                 'po.order_date',
                 'po.chief_id',
                 'po.buyer_id',
+                'po.head_id',
                 'po.supply_id',
                 'po.manager_id',
                 'vb.amount as budget_amount',
@@ -42,13 +44,15 @@ export class PafModel {
                 'la.ampur_name as labeler_ampur_name',
                 'lp.province_name as labeler_province_name',
                 'lp.province_code as labeler_province_code',
-                'bt.balance as transection_balance'
+                'bt.balance as transection_balance',
+                'mt.generic_type_name'
             )
             .leftJoin('mm_labelers as ml', 'ml.labeler_id', 'po.labeler_id')
             .leftJoin(knex.raw('l_tambon as lm on lm.tambon_code = ml.tambon_code and lm.ampur_code = ml.ampur_code and lm.province_code = ml.province_code'))
             .leftJoin(knex.raw('l_ampur as la on la.ampur_code = ml.ampur_code and la.province_code = ml.province_code'))
             .leftJoin(knex.raw('l_province as lp on lp.province_code = ml.province_code'))
             .leftJoin('l_bid_process as cbp', 'cbp.id', 'po.purchase_method_id')
+            .leftJoin('mm_generic_types as mt', 'mt.generic_type_id', 'po.generic_type_id')
             .leftJoin('l_bid_type as cbt', 'cbt.bid_id', 'po.purchase_type_id')
             .leftJoin('view_budget_subtype as vb', 'vb.view_bgdetail_id', 'po.budget_detail_id')
             .joinRaw(`left join pc_budget_transection as bt on bt.purchase_order_id = po.purchase_order_id and bt.transaction_status='spend' and bt.remark is null`)
@@ -142,6 +146,11 @@ export class PafModel {
             // .where('bbd.bg_year', budgetYear)
             .where('pbt.transaction_status', 'SPEND')
             .where('pbt.transection_id', '<', transectionId);
+    }
+
+    getWarehouseDesc(knex: Knex, warehouseId) {
+        return knex('wm_warehouses')
+            .where('warehouse_id', warehouseId)
     }
 }
 

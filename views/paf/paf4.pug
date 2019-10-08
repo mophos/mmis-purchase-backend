@@ -56,7 +56,7 @@ include ../css.pug
             td(style='border: 1px solid black; vertical-align: middle;').center รายการ
             td(style='border: 1px solid black; vertical-align: middle;').center จำนวน
             td(style='border: 1px solid black; vertical-align: middle;').center หน่วย
-            td(style='border: 1px solid black; vertical-align: middle;').center กำหนดเวลาใช้
+            td(style='border: 1px solid black; vertical-align: middle;').center กำหนดเวลาใช้พัสดุ
         tbody
           - var y=0
             - for(b of i.arrayItems)
@@ -66,7 +66,9 @@ include ../css.pug
                   td(style='border: 1px solid black; font-family:THSarabunNew;') #{b.generic_name}
                   td.center(style='border: 1px solid black;') #{b.qty}
                   td.center(style='border: 1px solid black;') #{b.unit_name} / #{b.conversion} #{b.primary_unit}
-                  td.center(style='border: 1px solid black;')
+                  td.center(style='border: 1px solid black;') 
+                    if(y===1)
+                      | 30 วันทำการ
       .enter.bold(style="padding-top: 8px; text-decoration: underline;") และขอแต่งตั้งผู้ตรวจรับพัสดุดังนี้
       if(i.committee.length > 0)
         -var b=0
@@ -79,10 +81,11 @@ include ../css.pug
         .fontspace
           | (1) #{i.committee[0].fullname}  ตำแหน่ง #{i.committee[0].position_name}  ผู้ตรวจรับพัสดุ
           br
-      .fontspace(style="padding-top: 15px;")
+      br
+      .fontspace
       | จึงเรียนมาเพื่อโปรดทราบและโปรดพิจารณาให้งานพัสดุเป็นผู้ดำเนินการจัดซื้อ/จัดจ้างตาม พ.ร.บ.การจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ.2560 โดยเบิกจ่ายจาก#{i.budget_type_name}
       br
-      | รหัสหน่วยงาน........................ผลผลิต.............................กิจกรรมที่........................แหล่งของเงิน........................ต่อไปด้วย
+      | รหัสหน่วยงาน................................................ผลผลิต.....................................................กิจกรรมที่................................................แหล่งของเงิน................................................ต่อไปด้วย
       br
       
       br

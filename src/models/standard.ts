@@ -22,7 +22,7 @@ export class StandardModel {
       .joinRaw(`left join mm_products as mp on mp.product_id = ${productId}`)
       .innerJoin('mm_units as mu1', 'mu1.unit_id', 'mu.from_unit_id')
       .innerJoin('mm_units as mu2', 'mu2.unit_id', 'mu.to_unit_id')
-      .where('mu.generic_id', genericId)
+      .whereRaw(`mu.generic_id = ${genericId}`)
       .where('mu.is_active', 'Y')
       .where('mu.is_deleted', 'N');
 

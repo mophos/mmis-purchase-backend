@@ -250,6 +250,8 @@ router.get('/report/list/purchase-orders-reserved/excel', wrap(async (req, res, 
     obj.order_qty = v.order_qty;
     obj.unit = v.from_unit_name + ' (' + v.conversion_qty + ' ' + v.to_unit_name + ')';
     obj.total_cost = v.total_cost;
+    obj.tmt_id = v.tmt_id;
+    obj.std_code = v.std_code;
     json.push(obj);
   });
 

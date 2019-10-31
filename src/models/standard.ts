@@ -25,7 +25,6 @@ export class StandardModel {
       .where('mu.generic_id', db.raw(`?`, [genericId]))
       .where('mu.is_active', 'Y')
       .where('mu.is_deleted', 'N');
-
   }
 
   getBidTypes(db: Knex) {

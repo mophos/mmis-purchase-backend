@@ -311,7 +311,7 @@ export class PurchasingOrderReportModel {
                 'mg.generic_name', 'rv.cost as purchase_cost', 'rv.purchase_qty as order_qty',
                 'rv.unit_generic_id', 'gt.generic_type_id', 'rv.product_id', 'rv.reserve_id',
                 'ut.unit_name as to_unit_name', 'uf.unit_name as from_unit_name', 'mp.v_labeler_id', 'mp.m_labeler_id',
-                'ug.qty as conversion_qty', 'ml.labeler_name', 'gt.generic_type_name', 'vcpa.contract_id', 'vcpa.contract_no', 'mp.tmt_id', 'mp.std_code')
+                'ug.qty as conversion_qty', 'ml.labeler_name', 'gt.generic_type_name', 'vcpa.contract_id', 'vcpa.contract_no', 'mp.tmt_id', 'mp.std_code', 'mp.description')
             .innerJoin('mm_products as mp', 'mp.product_id', 'rv.product_id')
             .innerJoin('mm_generics as mg', 'mg.generic_id', 'mp.generic_id')
             .innerJoin('mm_generic_types as gt', 'gt.generic_type_id', 'mg.generic_type_id')

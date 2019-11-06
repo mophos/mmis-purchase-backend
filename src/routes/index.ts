@@ -252,6 +252,7 @@ router.get('/report/list/purchase-orders-reserved/excel', wrap(async (req, res, 
     obj.total_cost = v.total_cost;
     obj.tmt_id = v.tmt_id;
     obj.std_code = v.std_code;
+    obj.description = v.description;
     json.push(obj);
   });
 

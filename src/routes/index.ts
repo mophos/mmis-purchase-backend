@@ -207,12 +207,12 @@ router.get('/report/list/purchase-orders-reserved', wrap(async (req, res, next) 
 router.get('/report/list/order-point', wrap(async (req, res, next) => {
   let warehouseId = req.query.warehouseId;
   let db = req.db;
-  
+
 
   let hospitalDetail = await model.hospital(db);
   let results = await model.orderPoint(db, warehouseId);
   results = results[0]
-  
+
   // for (const rs of results) {
   //   rs.total_cost = model.comma(rs.purchase_cost * rs.order_qty)
   //   rs.purchase_cost = model.comma(rs.purchase_cost)
@@ -253,6 +253,11 @@ router.get('/report/list/purchase-orders-reserved/excel', wrap(async (req, res, 
     obj.tmt_id = v.tmt_id;
     obj.std_code = v.std_code;
     obj.description = v.description;
+    obj.nin = v.nin;
+    obj.standard_cost = v.standard_cost;
+    obj.base_unit = v.to_unit_name;
+    obj.conversion = v.conversion;
+    obj.large_unit = v.from_unit_name;
     json.push(obj);
   });
 

@@ -256,7 +256,7 @@ router.get('/report/list/purchase-orders-reserved/excel', wrap(async (req, res, 
     obj.nin = v.nin;
     obj.standard_cost = v.standard_cost;
     obj.base_unit = v.to_unit_name;
-    obj.conversion = v.conversion;
+    obj.conversion_qty = v.conversion_qty;
     obj.large_unit = v.from_unit_name;
     json.push(obj);
   });

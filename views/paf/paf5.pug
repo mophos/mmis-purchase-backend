@@ -24,7 +24,7 @@ include ../css.pug
         label.h3(style='margin-top: 5px;')  #{i.warehouse[0].warehouse_desc}&nbsp;#{hospitalDetail.hospname} โทร.#{hospitalDetail.telephone} ต่อ #{i.warehouse[0].tel}
       p.h2(style='width:50%;float: left;')
         | ที่
-        label.h3(style='margin-top: 5px;') &nbsp;#{i.poNumber}
+        label.h3(style='margin-top: 5px;') &nbsp;#{at}
       b.h2(style='width:50%;float: left;')
         | วันที่ 
         label.h3 &nbsp;#{i.order_date}
@@ -34,7 +34,7 @@ include ../css.pug
       .enter เรียน ผู้อำนวยการ#{hospitalDetail.hospname}
       .fontspace
       | ด้วย#{i.warehouse[0].warehouse_desc} #{hospitalDetail.hospname} 
-      | มีความประสงค์จะซื้อเวชภันฑ์ #{i.count} รายการ โดย#{i.bid_process_name} จากบริษัท#{i.labeler_name_po}
+      | มีความประสงค์จะซื้อเวชภัณฑ์ #{i.count} รายการ โดย#{i.bid_process_name} จากบริษัท#{i.labeler_name_po}
       | ซึ่งมีรายละเอียด ดังต่อไปนี้
       br
       .fontspace
@@ -69,8 +69,7 @@ include ../css.pug
                   td.right(style='border: 1px solid black;') #{b.unit_price}  
                   td.right(style='border: 1px solid black;') #{b.total_price_item}
                   td.right(style='border: 1px solid black;') #{b.standard_cost} 
-                  td.right(style='border: 1px solid black;') #{b.unit_price} /
-                    label(style = 'font-size: 11pt;')   #{b.primary_unit}
+                  td.right(style='border: 1px solid black;') #{b.unit_price}
         tr
           td
           td(colspan='7').right รวม #{y} รายการ รวมเป็นเงินสุทธิ #{i.total_price} บาท
@@ -89,7 +88,7 @@ include ../css.pug
       br
       .fontspace
       .fontspace
-      | ดำเนินการโดยวิธี#{i.bid_type_name}ตามพระราชบัญญัติจัดซื้อจัดจ้าง และบริหารพัสดุภาครัฐ พ.ศ. 2560 มาตรา 56  วรรคหนึ่ง (2)(ข)
+      | ดำเนินการโดย#{i.bid_process_name}ตามพระราชบัญญัติจัดซื้อจัดจ้าง และบริหารพัสดุภาครัฐ พ.ศ. 2560 มาตรา 56  วรรคหนึ่ง (2)(ข)
       br
       .fontspace
       | 6. หลักเกณฑ์การพิจารณาคัดเลือกข้อเสนอ
@@ -162,12 +161,9 @@ include ../css.pug
           | (.....................................................)
           br
           | ผู้อำนวยการ
+          | #{hospitalDetail.chief}
         else
           | #{i.manager.fullname}
           br
           | #{i.manager.position}
-        br
-        if(i.bid_process_id==2) 
-          | ปฏิบัติราชการแทนผู้ตรวจกระทรวงเขต 4
-        if(i.bid_process_id!=2) 
           | #{hospitalDetail.chief}

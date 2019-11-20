@@ -160,10 +160,9 @@ include ../css.pug
         if(i.manager == null)
           | (.....................................................)
           br
-          | ผู้อำนวยการ
-          | #{hospitalDetail.chief}
+          | ผู้อำนวยการ#{hospitalDetail.hospname}
         else
           | #{i.manager.fullname}
           br
           | #{i.manager.position}
-          | #{hospitalDetail.chief}
+          | #{hospitalDetail.hospname}

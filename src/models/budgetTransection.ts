@@ -14,9 +14,9 @@ export class BudgetTransectionModel {
       .whereRaw(`IF
       ( po.is_cancel = 'N',  pt.transaction_status = 'SPEND',  pt.transaction_status = 'REVOKE' or pt.transaction_status = 'SPEND'  )`)
       .limit(1);
-      console.log(sql.toString());
-      return sql;
-      
+    console.log(sql.toString());
+    return sql;
+
   }
 
   // save transaction
@@ -97,6 +97,13 @@ export class BudgetTransectionModel {
       .orderBy('transection_id')
   }
 
+  getlastTransactionWithPo(db: Knex, purchaseOrderId: any) {
+    return db('pc_budget_transection')
+      .where('transaction_status', 'REVOKE')
+      .whereIn('purchase_order_id', purchaseOrderId)
+      .limit(1)
+  }
+
   getBalance(db: Knex, budgetDetailId: any) {
     return db('pc_budget_transection as p')
       .select('p.*', 'v.bgtype_name', 'v.bgtypesub_name', 'v.amount as vamount')
@@ -105,5 +112,19 @@ export class BudgetTransectionModel {
       .where('p.view_bgdetail_id', budgetDetailId)
       .orderBy('p.transection_id', 'DESC')
       .limit(1)
+  }
+
+  getBudgetDetail2(knex: Knex, budgetDetailId: any, ) {
+    return knex('bm_budget_detail').where('bgdetail_id', budgetDetailId).where('status', 'APPROVE')
+  }
+
+  getMainBudgetDetail(knex: Knex, budgetTypeId: any, budgetSubTyeId: any, budgetYear: any) {
+    let query = knex('view_budget_subtype')
+      .where('bgtype_id', budgetTypeId)
+      .where('bgtypesub_id', budgetSubTyeId)
+      .where('bg_year', budgetYear)
+      .orderBy('view_bgdetail_id', 'asc')
+      .limit(1);
+    return query;
   }
 }

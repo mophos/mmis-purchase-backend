@@ -1,0 +1,149 @@
+include ../css.pug
+- for(var i of header)
+  style(type='text/css' media='print').
+    @page{
+    margin-top: 1cm;
+    margin-left: 1cm;
+    margin-right: 1cm;
+    }
+  doctype html
+  html
+    head
+      meta(charset="utf-8")
+      title report
+    body
+      button.btn.btn-sm.btn-success.btnprint(onclick='window.print()') Print
+      img(src=APIURL+'krut.png', height='60px')
+      .headkut.h1 บันทึกข้อความ
+      p.h2
+        | ส่วนราชการ
+        label.h3(style='margin-top: 5px;')  #{i.warehouse[0].warehouse_desc}&nbsp;#{hospitalDetail.hospname} อำเภอ#{hospitalDetail.ampur} จังหวัด#{hospitalDetail.province}
+      p.h2(style='width:50%;float: left;')
+        | ที่
+        label.h3(style='margin-top: 5px;') &nbsp;#{i.poNumber}
+      b.h2(style='width:50%;float: left;')
+        | วันที่ 
+        label.h3 &nbsp;#{i.order_date}
+      br
+      table(style="width: 40%;")
+        tr
+          td(style="padding: 0px; width: 40px;") เรื่อง
+          td(style="padding: 0px; width: 70px;").right ขออนุมัติ&nbsp;
+          td(style="padding: 0px; width: 30px; border: 1px solid black;") 
+          td(style="padding: 0px;").right จัดซื้อ&nbsp;
+          td(style="padding: 0px; width: 30px; border: 1px solid black;")
+          td(style="padding: 0px;") &nbsp;&nbsp;จัดจ้าง #{i.generic_type_name}
+      br
+      .enter เรียน ผู้อำนวยการ#{hospitalDetail.hospname}
+      .fontspace
+      | ด้วยฝ่าย/งาน..#{i.warehouse[0].warehouse_desc}.#{hospitalDetail.hospname} มีความประสงค์ขออนุมัติ
+      .enter จัดซื้อ/จัดจ้าง ซื้อ#{i.generic_type_name}
+      table(style="width: 100%;")
+        tr
+          td(style="padding: 0px; width: 30px; border: 1px solid black;") 
+          td(style="padding: 0px;") &nbsp;ตามแผน
+          td(style="padding: 0px; width: 30px; border: 1px solid black;")
+          td(style="padding: 0px;") &nbsp;นอกแผน
+          td(style="padding: 0px; width: 30px; border: 1px solid black;")
+          td(style="padding: 0px;") &nbsp;ทดแทน
+          td เพื่อ (บอกเหตุผลความจำเป็น)เพื่อใช้ในกิจกรรมการรักษาผู้ป่วยของ#{hospitalDetail.hospname}
+      .enter(style="padding-top: 8px;") และเครือข่าย รพสต.13 อำเภอ ดังนั้น ฝ่าย/งาน..#{i.warehouse[0].warehouse_desc}.#{hospitalDetail.hospname} 
+      .enter จึงขออนุมัติจัดซื้อ/จัดจ้าง ตามรายการดังนี้
+      table
+        thead
+          tr 
+            td(style='border: 1px solid black; vertical-align: middle; width:4%;').center ลำดับ
+            td(style='border: 1px solid black; vertical-align: middle;').center รายการ
+            td(style='border: 1px solid black; vertical-align: middle;').center จำนวน
+            td(style='border: 1px solid black; vertical-align: middle;').center หน่วย
+            td(style='border: 1px solid black; vertical-align: middle;').center กำหนดเวลาใช้พัสดุ
+        tbody
+          - var y=0
+            - for(b of i.arrayItems)
+              - y++
+                tr
+                  td.center(style='border: 1px solid black;') #{y}
+                  td(style='border: 1px solid black; font-family:THSarabunNew;') #{b.generic_name}
+                  td.center(style='border: 1px solid black;') #{b.qty}
+                  td.center(style='border: 1px solid black;') #{b.unit_name} / #{b.conversion} #{b.primary_unit}
+                  td.center(style='border: 1px solid black;') 
+                    if(y===1)
+                      | 30 วันทำการ
+      .enter.bold(style="padding-top: 8px; text-decoration: underline;") และขอแต่งตั้งผู้ตรวจรับพัสดุดังนี้
+      if(i.committee.length > 0)
+        -var b=0
+        for c in i.committee
+          .fontspace
+          | (#{b+1}) #{c.fullname}  ตำแหน่ง #{c.position_name}  #{c.position}
+          br
+          -b++
+      else
+        .fontspace
+          | (1) #{i.committee[0].fullname}  ตำแหน่ง #{i.committee[0].position_name}  ผู้ตรวจรับพัสดุ
+          br
+      br
+      .fontspace
+      | จึงเรียนมาเพื่อโปรดทราบและโปรดพิจารณาให้งานพัสดุเป็นผู้ดำเนินการจัดซื้อ/จัดจ้างตาม พ.ร.บ.การจัดซื้อจัดจ้างและการบริหารพัสดุภาครัฐ พ.ศ.2560 โดยเบิกจ่ายจาก#{i.budget_type_name}
+      br
+      | รหัสหน่วยงาน................................................ผลผลิต.....................................................กิจกรรมที่................................................แหล่งของเงิน................................................ต่อไปด้วย
+      br
+      
+      br
+      br 
+      br 
+      div(style="width:100%;float:left;")
+        div(style="width:50%;float:left;text-align:center")
+          if(i.buyer ===null)
+            table.table
+              tr
+                td.center ลงชื่อ.........................................................ผู้ขออนุมัติ
+              tr
+                td 
+              tr
+                td 
+          else
+            table.table
+              tr
+                td.center ลงชื่อ.........................................................ผู้ขออนุมัติ
+              tr
+                td.center ( #{i.buyer.fullname} )
+              tr
+                td.center #{i.buyer.position_name}
+        div(style="width:50%;float:left;text-align:center")
+          if(i.chief ===null)
+            table.table
+              tr
+                td.center ลงชื่อ.........................................................หัวหน้าฝ่าย/รับรอง
+              tr
+                td 
+              tr
+                td 
+          else
+            table.table
+              tr
+                td.center ลงชื่อ.........................................................หัวหน้าฝ่าย/รับรอง
+              tr
+                td.center ( #{i.head.fullname} )
+              tr
+                td.center #{i.head.position_name}
+      div(style="width:100%;float:left; padding-top: 70px;")
+        div(style="width:50%;float:left;text-align:center")
+          table.table
+            tr
+              td เรียน #{i.manager.position}#{hospitalDetail.hospname}
+            tr
+              td - เพื่อโปรดทราบและพิจารณา
+            tr
+              td - เห็นควรอนุมัติให้พัสดุดำเนินการ
+            tr
+              td.center(style="padding-top: 70px;") ( #{i.chief.fullname} )
+            tr
+              td.center #{i.chief.position}
+        div(style="width:50%;float:left;text-align:center")
+          table.table
+            tr
+              td.center.bold(style="padding-top: 30px;") อนุมัติ
+            tr
+              td.center(style="padding-top: 70px;") ( #{i.manager.fullname} )
+            tr
+              td.center #{i.manager.position}#{hospitalDetail.hospname}

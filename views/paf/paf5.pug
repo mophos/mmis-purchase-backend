@@ -21,7 +21,7 @@ include ../css.pug
       .headkut.h1 บันทึกข้อความ
       p.h2
         | ส่วนราชการ
-        label.h3(style='margin-top: 5px;')  #{i.warehouse[0].warehouse_desc}&nbsp;#{hospitalDetail.hospname} โทร.#{hospitalDetail.telephone} ต่อ #{i.warehouse[0].tel}
+        label.h3(style='margin-top: 5px;')  #{i.warehouse[0].warehouse_desc}&nbsp;#{hospitalDetail.hospname} โทร.#{hospitalDetail.telephone} #{i.warehouse[0].tel}
       p.h2(style='width:50%;float: left;')
         | ที่
         label.h3(style='margin-top: 5px;') &nbsp;#{at}
@@ -34,7 +34,7 @@ include ../css.pug
       .enter เรียน ผู้อำนวยการ#{hospitalDetail.hospname}
       .fontspace
       | ด้วย#{i.warehouse[0].warehouse_desc} #{hospitalDetail.hospname} 
-      | มีความประสงค์จะซื้อเวชภัณฑ์ #{i.count} รายการ โดย#{i.bid_process_name} จากบริษัท#{i.labeler_name_po}
+      | มีความประสงค์จะซื้อเวชภัณฑ์ #{i.count} รายการ โดย#{i.bid_process_name} จาก#{i.labeler_name_po}
       | ซึ่งมีรายละเอียด ดังต่อไปนี้
       br
       .fontspace
@@ -148,6 +148,8 @@ include ../css.pug
                 td.center ( #{i.chief.fullname} )
               tr
                 td.center #{i.chief.position_name}
+      br
+      br
       div(style="width:100%;float:left;text-align:center") อนุมัติ
         br
         br

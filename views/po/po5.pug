@@ -1,0 +1,152 @@
+include ../css.pug
+- for(var i of header)
+  style(type='text/css' media='print').
+    @page{
+    margin-top: 0.5cm;
+    margin-left: 0.5cm;
+    margin-right: 0.5cm;
+    }
+  doctype html
+  html
+    head
+      meta(charset="utf-8")
+      title report
+    body
+      button.btn.btn-sm.btn-success.btnprint(onclick='window.print()') Print
+      .center.bold ใบสั่งซื้อ
+      br
+      table(style='width:100%; font-size: 14pt;')
+          tr
+              td.left(style='width:50%;') ผู้ขาย #{i.labeler_name_po}
+              td.left(style='width:50%;') ใบสั่งซื้อเลขที่ #{i.poNumber}
+          tr
+              td.left ที่อยู่ #{i.labeler_address}
+              td.left วันที่ ......................................
+          tr
+              td.left โทรศัพท์ #{i.labeler_phone}
+              td.left ส่วนราชการ#{hospitalDetail.hospname}
+          tr
+              td.left เลขประจำตัวผู้เสียภาษี #{i.labeler_nin}
+              td.left จังหวัด#{hospitalDetail.province}
+          tr
+              td.left เลขที่บัญชีเงินฝากธนาคาร  #{i.account_no}
+              td.left โทรศัพท์ #{hospitalDetail.telephone}
+          tr
+              td.left 
+                | ชื่อบัญชี  #{i.account_name}
+                br 
+                | ธนาคาร  #{i.bank_name}
+              td.left 
+          tr
+              td.left 
+              td.left
+      br
+      .fontspace
+      | ตามที่ บริษัท ได้เสนอราคาไว้ต่อ#{hospitalDetail.hospname} ซึ่งได้รับราคาและตกลงซื้อ/จ้าง ตามรายการต่อไปนี้
+      table(style='font-size: 14pt;')
+        thead
+          tr 
+            td(style='font-size: 11pt; border: 1px solid black; vertical-align: middle; width:4%;').center ลำดับ
+            td(style='font-size: 11pt; border: 1px solid black; vertical-align: middle;').center รายการ
+            td(style='font-size: 11pt; border: 1px solid black; vertical-align: middle;').center จำนวน
+            td(style='font-size: 11pt; border: 1px solid black; vertical-align: middle;').center ราคาต่อหน่วย(บาท)
+            td(style='font-size: 11pt; border: 1px solid black; vertical-align: middle;').center จำนวนเงิน(บาท)
+            td(style='font-size: 11pt; border: 1px solid black; vertical-align: middle;').center ราคากลาง
+        tbody
+          - var y=0
+              - for(b of i.arrayItems)
+                - y++
+                  tr
+                    td.center(style='border: 1px solid black;') #{y}
+                    td(style='border: 1px solid black;font-family:THSarabunNew;') #{b.generic_code} : #{b.generic_name}
+                    td.center(style='border: 1px solid black;') #{b.qty} x #{b.conversion} #{b.primary_unit}
+                    td.right(style='border: 1px solid black;') #{b.unit_price}
+                    td.right(style='border: 1px solid black;') #{b.sumcost}
+                    td.right(style='border: 1px solid black;') #{b.standard_cost}
+          tr
+            td(rowspan='4' colspan='3' style='font-weight: bold; border: 1px solid black; vertical-align: bottom;').center (#{i.bahtText})
+          tr
+            td(colspan='1' style='border: 1px solid black;').right รวมเป็นเงิน
+            td(style='border: 1px solid black;').right #{i.sub_total}
+          tr
+            td(colspan='1' style='border: 1px solid black;').right ภาษีมูลค่าเพิ่ม 7%
+            td(style='border: 1px solid black;').right #{i.vat}
+          tr
+            td(colspan='1' style='border: 1px solid black;').right รวมเป็นเงินทั้งสิ้น
+            td(style='border: 1px solid black;').right #{i.total_price}
+      br
+      .center(style='font-size: 14pt;') สิ่งของตามรายการข้างบนนี้สำหรับใช้ในราชการโรงพยาบาลมะเร็งลำปางซึ่งได้รับอนุมัติซื้อตาม   บันทึกที่  สธ   0315.3(3.13.1)/............................................
+      br 
+      label(style='font-size: 14pt;') ลงวันที่ ............................................
+      br
+      br
+      div(style="width:50%;float:left;text-align:center")
+        if(i.buyer ===null)
+          table.table
+            tr
+              td.center 
+                label(style='font-size: 14pt;') ลงชื่อ.........................................................เจ้าหน้าที่
+            tr
+              td 
+            tr
+              td 
+        else
+          table.table
+            tr
+              td.center 
+                label(style='font-size: 14pt;') ลงชื่อ.........................................................#{i.buyer.position}
+            tr
+              td.center(style='font-size: 14pt;') ( #{i.buyer.fullname} )
+            tr
+              td.center(style='font-size: 14pt;') #{i.buyer.position_name}
+      div(style="width:50%;float:left;text-align:center")
+        if(i.chief ===null)
+          table.table
+            tr
+              td.center 
+                label(style='font-size: 14pt;') ลงชื่อ.........................................................เจ้าหน้าที่
+            tr
+              td 
+            tr
+              td 
+        else
+          table.table
+            tr
+              td.center 
+                label(style='font-size: 14pt;') ลงชื่อ.........................................................#{i.chief.position}
+            tr
+              td.center(style='font-size: 14pt;') ( #{i.chief.fullname} )
+            tr
+              td.center(style='font-size: 14pt;') #{i.chief.position_name}
+      div(style="width:100%;float:left;text-align:center")
+        br
+        br
+        br
+        label(style='font-size: 14pt;') | ลงชื่อ............................................................
+        br
+        if(i.manager == null)
+          | (.....................................................)
+          br
+          | ผู้อำนวยการ#{hospitalDetail.hospname}
+        else
+          | #{i.manager.fullname}
+          br
+          | #{i.manager.position}
+          | #{hospitalDetail.hospname}
+        br
+        br
+        br
+        br
+      label(style='font-size: 12pt;') การซื้อ/สั่งจ้าง อยู่ภายใต้เงื่อนไขต่อไปนี้
+      br
+      label(style='font-size: 12pt;') 1.กำหนดส่งมอบภายใน #{i.delivery} วัน นับถัดจากวันที่ผู้รับจ้างได้รับใบสั่งซื้อ
+      br
+      label(style='font-size: 12pt;') 2.ครบกำหนดส่งมอบวันที่ .........................................
+      br
+      label(style='font-size: 12pt;') 3.สถานที่ส่งมอบ#{hospitalDetail.hospname}
+      br
+      label(style='font-size: 12pt;') 4.ระยะเวลารับประกัน 1 ปี
+      br
+      label(style='font-size: 12pt;') 5.สงวนสิทธิ์ค่าปรับกรณีส่งมอบเกินกำหนด โดยคิดค่าปรับเป็นรายวันในอัตราร้อยละ 0.1 ของราคาสิ่งของที่ยังไม่ได้รับมอบแต่จะต้องไม่ต่ำกว่าวันละ 100.00 บาท
+      br
+      label(style='font-size: 12pt;') 6.ส่วนราชการขอสงวนสิทธิ์ที่จะไม่รับมอบถ้าปรากฎว่าสินค้านั้นมีลักษณะไม่ตรงตามรายการที่ระบุไว้ในใบสั่งซื้อ กรณีนี้ผู้รับจ้างจะต้องดำเนินการเปลี่ยนใหม่ให้ถูกต้องตามใบสั่งซื้อทุกประการ

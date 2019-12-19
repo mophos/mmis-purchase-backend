@@ -259,6 +259,8 @@ router.get('/5', wrap(async (req, res, next) => {
     const warehouseId = req.decoded.warehouseId;
     const hospitalDetail = await basicModel.hospital(db);
     hospitalDetail.chief = chief;
+    let at = await basicModel.at(db)//book_prefix
+    at = at[0].value;
     moment.locale('th');
     const header = await model.purchasingHeader(db, purchaOrderId);
     for (const i of header) {
@@ -270,7 +272,6 @@ router.get('/5', wrap(async (req, res, next) => {
         i.committee = await getCommitee(db, i.verify_committee_id);
         i.warehouse = await model.getWarehouseDesc(db, i.warehouse_id);
         i.budget_amount = basicModel.comma(i.budget_amount);
-        i.at = await basicModel.at(db)//book_prefix
         i.standard_cost = i.standard_cost === 0 ? i.unit_price : i.standard_cost;
         let getAmountTransaction = await model.allAmountTransaction(db, i.budget_detail_id, i.purchase_order_id);
         i.transection_balance = basicModel.comma(i.transection_balance);
@@ -306,6 +307,7 @@ router.get('/5', wrap(async (req, res, next) => {
     }
 
     res.render('paf/paf5', {
+        at: at,
         type: type,
         hospitalDetail: hospitalDetail,
         header: header

@@ -207,12 +207,12 @@ router.get('/report/list/purchase-orders-reserved', wrap(async (req, res, next) 
 router.get('/report/list/order-point', wrap(async (req, res, next) => {
   let warehouseId = req.query.warehouseId;
   let db = req.db;
-  
+
 
   let hospitalDetail = await model.hospital(db);
   let results = await model.orderPoint(db, warehouseId);
   results = results[0]
-  
+
   // for (const rs of results) {
   //   rs.total_cost = model.comma(rs.purchase_cost * rs.order_qty)
   //   rs.purchase_cost = model.comma(rs.purchase_cost)
@@ -250,6 +250,14 @@ router.get('/report/list/purchase-orders-reserved/excel', wrap(async (req, res, 
     obj.order_qty = v.order_qty;
     obj.unit = v.from_unit_name + ' (' + v.conversion_qty + ' ' + v.to_unit_name + ')';
     obj.total_cost = v.total_cost;
+    obj.tmt_id = v.tmt_id;
+    obj.std_code = v.std_code;
+    obj.description = v.description;
+    obj.nin = v.nin;
+    obj.standard_cost = v.standard_cost;
+    obj.base_unit = v.to_unit_name;
+    obj.conversion_qty = v.conversion_qty;
+    obj.large_unit = v.from_unit_name;
     json.push(obj);
   });
 
@@ -968,6 +976,7 @@ router.get('/account/payable', wrap(async (req, res, next) => {
       const sum = model.comma(_.sumBy(rs, function (o: any) { return o.cost; }));
       for (const i of rs) {
         i.cost = model.comma(i.cost);
+        i.delivery_date = moment(i.delivery_date).format('D MMMM ') + (moment(i.delivery_date).get('year') + 543);
       }
       res.render('account_payable', {
         hospname: hospname,

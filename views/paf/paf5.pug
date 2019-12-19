@@ -1,9 +1,5 @@
 include ../css.pug
 - for(var i of header)
-  style(type='text/css').
-    body{
-      font-family:'THSarabunIT';
-    }
   style(type='text/css' media='print').
     @page{
     margin-top: 1cm;
@@ -164,7 +160,7 @@ include ../css.pug
           br
           | ผู้อำนวยการ#{hospitalDetail.hospname}
         else
-          | #{i.manager.fullname}
+          | ( #{i.manager.fullname} )
           br
           | #{i.manager.position}
           | #{hospitalDetail.hospname}

@@ -42,9 +42,13 @@ export class PoModel {
                 'la.ampur_name as labeler_ampur_name',
                 'lp.province_name as labeler_province_name',
                 'lp.province_code as labeler_province_code',
-                'bt.balance as transection_balance'
+                'bt.balance as transection_balance',
+                'mb.bank_name',
+                'mb.account_name',
+                'mb.account_no'
             )
             .leftJoin('mm_labelers as ml', 'ml.labeler_id', 'po.labeler_id')
+            .leftJoin('mm_labeler_bank as mb', 'ml.labeler_id', 'mb.labeler_id')
             .leftJoin(knex.raw('l_tambon as lm on lm.tambon_code = ml.tambon_code and lm.ampur_code = ml.ampur_code and lm.province_code = ml.province_code'))
             .leftJoin(knex.raw('l_ampur as la on la.ampur_code = ml.ampur_code and la.province_code = ml.province_code'))
             .leftJoin(knex.raw('l_province as lp on lp.province_code = ml.province_code'))

@@ -65,7 +65,7 @@ include ../css.pug
                   td.right(style='border: 1px solid black;') #{b.unit_price}  
                   td.right(style='border: 1px solid black;') #{b.total_price_item}
                   td.right(style='border: 1px solid black;') #{b.standard_cost} 
-                  td.right(style='border: 1px solid black;') #{b.unit_price}
+                  td.right(style='border: 1px solid black;') #{b.cost}
         tr
           td
           td(colspan='7').right รวม #{y} รายการ รวมเป็นเงินสุทธิ #{i.total_price} บาท
@@ -146,9 +146,9 @@ include ../css.pug
                 td.center #{i.chief.position_name}
       br
       br
+      br
+      br
       div(style="width:100%;float:left;text-align:center") อนุมัติ
-        br
-        br
         br
         br
         br

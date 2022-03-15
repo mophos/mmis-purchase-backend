@@ -48,13 +48,13 @@ html
     | 3.	วงเงินที่จะซื้อ
     br
     .fontspace 
-    | &nbsp;&nbsp; เงินนอกงบประมาณ จากเงินบำรุงโรงพยาบาล จำนวน #{i.total_price} บาท (#{i.bahtText})
+    | &nbsp;&nbsp; เงินนอกงบประมาณ จาก#{i.budget_type_name} จำนวน #{i.total_price} บาท (#{i.bahtText})
     br
     .fontspace 
     | 4.	กำหนดเวลาที่ต้องการใช้พัสดุนั้น หรือให้งานแล้วเสร็จ
     br
     .fontspace 
-    | &nbsp;&nbsp; กำหนดเวลาส่งมอบงานหรือให้งานแล้วเสร็จภายใน #{i.delivery} วัน 
+    | &nbsp;&nbsp; กำหนดเวลาส่งมอบงานหรือให้งานแล้วเสร็จภายใน #{i.delivery} วัน นับถัดจากวันที่ผู้รับจ้างได้รับใบสั่งซื้อ 
     br
     .fontspace
     | 5.	วิธีที่จะซื้อ #{i.bid_process_name}

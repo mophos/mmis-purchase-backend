@@ -976,6 +976,7 @@ router.get('/account/payable', wrap(async (req, res, next) => {
       const sum = model.comma(_.sumBy(rs, function (o: any) { return o.cost; }));
       for (const i of rs) {
         i.cost = model.comma(i.cost);
+        i.delivery_date = moment(i.delivery_date).format('D MMMM ') + (moment(i.delivery_date).get('year') + 543);
       }
       res.render('account_payable', {
         hospname: hospname,

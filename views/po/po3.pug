@@ -41,13 +41,32 @@ include ../css.pug
               td.left เลขประจำตัวผู้เสียภาษี #{i.labeler_nin}
               td.left จังหวัด#{hospitalDetail.province}
           tr
-              td.left เลขที่บัญชีเงินฝากธนาคาร  ..................................
+              td.left เลขที่บัญชีเงินฝากธนาคาร 
+                if(i.account_no===null) 
+                  | ..................................
+                else 
+                  | #{i.account_no}
               td.left โทรศัพท์ #{hospitalDetail.telephone}
           tr
-              td.left ชื่อบัญชี  ............................................
+              td.left ชื่อบัญชี  
+                if(i.account_name===null) 
+                  | ............................................
+                else 
+                  | #{i.account_name}
               td.left
           tr
-              td.left ธนาคาร  ............................................
+              td.left ธนาคาร 
+                if(i.bank_name===null) 
+                  | ............................................
+                else 
+                  | #{i.bank_name}
+              td.left
+          tr
+              td.left สาขา 
+                if(i.bank_branch===null) 
+                  | ............................................
+                else 
+                  | #{i.bank_branch}
               td.left
       br
       .fontspace

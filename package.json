@@ -19,7 +19,7 @@
         "express-validator": "^5.0.1",
         "fs-extra": "^5.0.0",
         "json2xls": "^0.1.2",
-        "jsonwebtoken": "^8.1.1",
+        "jsonwebtoken": "^9.0.0",
         "knex": "^0.14.6",
         "lodash": "^4.17.13",
         "moment": "^2.20.1",

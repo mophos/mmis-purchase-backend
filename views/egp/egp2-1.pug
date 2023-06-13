@@ -137,15 +137,17 @@ html
       br
       br
       | ลงชื่อ............................................................
-      br
-      | ( #{i.manager.fullname} )
-      br
-      if(i.manager.position_name != null) 
-        | #{i.manager.position_name}
+      if(i.manager != null)
+        if(i.manager.position_name != null) 
+          br
+          | ( #{i.manager.fullname} )
+          br
+        if(i.manager.position_name != null) 
+          | #{i.manager.position_name}
+          br
+        | #{i.manager.position}
         br
-      | #{i.manager.position}
-      br
-      if(i.purchase_method_id==2) 
-        | ปฏิบัติราชการแทนผู้ตรวจกระทรวงเขต 4
-      if(i.purchase_method_id!=2) 
-        | #{hospitalDetail.chief}#{hospitalDetail.province}
+        if(i.purchase_method_id==2) 
+          | ปฏิบัติราชการแทนผู้ตรวจกระทรวงเขต 4
+        if(i.purchase_method_id!=2) 
+          | #{hospitalDetail.chief}#{hospitalDetail.province}

@@ -180,10 +180,11 @@ html
     br
     br
     div(style='margin-left: 41%; width: 60%; text-align:center;')
-      br
-      | (#{i.manager.fullname} )
-      br
-      | #{i.manager.position}
+      if(i.manager != null)
+        br
+        | (#{i.manager.fullname} )
+        br
+        | #{i.manager.position}
       br
       if(i.purchase_method_id==2) 
         | ปฏิบัติราชการแทนผู้ตรวจกระทรวงเขต 4

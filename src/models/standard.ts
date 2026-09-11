@@ -34,11 +34,19 @@ export class StandardModel {
   }
 
   getBudgetTypes(db: Knex, warehouseId: any) {
-    return db('bm_bgtype as bb')
+    return db('bm_budget_detail_warehouse as bbdw')
       .select('bb.bgtype_id', 'bb.bgtype_name', 'bb.isactive')
-      .join('bm_budget_detail as bbd', 'bbd.bgtype_id', 'bb.bgtype_id')
-      .join('view_budget_subtype as vbs', 'bbd.bgdetail_id', 'vbs.bgdetail_id')
-      .join('bm_budget_detail_warehouse as bbdw', 'bbdw.view_bgdetail_id', 'vbs.view_bgdetail_id')
+      .join('bm_budget_detail as bd', 'bd.bgdetail_id', 'bbdw.view_bgdetail_id')
+      // จับคู่ด้วย "กลุ่มงบ" (ปี + ประเภท + ประเภทย่อย) แทนการเทียบ id ตรง ๆ
+      // bm_budget_detail_warehouse.view_bgdetail_id เก็บ bgdetail_id แถวไหนก็ได้ในกลุ่ม
+      // ขึ้นกับว่าตอนผูกคลังผู้ใช้กดแถวไหน และถ้าโอนเพิ่มงบเข้ากลุ่มเดิมภายหลัง
+      // แถวใหม่ก็เข้ากลุ่มเดียวกัน การเทียบ id ตรง ๆ จึงหลุดได้ตลอด
+      // bgtypesub_id เป็น null ได้ ใช้ <=> ให้ null เทียบกับ null ติด
+      .joinRaw(`join view_budget_subtype as vbs
+                  on vbs.bg_year = bd.bg_year
+                 and vbs.bgtype_id = bd.bgtype_id
+                 and vbs.bgtypesub_id <=> bd.bgtypesub_id`)
+      .join('bm_bgtype as bb', 'bb.bgtype_id', 'vbs.bgtype_id')
       .where('bbdw.warehouse_id', warehouseId)
       .groupBy('bb.bgtype_id')
       .orderBy('bb.bgtype_name');
@@ -51,11 +59,24 @@ export class StandardModel {
   }
 
   getBudgetDetail(db: Knex, budgetYear: string, budgetTypeId: string, warehouseId: any) {
-    return db('view_budget_subtype as vs')
-      .select('vs.bgdetail_id', 'vs.view_bgdetail_id', 'vs.bg_year', 'vs.bgtype_id', 'vs.bgtype_name', 'vs.bgtypesub_id', 'vs.bgtypesub_name', 'vs.remark', 'vs.amount')
-      .join('bm_budget_detail_warehouse as bbdw', 'bbdw.view_bgdetail_id', 'vs.bgdetail_id')
-      .where('vs.bg_year', budgetYear)
+    return db('bm_budget_detail_warehouse as bbdw')
+      .distinct('vs.bgdetail_id', 'vs.view_bgdetail_id', 'vs.bg_year', 'vs.bgtype_id', 'vs.bgtype_name', 'vs.bgtypesub_id', 'vs.bgtypesub_name', 'vs.remark', 'vs.amount')
+      .join('bm_budget_detail as bd', 'bd.bgdetail_id', 'bbdw.view_bgdetail_id')
+      // จับคู่ด้วย "กลุ่มงบ" (ปี + ประเภท + ประเภทย่อย) แทนการเทียบ id ตรง ๆ
+      // bm_budget_detail_warehouse.view_bgdetail_id เก็บ bgdetail_id แถวไหนก็ได้ในกลุ่ม
+      // ขึ้นกับว่าตอนผูกคลังผู้ใช้กดแถวไหน และถ้าโอนเพิ่มงบเข้ากลุ่มเดิมภายหลัง
+      // แถวใหม่ก็เข้ากลุ่มเดียวกัน การเทียบ id ตรง ๆ จึงหลุดได้ตลอด
+      // bgtypesub_id เป็น null ได้ ใช้ <=> ให้ null เทียบกับ null ติด
+      .joinRaw(`join view_budget_subtype as vs
+                  on vs.bg_year = bd.bg_year
+                 and vs.bgtype_id = bd.bgtype_id
+                 and vs.bgtypesub_id <=> bd.bgtypesub_id`)
+      .where('bbdw.warehouse_id', warehouseId)
+      .andWhere('vs.bg_year', budgetYear)
       .andWhere('vs.bgtype_id', budgetTypeId)
-      .andWhere('bbdw.warehouse_id', warehouseId)
+      // คลังเดียวอาจผูกไว้หลายแถวในกลุ่มเดียวกัน (เช่น 33 กับ 40 ของคลัง 1)
+      // ต้องยุบให้เหลือกลุ่มละบรรทัด ไม่งั้นงบย่อยจะขึ้นซ้ำใน dropdown
+      // ใช้ distinct แทน group by เพราะคอลัมน์ที่ select มาจาก view ทั้งหมด
+      // แถวซ้ำจึงเหมือนกันทุกคอลัมน์ และไม่ติด ONLY_FULL_GROUP_BY ถ้าวันหลังเปิดใช้
   }
 }
